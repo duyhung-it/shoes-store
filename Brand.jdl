@@ -1,0 +1,14 @@
+entity Brand {
+    code String,
+    name String,
+    description String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service Brand  with serviceImpl
+dto Brand with mapstruct
+paginate Brand with pagination
