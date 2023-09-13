@@ -15,27 +15,9 @@ npm-debug.log.*
 /.awcache/*
 /.cache-loader/*
 
-######################
-# SASS
-######################
-.sass-cache/
-
-######################
-# Eclipse
-######################
-*.pydevproject
-.project
-.metadata
-tmp/
-tmp/**/*
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
+### STS ###
+.apt_generated
 .classpath
-.settings/
-.loadpath
 .factorypath
 /src/main/resources/rebel.xml
 
