@@ -1,7 +1,8 @@
 ######################
 # Project Specific
 ######################
-/target/classes/static/**
+/src/main/webapp/content/css/main.css
+/dist/classes/static/**
 /src/test/javascript/coverage/
 
 ######################
@@ -38,6 +39,7 @@ local.properties
 .factorypath
 /src/main/resources/rebel.xml
 
+
 # External tool builders
 .externalToolBuilders/**
 
@@ -64,6 +66,10 @@ local.properties
 *.orig
 classes/
 out/
+/src/test/
+/src/test/**
+src/test/
+src/test/**
 
 ######################
 # Visual Studio Code
@@ -156,3 +162,4 @@ Desktop.ini
 ######################
 /coverage/
 /.nyc_output/
+/dist/

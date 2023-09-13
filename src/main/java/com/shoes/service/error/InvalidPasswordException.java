@@ -1,4 +1,4 @@
-package com.shoes.service;
+package com.shoes.service.error;
 
 public class InvalidPasswordException extends RuntimeException {
 
