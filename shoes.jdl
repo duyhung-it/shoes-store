@@ -1,0 +1,8 @@
+entity Shoes {
+    code String,
+    name String
+}
+
+service Shoes  with serviceImpl
+dto Shoes with mapstruct
+paginate Shoes with pagination

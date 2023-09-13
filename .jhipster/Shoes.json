@@ -1,0 +1,24 @@
+{
+  "applications": "*",
+  "changelogDate": "20230913023519",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "shoes",
+  "fields": [
+    {
+      "fieldName": "code",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Shoes",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceImpl"
+}

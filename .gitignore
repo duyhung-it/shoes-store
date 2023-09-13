@@ -163,3 +163,6 @@ Desktop.ini
 /coverage/
 /.nyc_output/
 /dist/
+
+# Fake data
+*.csv

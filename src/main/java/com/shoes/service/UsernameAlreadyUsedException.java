@@ -1,4 +1,4 @@
-package com.shoes.service.error;
+package com.shoes.service;
 
 public class UsernameAlreadyUsedException extends RuntimeException {
 
