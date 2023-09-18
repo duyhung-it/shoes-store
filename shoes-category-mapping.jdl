@@ -1,0 +1,19 @@
+entity ShoesCategoryValueMapping {
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+entity ShoesCategoryValue
+entity ShoesDetails
+relationship ManyToOne {
+    ShoesCategoryValueMapping{category} to ShoesCategoryValue
+}
+relationship ManyToOne {
+    ShoesCategoryValueMapping{shoesDetails} to ShoesDetails
+}
+service *  with serviceImpl
+dto all with mapstruct
+paginate * with pagination

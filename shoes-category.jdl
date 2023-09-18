@@ -1,0 +1,13 @@
+entity ShoesCategory {
+    code String,
+    name String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service ShoesCategory  with serviceImpl
+dto ShoesCategory with mapstruct
+paginate ShoesCategory with pagination

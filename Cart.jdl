@@ -1,0 +1,15 @@
+entity Cart {
+    code String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service Cart  with serviceImpl
+dto Cart with mapstruct
+paginate Cart with pagination
+relationship ManyToOne {
+    Cart{owner} to User
+}

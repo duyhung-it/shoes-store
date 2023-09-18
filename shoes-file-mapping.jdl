@@ -1,0 +1,19 @@
+entity ShoesFileUploadMapping {
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+entity FileUpload
+entity ShoesDetails
+relationship ManyToOne {
+    ShoesFileUploadMapping{fileUpload} to FileUpload
+}
+relationship ManyToOne {
+    ShoesFileUploadMapping{shoesDetails} to ShoesDetails
+}
+service *  with serviceImpl
+dto all with mapstruct
+paginate * with pagination

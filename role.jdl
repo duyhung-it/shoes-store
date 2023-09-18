@@ -1,0 +1,13 @@
+entity Role {
+    code String,
+    name String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service Role  with serviceImpl
+dto Role with mapstruct
+paginate Role with pagination

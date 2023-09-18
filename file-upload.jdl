@@ -1,0 +1,9 @@
+entity FileUpload {
+    path String,
+    name String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}

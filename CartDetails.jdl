@@ -1,0 +1,20 @@
+entity CartDetails {
+    quantity Long,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+entity Cart
+entity ShoesDetails
+relationship ManyToOne {
+    CartDetails{cart} to Cart
+}
+relationship ManyToOne {
+    CartDetails{shoesDetails} to ShoesDetails
+}
+service *  with serviceImpl
+dto all with mapstruct
+paginate * with pagination

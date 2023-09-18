@@ -4,16 +4,7 @@
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "shoes",
-  "fields": [
-    {
-      "fieldName": "code",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "name",
-      "fieldType": "String"
-    }
-  ],
+  "fields": [],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
   "name": "Shoes",
