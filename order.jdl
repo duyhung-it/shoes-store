@@ -1,0 +1,25 @@
+entity Order {
+    code String,
+    address String,
+    phone String,
+    paymentMethod Integer,
+    shipPrice BigDecimal,
+    totalPrice BigDecimal,
+    receivedBy String,
+    receivedDate Instant,
+    shippedDate Instant,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+relationship ManyToOne {
+    Order{owner} to User
+}
+
+
+service *  with serviceImpl
+dto all with mapstruct
+paginate * with pagination
