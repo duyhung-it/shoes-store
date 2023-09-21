@@ -19,7 +19,13 @@ import org.springframework.core.env.Environment;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
-@SpringBootApplication
+@SpringBootApplication(
+    exclude = {
+        org.springframework.cloud.aws.autoconfigure.context.ContextInstanceDataAutoConfiguration.class,
+        org.springframework.cloud.aws.autoconfigure.context.ContextStackAutoConfiguration.class,
+        org.springframework.cloud.aws.autoconfigure.context.ContextRegionProviderAutoConfiguration.class,
+    }
+)
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
 public class ShoesstoreApp {
 
