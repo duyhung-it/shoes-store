@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class CartDetailsResource {
 
     private final Logger log = LoggerFactory.getLogger(CartDetailsResource.class);
@@ -40,11 +42,6 @@ public class CartDetailsResource {
     private final CartDetailsService cartDetailsService;
 
     private final CartDetailsRepository cartDetailsRepository;
-
-    public CartDetailsResource(CartDetailsService cartDetailsService, CartDetailsRepository cartDetailsRepository) {
-        this.cartDetailsService = cartDetailsService;
-        this.cartDetailsRepository = cartDetailsRepository;
-    }
 
     /**
      * {@code POST  /cart-details} : Create a new cartDetails.

@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ShoesCategoryValueResource {
 
     private final Logger log = LoggerFactory.getLogger(ShoesCategoryValueResource.class);
@@ -40,14 +42,6 @@ public class ShoesCategoryValueResource {
     private final ShoesCategoryValueService shoesCategoryValueService;
 
     private final ShoesCategoryValueRepository shoesCategoryValueRepository;
-
-    public ShoesCategoryValueResource(
-        ShoesCategoryValueService shoesCategoryValueService,
-        ShoesCategoryValueRepository shoesCategoryValueRepository
-    ) {
-        this.shoesCategoryValueService = shoesCategoryValueService;
-        this.shoesCategoryValueRepository = shoesCategoryValueRepository;
-    }
 
     /**
      * {@code POST  /shoes-category-values} : Create a new shoesCategoryValue.

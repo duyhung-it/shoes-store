@@ -6,6 +6,7 @@ import com.shoes.service.RoleService;
 import com.shoes.service.dto.RoleDTO;
 import com.shoes.service.mapper.RoleMapper;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
     private final Logger log = LoggerFactory.getLogger(RoleServiceImpl.class);
@@ -25,11 +27,6 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     private final RoleMapper roleMapper;
-
-    public RoleServiceImpl(RoleRepository roleRepository, RoleMapper roleMapper) {
-        this.roleRepository = roleRepository;
-        this.roleMapper = roleMapper;
-    }
 
     @Override
     public RoleDTO save(RoleDTO roleDTO) {

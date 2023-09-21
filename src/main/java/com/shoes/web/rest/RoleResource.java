@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class RoleResource {
 
     private final Logger log = LoggerFactory.getLogger(RoleResource.class);
@@ -40,11 +42,6 @@ public class RoleResource {
     private final RoleService roleService;
 
     private final RoleRepository roleRepository;
-
-    public RoleResource(RoleService roleService, RoleRepository roleRepository) {
-        this.roleService = roleService;
-        this.roleRepository = roleRepository;
-    }
 
     /**
      * {@code POST  /roles} : Create a new role.

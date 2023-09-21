@@ -6,6 +6,7 @@ import com.shoes.service.ShoesCategoryValueMappingService;
 import com.shoes.service.dto.ShoesCategoryValueMappingDTO;
 import com.shoes.service.mapper.ShoesCategoryValueMappingMapper;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ShoesCategoryValueMappingServiceImpl implements ShoesCategoryValueMappingService {
 
     private final Logger log = LoggerFactory.getLogger(ShoesCategoryValueMappingServiceImpl.class);
@@ -25,14 +27,6 @@ public class ShoesCategoryValueMappingServiceImpl implements ShoesCategoryValueM
     private final ShoesCategoryValueMappingRepository shoesCategoryValueMappingRepository;
 
     private final ShoesCategoryValueMappingMapper shoesCategoryValueMappingMapper;
-
-    public ShoesCategoryValueMappingServiceImpl(
-        ShoesCategoryValueMappingRepository shoesCategoryValueMappingRepository,
-        ShoesCategoryValueMappingMapper shoesCategoryValueMappingMapper
-    ) {
-        this.shoesCategoryValueMappingRepository = shoesCategoryValueMappingRepository;
-        this.shoesCategoryValueMappingMapper = shoesCategoryValueMappingMapper;
-    }
 
     @Override
     public ShoesCategoryValueMappingDTO save(ShoesCategoryValueMappingDTO shoesCategoryValueMappingDTO) {

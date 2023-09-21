@@ -6,6 +6,7 @@ import com.shoes.service.FileUploadService;
 import com.shoes.service.dto.FileUploadDTO;
 import com.shoes.service.mapper.FileUploadMapper;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class FileUploadServiceImpl implements FileUploadService {
 
     private final Logger log = LoggerFactory.getLogger(FileUploadServiceImpl.class);
@@ -25,11 +27,6 @@ public class FileUploadServiceImpl implements FileUploadService {
     private final FileUploadRepository fileUploadRepository;
 
     private final FileUploadMapper fileUploadMapper;
-
-    public FileUploadServiceImpl(FileUploadRepository fileUploadRepository, FileUploadMapper fileUploadMapper) {
-        this.fileUploadRepository = fileUploadRepository;
-        this.fileUploadMapper = fileUploadMapper;
-    }
 
     @Override
     public FileUploadDTO save(FileUploadDTO fileUploadDTO) {

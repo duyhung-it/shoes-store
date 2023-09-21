@@ -6,6 +6,7 @@ import com.shoes.service.ShoesFileUploadMappingService;
 import com.shoes.service.dto.ShoesFileUploadMappingDTO;
 import com.shoes.service.mapper.ShoesFileUploadMappingMapper;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ShoesFileUploadMappingServiceImpl implements ShoesFileUploadMappingService {
 
     private final Logger log = LoggerFactory.getLogger(ShoesFileUploadMappingServiceImpl.class);
@@ -25,14 +27,6 @@ public class ShoesFileUploadMappingServiceImpl implements ShoesFileUploadMapping
     private final ShoesFileUploadMappingRepository shoesFileUploadMappingRepository;
 
     private final ShoesFileUploadMappingMapper shoesFileUploadMappingMapper;
-
-    public ShoesFileUploadMappingServiceImpl(
-        ShoesFileUploadMappingRepository shoesFileUploadMappingRepository,
-        ShoesFileUploadMappingMapper shoesFileUploadMappingMapper
-    ) {
-        this.shoesFileUploadMappingRepository = shoesFileUploadMappingRepository;
-        this.shoesFileUploadMappingMapper = shoesFileUploadMappingMapper;
-    }
 
     @Override
     public ShoesFileUploadMappingDTO save(ShoesFileUploadMappingDTO shoesFileUploadMappingDTO) {

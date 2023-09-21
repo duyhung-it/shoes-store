@@ -32,9 +32,6 @@ public abstract class AbstractAuditingEntity<T> implements Serializable {
 
     public abstract T getId();
 
-    @Column(name = "status")
-    private Integer status;
-
     @CreatedBy
     @Column(name = "created_by", nullable = false, length = 50, updatable = false)
     private String createdBy;

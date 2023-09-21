@@ -6,6 +6,7 @@ import com.shoes.service.BrandService;
 import com.shoes.service.dto.BrandDTO;
 import com.shoes.service.mapper.BrandMapper;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class BrandServiceImpl implements BrandService {
 
     private final Logger log = LoggerFactory.getLogger(BrandServiceImpl.class);
@@ -25,11 +27,6 @@ public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository;
 
     private final BrandMapper brandMapper;
-
-    public BrandServiceImpl(BrandRepository brandRepository, BrandMapper brandMapper) {
-        this.brandRepository = brandRepository;
-        this.brandMapper = brandMapper;
-    }
 
     @Override
     public BrandDTO save(BrandDTO brandDTO) {

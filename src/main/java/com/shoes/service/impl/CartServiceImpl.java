@@ -6,6 +6,7 @@ import com.shoes.service.CartService;
 import com.shoes.service.dto.CartDTO;
 import com.shoes.service.mapper.CartMapper;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
     private final Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
@@ -25,11 +27,6 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
 
     private final CartMapper cartMapper;
-
-    public CartServiceImpl(CartRepository cartRepository, CartMapper cartMapper) {
-        this.cartRepository = cartRepository;
-        this.cartMapper = cartMapper;
-    }
 
     @Override
     public CartDTO save(CartDTO cartDTO) {

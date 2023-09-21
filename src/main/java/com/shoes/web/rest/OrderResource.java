@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class OrderResource {
 
     private final Logger log = LoggerFactory.getLogger(OrderResource.class);
@@ -40,11 +42,6 @@ public class OrderResource {
     private final OrderService orderService;
 
     private final OrderRepository orderRepository;
-
-    public OrderResource(OrderService orderService, OrderRepository orderRepository) {
-        this.orderService = orderService;
-        this.orderRepository = orderRepository;
-    }
 
     /**
      * {@code POST  /orders} : Create a new order.

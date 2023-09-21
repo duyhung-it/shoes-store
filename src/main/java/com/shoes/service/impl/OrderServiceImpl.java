@@ -6,6 +6,7 @@ import com.shoes.service.OrderService;
 import com.shoes.service.dto.OrderDTO;
 import com.shoes.service.mapper.OrderMapper;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
@@ -25,11 +27,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     private final OrderMapper orderMapper;
-
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper) {
-        this.orderRepository = orderRepository;
-        this.orderMapper = orderMapper;
-    }
 
     @Override
     public OrderDTO save(OrderDTO orderDTO) {

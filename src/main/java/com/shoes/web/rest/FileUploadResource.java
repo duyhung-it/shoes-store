@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RestController
 @RequestMapping("/api")
 @Transactional
+@RequiredArgsConstructor
 public class FileUploadResource {
 
     private final Logger log = LoggerFactory.getLogger(FileUploadResource.class);
@@ -33,10 +35,6 @@ public class FileUploadResource {
     private String applicationName;
 
     private final FileUploadRepository fileUploadRepository;
-
-    public FileUploadResource(FileUploadRepository fileUploadRepository) {
-        this.fileUploadRepository = fileUploadRepository;
-    }
 
     /**
      * {@code POST  /file-uploads} : Create a new fileUpload.
