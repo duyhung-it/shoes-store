@@ -47,4 +47,12 @@ public abstract class AbstractAuditingEntity<T> implements Serializable {
     @LastModifiedDate
     @Column(name = "last_modified_date")
     private Instant lastModifiedDate = Instant.now().plus(7, ChronoUnit.HOURS);
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = Instant.now();
+    }
+
+    public void setLastModifiedDate(Instant lastModifiedDate) {
+        this.lastModifiedDate = Instant.now();
+    }
 }
