@@ -2,11 +2,11 @@ package com.shoes.web.rest;
 
 import com.shoes.domain.User;
 import com.shoes.repository.UserRepository;
-import com.shoes.security.SecurityUtils;
 import com.shoes.service.MailService;
 import com.shoes.service.UserService;
 import com.shoes.service.dto.AdminUserDTO;
 import com.shoes.service.dto.PasswordChangeDTO;
+import com.shoes.util.SecurityUtils;
 import com.shoes.web.rest.errors.*;
 import com.shoes.web.rest.vm.KeyAndPasswordVM;
 import com.shoes.web.rest.vm.ManagedUserVM;

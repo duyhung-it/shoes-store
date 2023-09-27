@@ -1,6 +1,9 @@
 package com.shoes.service;
 
 import com.shoes.service.dto.ShoesCategoryDTO;
+import com.shoes.service.dto.ShoesCategorySearchReqDTO;
+import com.shoes.service.dto.ShoesCategorySearchResDTO;
+import com.shoes.service.dto.ShoesCategoryUpdateDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +26,7 @@ public interface ShoesCategoryService {
      * @param shoesCategoryDTO the entity to update.
      * @return the persisted entity.
      */
-    ShoesCategoryDTO update(ShoesCategoryDTO shoesCategoryDTO);
+    ShoesCategoryDTO update(ShoesCategoryUpdateDTO shoesCategoryDTO, Long idShoesCategory);
 
     /**
      * Partially updates a shoesCategory.
@@ -39,7 +42,7 @@ public interface ShoesCategoryService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<ShoesCategoryDTO> findAll(Pageable pageable);
+    Page<ShoesCategorySearchResDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" shoesCategory.
@@ -47,7 +50,7 @@ public interface ShoesCategoryService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<ShoesCategoryDTO> findOne(Long id);
+    ShoesCategoryDTO findOne(Long id);
 
     /**
      * Delete the "id" shoesCategory.
@@ -55,4 +58,6 @@ public interface ShoesCategoryService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Page<ShoesCategorySearchResDTO> search(ShoesCategorySearchReqDTO searchText, Pageable pageable);
 }

@@ -1,31 +1,18 @@
 package com.shoes.service.dto;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * A DTO for the {@link com.shoes.domain.ShoesCategory} entity.
- */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings("common-java:DuplicatedBlocks")
-public class ShoesCategoryDTO implements Serializable {
+@NoArgsConstructor
+public class ShoesCategoryUpdateDTO {
 
-    private Long id;
-
-    @NotBlank(message = "error.shoes.category.code.notBlank")
     private String code;
 
     @NotBlank(message = "error.shoes.category.name.notBlank")
