@@ -1,5 +1,6 @@
-package com.shoes.security;
+package com.shoes.util;
 
+import com.shoes.security.AuthoritiesConstants;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;

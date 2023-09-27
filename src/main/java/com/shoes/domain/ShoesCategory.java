@@ -1,5 +1,7 @@
 package com.shoes.domain;
 
+import com.shoes.service.dto.ShoesCategoryDTO;
+import com.shoes.service.dto.ShoesCategorySearchResDTO;
 import java.io.Serializable;
 import java.time.Instant;
 import javax.persistence.*;
@@ -15,6 +17,24 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SqlResultSetMappings(
+    value = @SqlResultSetMapping(
+        name = "shoes_category_result",
+        classes = {
+            @ConstructorResult(
+                targetClass = ShoesCategorySearchResDTO.class,
+                columns = {
+                    @ColumnResult(name = "id", type = Long.class),
+                    @ColumnResult(name = "code", type = String.class),
+                    @ColumnResult(name = "name", type = String.class),
+                    @ColumnResult(name = "status", type = Integer.class),
+                    @ColumnResult(name = "last_modified_by", type = String.class),
+                    @ColumnResult(name = "last_modified_date", type = Instant.class),
+                }
+            ),
+        }
+    )
+)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShoesCategory extends AbstractAuditingEntity<Long> implements Serializable {
 
