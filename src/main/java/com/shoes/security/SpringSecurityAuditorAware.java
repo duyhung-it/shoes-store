@@ -1,6 +1,7 @@
 package com.shoes.security;
 
 import com.shoes.config.Constants;
+import com.shoes.util.SecurityUtils;
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;

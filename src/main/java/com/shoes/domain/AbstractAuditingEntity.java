@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -48,11 +49,9 @@ public abstract class AbstractAuditingEntity<T> implements Serializable {
     @Column(name = "last_modified_date")
     private Instant lastModifiedDate = Instant.now().plus(7, ChronoUnit.HOURS);
 
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = Instant.now();
-    }
-
-    public void setLastModifiedDate(Instant lastModifiedDate) {
-        this.lastModifiedDate = Instant.now();
+    @PrePersist
+    public void updateLastModifiedDatePrePersist() {
+        if (this.createdDate == null) this.setCreatedDate(Instant.now().plus(7, ChronoUnit.HOURS));
+        this.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
     }
 }
