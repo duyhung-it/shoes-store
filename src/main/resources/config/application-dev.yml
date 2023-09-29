@@ -12,6 +12,8 @@
 # Full reference is available at:
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
+awsAccessKey: AKIAYEQDRZP5JOFOKBE7
+awsSecretKey: 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
 
 logging:
   level:
@@ -24,6 +26,7 @@ logging:
         amazonaws:
           util:
             EC2MetadataUtils: error
+
 cloud:
   aws:
     region:
@@ -32,6 +35,7 @@ cloud:
       use-default-aws-region-chain: true
     stack: false
     stack.auto: false
+
 spring:
   devtools:
     restart:
@@ -44,7 +48,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://localhost:3306/shoes-store?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/shoes-store?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=True
     username: root
     password: root
     hikari:

@@ -23,6 +23,7 @@ public class ShoesCategoryValue extends AbstractAuditingEntity<Long> implements 
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "value")
@@ -35,6 +36,7 @@ public class ShoesCategoryValue extends AbstractAuditingEntity<Long> implements 
     private Integer status;
 
     @ManyToOne
+    @JoinColumn(name = "shoes_category_id")
     @JsonIgnoreProperties(value = { "shoesCategoryValues" }, allowSetters = true)
     private ShoesCategory category;
 

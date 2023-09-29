@@ -1,5 +1,8 @@
 package com.shoes.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import lombok.NoArgsConstructor;
@@ -8,6 +11,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @NoArgsConstructor
@@ -74,5 +78,16 @@ public class DataUtils {
     public static String toUpperCase(String str) {
         if (isNullOrEmpty(str)) return str;
         return str.toUpperCase();
+    }
+
+    public static File multipartFileToFile(MultipartFile multipartFile) throws IOException {
+        File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(multipartFile.getBytes());
+        } catch (IOException e) {
+            // Handle the exception, e.g., log it or return an error response.
+            throw e;
+        }
+        return file;
     }
 }

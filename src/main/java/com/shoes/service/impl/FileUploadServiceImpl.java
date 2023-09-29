@@ -1,10 +1,15 @@
 package com.shoes.service.impl;
 
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.shoes.config.Constants;
 import com.shoes.domain.FileUpload;
 import com.shoes.repository.FileUploadRepository;
 import com.shoes.service.FileUploadService;
 import com.shoes.service.dto.FileUploadDTO;
 import com.shoes.service.mapper.FileUploadMapper;
+import com.shoes.util.AWSS3Util;
+import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,6 +32,8 @@ public class FileUploadServiceImpl implements FileUploadService {
     private final FileUploadRepository fileUploadRepository;
 
     private final FileUploadMapper fileUploadMapper;
+
+    private final AWSS3Util awss3Util;
 
     @Override
     public FileUploadDTO save(FileUploadDTO fileUploadDTO) {
