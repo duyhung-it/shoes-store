@@ -1,14 +1,19 @@
 package com.shoes.web.rest;
 
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.shoes.config.Constants;
 import com.shoes.repository.ShoesCategoryRepository;
 import com.shoes.service.ShoesCategoryService;
-import com.shoes.service.dto.ShoesCategoryDTO;
-import com.shoes.service.dto.ShoesCategorySearchReqDTO;
-import com.shoes.service.dto.ShoesCategorySearchResDTO;
-import com.shoes.service.dto.ShoesCategoryUpdateDTO;
+import com.shoes.service.dto.*;
+import com.shoes.util.AWSS3Util;
+import com.shoes.util.DataUtils;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -134,5 +140,18 @@ public class ShoesCategoryResource {
         log.debug("REST request to search ShoesCategory");
         Page<ShoesCategorySearchResDTO> shoesCategoryDTOPage = shoesCategoryService.search(shoescategorySearchReqDTO, pageable);
         return ResponseEntity.ok(shoesCategoryDTOPage);
+    }
+
+    @PostMapping("/upload")
+    public String publicEntity(@ModelAttribute ObjectTest objectTest) {
+        File file = null;
+        try {
+            file = DataUtils.multipartFileToFile(objectTest.getFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "error";
+        }
+        new AWSS3Util().uploadPhoto(Constants.KEY_UPLOAD + objectTest.getFile().getOriginalFilename(), file);
+        return "uploadsucces";
     }
 }
