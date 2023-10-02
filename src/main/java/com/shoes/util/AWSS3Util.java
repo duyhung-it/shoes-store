@@ -18,23 +18,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class AWSS3Util {
 
-    private static final String bucketName = "j7v1";
+    private static final String bucketName = "hungnd-bucket";
 
-    private AmazonS3 s3Client;
+    private static AmazonS3 s3Client;
 
-    //    @Value("${awsAccessKey}")
+    @Value("${awsAccessKey}")
     private String accessKey;
 
-    //    @Value("${awsSecretKey}")
+    @Value("${awsSecretKey}")
     private String secretKey;
 
-    //    @PostConstruct
-    //    private void initializeAmazon() {
-    //        AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
-    //        this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials))
-    //            .withRegion(Regions.US_EAST_1).build();
-    //
-    //    }
+    @PostConstruct
+    private void initializeAmazon() {
+        AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
+        this.s3Client =
+            AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.US_EAST_1)
+                .build();
+    }
 
     public void uploadPhoto(String key, File file) {
         this.s3Client.putObject(bucketName, key, file);
