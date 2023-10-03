@@ -153,7 +153,13 @@ spring:
   output:
     ansi:
       console-available: true
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 290174151346-n8m8vr9anhbp419bp5m0j95an05mcref.apps.googleusercontent.com
+            clientSecret: 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
 server:
   servlet:
     session:
