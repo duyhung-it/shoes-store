@@ -1,5 +1,6 @@
 package com.shoes.web.rest.vm;
 
+import com.shoes.domain.User;
 import com.shoes.service.dto.AdminUserDTO;
 import javax.validation.constraints.Size;
 
@@ -13,23 +14,23 @@ public class ManagedUserVM extends AdminUserDTO {
     public static final int PASSWORD_MAX_LENGTH = 100;
 
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
-    private String password;
+    private String passwordHash;
 
     public ManagedUserVM() {
         // Empty constructor needed for Jackson.
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     // prettier-ignore
     @Override
     public String toString() {
-        return "ManagedUserVM{" + super.toString() + "} ";
+        return "ManagedUserVM{" + super.toString() + "} + password = " + this.passwordHash;
     }
 }

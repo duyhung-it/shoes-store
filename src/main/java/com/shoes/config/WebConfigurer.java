@@ -1,5 +1,6 @@
 package com.shoes.config;
 
+import java.util.Properties;
 import javax.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -54,5 +57,19 @@ public class WebConfigurer implements ServletContextInitializer {
             source.registerCorsConfiguration("/swagger-ui/**", config);
         }
         return new CorsFilter(source);
+    }
+
+    @Bean
+    public JavaMailSender javaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp.gmail.com"); // Set your SMTP server host
+        mailSender.setPort(587); // Set the SMTP port
+        mailSender.setUsername("duonglcph27090@fpt.edu.vn"); // Set your SMTP username
+        mailSender.setPassword("adqm zpyy junv kxxn"); // Set your SMTP password
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        return mailSender;
     }
 }
