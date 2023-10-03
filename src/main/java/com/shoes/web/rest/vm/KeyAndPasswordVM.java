@@ -5,23 +5,23 @@ package com.shoes.web.rest.vm;
  */
 public class KeyAndPasswordVM {
 
-    private String key;
+    private String resetKey;
 
-    private String newPassword;
+    private String passwordHash;
 
-    public String getKey() {
-        return key;
+    public String getResetKey() {
+        return resetKey;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setResetKey(String key) {
+        this.resetKey = key;
     }
 
-    public String getNewPassword() {
-        return newPassword;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
+    public void setPasswordHash(String newPassword) {
+        this.passwordHash = newPassword;
     }
 }

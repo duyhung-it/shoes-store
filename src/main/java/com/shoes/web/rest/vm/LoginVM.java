@@ -10,28 +10,28 @@ public class LoginVM {
 
     @NotNull
     @Size(min = 1, max = 50)
-    private String username;
+    private String login;
 
     @NotNull
     @Size(min = 4, max = 100)
-    private String password;
+    private String passwordHash;
 
     private boolean rememberMe;
 
-    public String getUsername() {
-        return username;
+    public String getLogin() {
+        return login;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public boolean isRememberMe() {
@@ -46,7 +46,7 @@ public class LoginVM {
     @Override
     public String toString() {
         return "LoginVM{" +
-            "username='" + username + '\'' +
+            "username='" + login + '\'' +
             ", rememberMe=" + rememberMe +
             '}';
     }

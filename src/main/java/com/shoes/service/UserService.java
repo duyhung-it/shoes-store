@@ -82,6 +82,7 @@ public class UserService {
     }
 
     public Optional<User> requestPasswordReset(String mail) {
+        System.out.println(mail);
         return userRepository
             .findOneByEmailIgnoreCase(mail)
             .filter(User::isActivated)

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  * REST controller for managing the current user's account.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/")
 @RequiredArgsConstructor
 public class AccountResource {
 
@@ -54,10 +54,10 @@ public class AccountResource {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
-        if (isPasswordLengthInvalid(managedUserVM.getPassword())) {
+        if (isPasswordLengthInvalid(managedUserVM.getPasswordHash())) {
             throw new InvalidPasswordException();
         }
-        User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
+        User user = userService.registerUser(managedUserVM, managedUserVM.getPasswordHash());
         mailService.sendActivationEmail(user);
     }
 
@@ -152,6 +152,7 @@ public class AccountResource {
     @PostMapping(path = "/account/reset-password/init")
     public void requestPasswordReset(@RequestBody String mail) {
         Optional<User> user = userService.requestPasswordReset(mail);
+        System.out.println(user);
         if (user.isPresent()) {
             mailService.sendPasswordResetMail(user.get());
         } else {
@@ -170,11 +171,11 @@ public class AccountResource {
      */
     @PostMapping(path = "/account/reset-password/finish")
     public void finishPasswordReset(@RequestBody KeyAndPasswordVM keyAndPassword) {
-        if (isPasswordLengthInvalid(keyAndPassword.getNewPassword())) {
+        if (isPasswordLengthInvalid(keyAndPassword.getPasswordHash())) {
             throw new InvalidPasswordException();
         }
-        Optional<User> user = userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey());
-
+        Optional<User> user = userService.completePasswordReset(keyAndPassword.getPasswordHash(), keyAndPassword.getResetKey());
+        System.out.println(user.get());
         if (!user.isPresent()) {
             throw new AccountResourceException("No user was found for this reset key");
         }
