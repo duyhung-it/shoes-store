@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AWSS3Util {
 
-    private static final String bucketName = "hungnd-bucket";
+    private static final String bucketName = "duyhung-bucket";
 
     private static AmazonS3 s3Client;
 
@@ -35,7 +35,7 @@ public class AWSS3Util {
             AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
+                .withRegion(Regions.AP_SOUTHEAST_1)
                 .build();
     }
 

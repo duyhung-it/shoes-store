@@ -35,6 +35,7 @@ import tech.jhipster.web.util.PaginationUtil;
 @RestController
 @RequestMapping("/api/shoes-categories")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ShoesCategoryResource {
 
     private final Logger log = LoggerFactory.getLogger(ShoesCategoryResource.class);
@@ -151,7 +152,7 @@ public class ShoesCategoryResource {
             e.printStackTrace();
             return "error";
         }
-        new AWSS3Util().uploadPhoto(Constants.KEY_UPLOAD + objectTest.getFile().getOriginalFilename(), file);
+        new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + objectTest.getFile().getOriginalFilename(), file);
         return "uploadsucces";
     }
 }
