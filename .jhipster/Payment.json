@@ -1,10 +1,22 @@
 {
   "applications": "*",
-  "changelogDate": "20230918165922",
+  "changelogDate": "20231005143930",
   "dto": "mapstruct",
   "embedded": false,
-  "entityTableName": "shoes_category_value_mapping",
+  "entityTableName": "payment",
   "fields": [
+    {
+      "fieldName": "code",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "paymentMethod",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "paymentStatus",
+      "fieldType": "Integer"
+    },
     {
       "fieldName": "status",
       "fieldType": "Integer"
@@ -28,20 +40,9 @@
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
-  "name": "ShoesCategoryValueMapping",
+  "name": "Payment",
   "pagination": "pagination",
   "readOnly": false,
-  "relationships": [
-    {
-      "otherEntityName": "shoesCategoryValue",
-      "relationshipName": "category",
-      "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "shoesDetails",
-      "relationshipName": "shoesDetails",
-      "relationshipType": "many-to-one"
-    }
-  ],
+  "relationships": [],
   "service": "serviceImpl"
 }
