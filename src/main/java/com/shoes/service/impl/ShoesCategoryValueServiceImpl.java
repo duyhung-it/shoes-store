@@ -1,11 +1,13 @@
 package com.shoes.service.impl;
 
+import com.shoes.config.Constants;
 import com.shoes.domain.ShoesCategoryValue;
 import com.shoes.repository.ShoesCategoryRepository;
 import com.shoes.repository.ShoesCategoryValueRepository;
 import com.shoes.service.ShoesCategoryValueService;
 import com.shoes.service.dto.ShoesCategoryValueDTO;
 import com.shoes.service.mapper.ShoesCategoryValueMapper;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,5 +94,12 @@ public class ShoesCategoryValueServiceImpl implements ShoesCategoryValueService 
     public void delete(Long id) {
         log.debug("Request to delete ShoesCategoryValue : {}", id);
         shoesCategoryValueRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ShoesCategoryValueDTO> findAllByShoesCategory(Long idShoesCategory) {
+        return shoesCategoryValueMapper.toDto(
+            shoesCategoryValueRepository.findAllByCategory_IdAndStatus(idShoesCategory, Constants.STATUS.ACTIVE)
+        );
     }
 }

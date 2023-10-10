@@ -1,6 +1,7 @@
 package com.shoes.service;
 
 import com.shoes.service.dto.ShoesCategoryValueDTO;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,4 +56,6 @@ public interface ShoesCategoryValueService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<ShoesCategoryValueDTO> findAllByShoesCategory(Long idShoesCategory);
 }

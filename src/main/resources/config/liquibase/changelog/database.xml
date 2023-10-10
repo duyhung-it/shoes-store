@@ -667,19 +667,19 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="payment" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="payment" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="payment" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="payment" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <changeSet id="20231005143930-2" author="jhipster">
         <addColumn tableName="jhi_order">
@@ -692,5 +692,24 @@
                                  constraintName="fk_jhi_order_payment_id"
                                  referencedColumnNames="id"
                                  referencedTableName="payment"/>
+    </changeSet>
+    <changeSet id="20231005143930-3" author="hung">
+        <addColumn tableName="shoes">
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_date" type="datetime(6)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_date" type="datetime(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>
