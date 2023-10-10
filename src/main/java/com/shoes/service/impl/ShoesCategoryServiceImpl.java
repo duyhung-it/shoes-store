@@ -14,6 +14,7 @@ import com.shoes.util.SecurityUtils;
 import com.shoes.util.Translator;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -135,21 +136,30 @@ public class ShoesCategoryServiceImpl implements ShoesCategoryService {
     @Transactional(readOnly = true)
     public ShoesCategoryDTO findOne(Long id) {
         log.debug("Request to get ShoesCategory : {}", id);
-        return shoesCategoryRepository
+        List<ShoesCategoryValue> shoesCategoryValues =
+            this.shoesCategoryValueRepository.findAllByCategory_IdAndStatus(id, Constants.STATUS.ACTIVE);
+        ShoesCategoryDTO shoesCategoryDTO = shoesCategoryRepository
             .findByIdAndStatus(id, Constants.STATUS.ACTIVE)
             .map(shoesCategoryMapper::toDto)
             .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.shoes.category.not.exist"), ENTITY_NAME, "exist"));
+        shoesCategoryDTO.setShoesCategoryValueDTOList(shoesCategoryValueMapperMapper.toDto(shoesCategoryValues));
+
+        return shoesCategoryDTO;
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         log.debug("Request to delete ShoesCategory : {}", id);
         String loggedUser = SecurityUtils.getCurrentUserLogin().orElse("anonymousUser");
         Optional<ShoesCategory> shoesCategoryOptional = shoesCategoryRepository.findByIdAndStatus(id, Constants.STATUS.ACTIVE);
-        shoesCategoryOptional.orElseThrow(() ->
+        ShoesCategory shoesCategory = shoesCategoryOptional.orElseThrow(() ->
             new BadRequestAlertException(Translator.toLocal("error.shoes.category.not.exist"), ENTITY_NAME, "exist")
         );
-        shoesCategoryRepository.updateStatus(id, Constants.STATUS.DELETE, loggedUser, Instant.now());
+        shoesCategory.setStatus(Constants.STATUS.DELETE);
+        shoesCategory.setLastModifiedBy(loggedUser);
+        shoesCategory.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
+        shoesCategoryRepository.save(shoesCategory);
     }
 
     @Override
