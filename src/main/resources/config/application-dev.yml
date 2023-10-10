@@ -15,6 +15,12 @@
 awsAccessKey: AKIA35VACK5WJXQSUD6R
 awsSecretKey: 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
 
+paypal:
+  client:
+    id: AQwzZeo_MvzrDd-EAFaQ3jSryW3zvYToUQd5KiNUQJJ4D97wg69dlL6KJDqQQRiefXVaOC7_LnmfL8_0
+    secret: EBNnd0SbtjrWfLMBxGvhU0da0h8Xt9peGSy-3i0f0pHmrvAu5iDBuHZEVUoDCn8NcAnzvGu8XQ8VQylQ
+  mode: sandbox
+
 logging:
   level:
     ROOT: DEBUG
