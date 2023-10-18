@@ -1,5 +1,6 @@
 package com.shoes.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -26,10 +27,12 @@ public class ShoesDTO implements Serializable {
 
     private String createdBy;
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private Instant createdDate;
 
     private String lastModifiedBy;
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private Instant lastModifiedDate;
 
     public Long getId() {
