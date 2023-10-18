@@ -3,6 +3,8 @@ package com.shoes.domain;
 import java.io.Serializable;
 import java.time.Instant;
 import javax.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  * A Payment.
@@ -34,12 +36,14 @@ public class Payment implements Serializable {
     @Column(name = "created_by")
     private String createdBy;
 
+    @CreationTimestamp
     @Column(name = "created_date")
     private Instant createdDate;
 
     @Column(name = "last_modified_by")
     private String lastModifiedBy;
 
+    @UpdateTimestamp
     @Column(name = "last_modified_date")
     private Instant lastModifiedDate;
 

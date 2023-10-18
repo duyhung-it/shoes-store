@@ -55,4 +55,14 @@ public interface BrandService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    /**
+     * Search for brands by their code and/or name, with optional pagination.
+     *
+     * @param code     The code to search for (optional). If null or empty, code will not be used as a search criterion.
+     * @param name     The name to search for (optional). If null or empty, name will not be used as a search criterion.
+     * @param pageable The pagination information to control the result size and page number.
+     * @return A page of {@link BrandDTO} objects matching the search criteria, wrapped in a {@link Page}.
+     */
+    Page<BrandDTO> findByCodeAndName(String code, String name, Pageable pageable);
 }

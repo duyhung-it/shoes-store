@@ -12,6 +12,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -174,5 +175,25 @@ public class BrandResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code GET  /brands/search} : Search for brands by name and/or code.
+     *
+     * @param name     the name to search for (optional).
+     * @param code     the code to search for (optional).
+     * @param pageable the pagination information.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of matching brands in body.
+     */
+    @GetMapping("/brands/search")
+    public ResponseEntity<Page<BrandDTO>> searchBrands(
+        @RequestParam(name = "name", required = false) String name,
+        @RequestParam(name = "code", required = false) String code,
+        @ParameterObject Pageable pageable
+    ) {
+        log.debug("REST request to search for Brands by name and code: {} {}", name, code);
+        Page<BrandDTO> page = brandService.findByCodeAndName(code, name, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page);
     }
 }
