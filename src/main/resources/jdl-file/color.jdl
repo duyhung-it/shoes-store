@@ -1,0 +1,13 @@
+entity Color {
+    code String,
+    name String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service *  with serviceImpl
+dto all with mapstruct
+paginate * with pagination

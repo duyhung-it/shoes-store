@@ -1,0 +1,13 @@
+entity Size {
+    code String,
+    name String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service Size  with serviceImpl
+dto Size with mapstruct
+paginate Size with pagination

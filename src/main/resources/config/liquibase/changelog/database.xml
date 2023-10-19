@@ -712,4 +712,72 @@
             </column>
         </addColumn>
     </changeSet>
+    <!--
+        Added the entity Size.
+    -->
+    <changeSet id="20231019161509-1" author="jhipster">
+        <createTable tableName="size">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="code" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="size" columnName="created_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="size" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+    </changeSet>
+    <!--
+        Added the entity Color.
+    -->
+    <changeSet id="20231019161534-1" author="jhipster">
+        <createTable tableName="color">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="code" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="color" columnName="created_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="color" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+    </changeSet>
 </databaseChangeLog>
