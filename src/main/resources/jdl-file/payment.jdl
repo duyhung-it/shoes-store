@@ -1,0 +1,14 @@
+entity Payment {
+    code String,
+    paymentMethod Integer,
+    paymentStatus Integer,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service Payment  with serviceImpl
+dto Payment with mapstruct
+paginate Payment with pagination

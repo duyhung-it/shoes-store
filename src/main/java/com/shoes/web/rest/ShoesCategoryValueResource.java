@@ -153,6 +153,13 @@ public class ShoesCategoryValueResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("/shoes-category-values/category/{id}")
+    public ResponseEntity<List<ShoesCategoryValueDTO>> getAllByShoesCategory(@PathVariable("id") Long idCategory) {
+        log.debug("REST request to get a page of ShoesCategoryValues");
+        List<ShoesCategoryValueDTO> shoesCategoryValueDTOList = shoesCategoryValueService.findAllByShoesCategory(idCategory);
+        return ResponseEntity.ok().body(shoesCategoryValueDTOList);
+    }
+
     /**
      * {@code GET  /shoes-category-values/:id} : get the "id" shoesCategoryValue.
      *

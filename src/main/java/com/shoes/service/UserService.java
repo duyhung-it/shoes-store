@@ -6,9 +6,9 @@ import com.shoes.domain.User;
 import com.shoes.repository.AuthorityRepository;
 import com.shoes.repository.UserRepository;
 import com.shoes.security.AuthoritiesConstants;
-import com.shoes.security.SecurityUtils;
 import com.shoes.service.dto.AdminUserDTO;
 import com.shoes.service.dto.UserDTO;
+import com.shoes.util.SecurityUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -122,7 +122,7 @@ public class UserService {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
         newUser.setImageUrl(userDTO.getImageUrl());
-        newUser.setLangKey(userDTO.getLangKey());
+        newUser.setLangKey("en");
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key
@@ -156,14 +156,14 @@ public class UserService {
         }
         user.setImageUrl(userDTO.getImageUrl());
         if (userDTO.getLangKey() == null) {
-            user.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
+            user.setLangKey("en"); // default language
         } else {
             user.setLangKey(userDTO.getLangKey());
         }
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
         user.setPassword(encryptedPassword);
-        user.setResetKey(RandomUtil.generateResetKey());
-        user.setResetDate(Instant.now());
+        user.setActivationKey(RandomUtil.generateResetKey());
+        user.setCreatedDate(Instant.now());
         user.setActivated(true);
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = userDTO

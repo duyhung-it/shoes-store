@@ -11,7 +11,7 @@ public final class Constants {
     public static final String SYSTEM = "system";
     public static final String DEFAULT_LANGUAGE = "en";
 
-    public static class Status {
+    public static class STATUS {
 
         public static final Integer ACTIVE = 1;
         public static final Integer IN_ACTIVE = 0;
@@ -19,4 +19,6 @@ public final class Constants {
     }
 
     private Constants() {}
+
+    public static final String KEY_UPLOAD = "bad";
 }

@@ -148,3 +148,15 @@ Desktop.ini
 
 # Fake data
 *.csv
+.jhipster/Brand.json
+.jhipster/Cart.json
+.jhipster/CartDetails.json
+.jhipster/FileUpload.json
+.jhipster/Order.json
+.jhipster/Role.json
+.jhipster/Shoes.json
+.jhipster/ShoesCategory.json
+.jhipster/ShoesCategoryValue.json
+.jhipster/ShoesCategoryValueMapping.json
+.jhipster/ShoesDetails.json
+.jhipster/ShoesFileUploadMapping.json

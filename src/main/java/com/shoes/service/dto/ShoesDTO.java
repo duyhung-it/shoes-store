@@ -1,11 +1,19 @@
 package com.shoes.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * A DTO for the {@link com.shoes.domain.Shoes} entity.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShoesDTO implements Serializable {
 
@@ -14,6 +22,18 @@ public class ShoesDTO implements Serializable {
     private String code;
 
     private String name;
+
+    private Integer status;
+
+    private String createdBy;
+
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
+    private Instant createdDate;
+
+    private String lastModifiedBy;
+
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
+    private Instant lastModifiedDate;
 
     public Long getId() {
         return id;

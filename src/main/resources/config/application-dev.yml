@@ -12,6 +12,14 @@
 # Full reference is available at:
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
+awsAccessKey: AKIA35VACK5WJXQSUD6R
+awsSecretKey: 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
+
+paypal:
+  client:
+    id: AQwzZeo_MvzrDd-EAFaQ3jSryW3zvYToUQd5KiNUQJJ4D97wg69dlL6KJDqQQRiefXVaOC7_LnmfL8_0
+    secret: EBNnd0SbtjrWfLMBxGvhU0da0h8Xt9peGSy-3i0f0pHmrvAu5iDBuHZEVUoDCn8NcAnzvGu8XQ8VQylQ
+  mode: sandbox
 
 logging:
   level:
@@ -24,6 +32,7 @@ logging:
         amazonaws:
           util:
             EC2MetadataUtils: error
+
 cloud:
   aws:
     region:
@@ -32,6 +41,7 @@ cloud:
       use-default-aws-region-chain: true
     stack: false
     stack.auto: false
+
 spring:
   devtools:
     restart:
@@ -44,9 +54,9 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://localhost:3306/shoes-store?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/shoes-store?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=True
     username: root
-    password: root
+    password: 123456789
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -64,6 +74,11 @@ spring:
     port: 25
     username:
     password:
+    properties:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:
@@ -86,7 +101,7 @@ jhipster:
   # CORS is only enabled by default with the "dev" profile
   cors:
     # Allow Ionic for JHipster by default (* no longer allowed in Spring Boot 2.4+)
-    allowed-origins: 'http://localhost:8100,https://localhost:8100,http://localhost:9000,https://localhost:9000'
+    allowed-origins: 'http://localhost:8100,https://localhost:8100,http://localhost:9000,https://localhost:9000,http://localhost:4200'
     # Enable CORS when running in GitHub Codespaces
     allowed-origin-patterns: 'https://*.githubpreview.dev'
     allowed-methods: '*'
@@ -103,7 +118,7 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
-    base-url: http://127.0.0.1:8080
+    base-url: http://localhost:8088
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
