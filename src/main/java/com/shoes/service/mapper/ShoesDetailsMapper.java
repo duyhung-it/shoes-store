@@ -18,12 +18,10 @@ public interface ShoesDetailsMapper extends EntityMapper<ShoesDetailsDTO, ShoesD
     ShoesDetailsDTO toDto(ShoesDetails s);
 
     @Named("shoesId")
-    @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     ShoesDTO toDtoShoesId(Shoes shoes);
 
     @Named("brandId")
-    @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     BrandDTO toDtoBrandId(Brand brand);
 }

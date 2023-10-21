@@ -732,19 +732,19 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="size" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="size" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="size" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="size" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <!--
         Added the entity Color.
@@ -766,18 +766,18 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="color" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="color" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="color" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="color" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
 </databaseChangeLog>
