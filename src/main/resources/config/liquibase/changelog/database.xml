@@ -781,4 +781,24 @@
         <dropDefaultValue tableName="color" columnName="created_date" columnDataType="datetime(6)"/>
         <dropDefaultValue tableName="color" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
+    <changeSet id="20231005143930-4" author="hung">
+        <addColumn tableName="shoes_details">
+            <column name="color_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="size_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="color_id"
+                                 baseTableName="shoes_details"
+                                 constraintName="fk_color_shoes_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="color"/>
+        <addForeignKeyConstraint baseColumnNames="size_id"
+                                 baseTableName="shoes_details"
+                                 constraintName="fk_size_shoes_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="size"/>
+    </changeSet>
 </databaseChangeLog>
