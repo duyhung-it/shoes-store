@@ -385,6 +385,7 @@
                                  constraintName="fk_shoes_details__brand_id"
                                  referencedColumnNames="id"
                                  referencedTableName="brand"/>
+
     </changeSet>
     <!--
         Added the entity ShoesCategoryValueMapping.
