@@ -343,6 +343,12 @@
             <column name="price" type="decimal(13,2)">
                 <constraints nullable="true" />
             </column>
+            <column name="import_price" type="decimal(13,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="tax" type="decimal(13,2)">
+                <constraints nullable="true" />
+            </column>
             <column name="quantity" type="bigint">
                 <constraints nullable="true" />
             </column>

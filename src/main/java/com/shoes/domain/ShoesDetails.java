@@ -31,6 +31,12 @@ public class ShoesDetails extends AbstractAuditingEntity<Long> implements Serial
     @Column(name = "price", precision = 21, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "import_price", precision = 21, scale = 2)
+    private BigDecimal import_price;
+
+    @Column(name = "tax", precision = 21, scale = 2)
+    private BigDecimal tax;
+
     @Column(name = "quantity")
     private Long quantity;
 

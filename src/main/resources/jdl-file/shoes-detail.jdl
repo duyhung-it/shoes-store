@@ -1,6 +1,8 @@
 entity ShoesDetails {
     code String,
     price BigDecimal,
+    import_price BigDecimal,
+    tax BigDecimal,
     quantity Long,
     status Integer,
     createdBy String,
@@ -10,12 +12,20 @@ entity ShoesDetails {
 }
 entity Shoes
 entity Brand
+entity Size
+entity Color
 
 relationship ManyToOne {
     ShoesDetails{shoes} to Shoes
 }
 relationship ManyToOne {
     ShoesDetails{brand} to Brand
+}
+relationship ManyToOne {
+    ShoesDetails{size} to Size
+}
+relationship ManyToOne {
+    ShoesDetails{color} to Color
 }
 service *  with serviceImpl
 dto all with mapstruct
