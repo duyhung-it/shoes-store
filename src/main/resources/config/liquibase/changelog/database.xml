@@ -165,8 +165,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="brand" columnName="created_date" columnDataType="datetime(6)"/>
-        <dropDefaultValue tableName="brand" columnName="last_modified_date" columnDataType="datetime(6)"/>
+
+
     </changeSet>
     <!--
         Added the entity Cart.
@@ -367,6 +367,12 @@
             <column name="brand_id" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="color_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="size_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="shoes_details" columnName="created_date" columnDataType="datetime(6)"/>
@@ -386,6 +392,17 @@
                                  referencedColumnNames="id"
                                  referencedTableName="brand"/>
 
+        <addForeignKeyConstraint baseColumnNames="size_id"
+                                 baseTableName="shoes_details"
+                                 constraintName="fk_shoes_details__size_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="size"/>
+
+        <addForeignKeyConstraint baseColumnNames="color_id"
+                                 baseTableName="shoes_details"
+                                 constraintName="fk_shoes_details__color_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="color"/>
     </changeSet>
     <!--
         Added the entity ShoesCategoryValueMapping.

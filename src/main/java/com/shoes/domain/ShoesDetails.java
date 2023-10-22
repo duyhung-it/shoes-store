@@ -2,7 +2,6 @@ package com.shoes.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.Instant;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,4 +42,10 @@ public class ShoesDetails extends AbstractAuditingEntity<Long> implements Serial
 
     @ManyToOne
     private Brand brand;
+
+    @ManyToOne
+    private Size size;
+
+    @ManyToOne
+    private Color color;
 }
