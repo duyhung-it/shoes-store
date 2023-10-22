@@ -818,4 +818,14 @@
                                  referencedColumnNames="id"
                                  referencedTableName="size"/>
     </changeSet>
+    <changeSet id="20231005143930-5" author="hung">
+        <addColumn tableName="shoes_details">
+            <column name="import_price" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="tax" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
