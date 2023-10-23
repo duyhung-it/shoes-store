@@ -7,6 +7,7 @@ import com.shoes.security.AuthoritiesConstants;
 import com.shoes.service.MailService;
 import com.shoes.service.UserService;
 import com.shoes.service.dto.AdminUserDTO;
+import com.shoes.service.dto.OrderDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import com.shoes.web.rest.errors.EmailAlreadyUsedException;
 import com.shoes.web.rest.errors.LoginAlreadyUsedException;

@@ -1,5 +1,6 @@
 package com.shoes.web.rest;
 
+import com.shoes.domain.Order;
 import com.shoes.repository.OrderRepository;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.OrderDTO;
@@ -143,6 +144,13 @@ public class OrderResource {
     public ResponseEntity<List<OrderDTO>> getAllOrders(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Orders");
         Page<OrderDTO> page = orderService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/admin/order-owner/{id}")
+    public ResponseEntity<List<OrderDTO>> getOrderByOwnerId(Pageable pageable, @PathVariable Long id) {
+        Page<OrderDTO> page = orderService.getOrderByOwnerId(id, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
