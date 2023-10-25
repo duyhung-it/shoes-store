@@ -1,0 +1,17 @@
+entity Discount {
+    code String,
+    name String,
+    startDate Instant,
+    endDate Instant,
+    discountMethod Integer,
+    discountAmount BigDecimal,
+    discountStatus Integer,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+service Discount  with serviceImpl
+dto Discount with mapstruct

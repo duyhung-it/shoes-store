@@ -1,0 +1,19 @@
+entity DiscountShoesDetails {
+    discountAmount BigDecimal,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+entity Discount
+entity ShoesDetails
+
+relationship ManyToOne {
+    DiscountShoesDetails{discount} to Discount
+}
+relationship ManyToOne {
+    DiscountShoesDetails{shoesDetails} to ShoesDetails
+}
+service *  with serviceImpl
+dto * with mapstruct

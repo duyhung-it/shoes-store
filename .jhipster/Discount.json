@@ -1,0 +1,15 @@
+{
+  "applications": "*",
+  "changelogDate": "20231025034944",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "discount",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Discount",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceImpl"
+}
