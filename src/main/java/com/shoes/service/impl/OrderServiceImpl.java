@@ -78,4 +78,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Request to delete Order : {}", id);
         orderRepository.deleteById(id);
     }
+
+    @Override
+    public Page<OrderDTO> getOrderByOwnerId(Long id, Pageable pageable) {
+        return orderRepository.getOrderByOwnerId(id, pageable).map(orderMapper::toDto);
+    }
 }

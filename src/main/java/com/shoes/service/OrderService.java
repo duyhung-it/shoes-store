@@ -1,5 +1,6 @@
 package com.shoes.service;
 
+import com.shoes.domain.Order;
 import com.shoes.service.dto.OrderDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -55,4 +56,6 @@ public interface OrderService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Page<OrderDTO> getOrderByOwnerId(Long id, Pageable pageable);
 }
