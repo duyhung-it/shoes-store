@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
+import lombok.Data;
 
 /**
  * A DTO for the {@link com.shoes.domain.ShoesDetails} entity.
  */
+@Data
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShoesDetailsDTO implements Serializable {
 
@@ -32,6 +34,10 @@ public class ShoesDetailsDTO implements Serializable {
     private ShoesDTO shoes;
 
     private BrandDTO brand;
+
+    private SizeDTO size;
+
+    private ColorDTO color;
 
     public Long getId() {
         return id;

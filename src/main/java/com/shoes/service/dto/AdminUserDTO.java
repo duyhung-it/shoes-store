@@ -23,6 +23,8 @@ public class AdminUserDTO implements Serializable {
     @Size(min = 1, max = 50)
     private String login;
 
+    private String passwordHash;
+
     @Size(max = 50)
     private String firstName;
 
@@ -58,6 +60,7 @@ public class AdminUserDTO implements Serializable {
     public AdminUserDTO(User user) {
         this.id = user.getId();
         this.login = user.getLogin();
+        this.passwordHash = user.getPassword();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
@@ -85,6 +88,14 @@ public class AdminUserDTO implements Serializable {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getFirstName() {
@@ -180,6 +191,7 @@ public class AdminUserDTO implements Serializable {
     public String toString() {
         return "AdminUserDTO{" +
             "login='" + login + '\'' +
+            "password='" + passwordHash + '\'' +
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +

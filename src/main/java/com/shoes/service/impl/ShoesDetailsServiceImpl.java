@@ -5,7 +5,9 @@ import com.shoes.repository.ShoesDetailsRepository;
 import com.shoes.service.ShoesDetailsService;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import com.shoes.service.mapper.ShoesDetailsMapper;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +63,9 @@ public class ShoesDetailsServiceImpl implements ShoesDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ShoesDetailsDTO> findAll(Pageable pageable) {
+    public List<ShoesDetailsDTO> findAll(Pageable pageable) {
         log.debug("Request to get all ShoesDetails");
-        return shoesDetailsRepository.findAll(pageable).map(shoesDetailsMapper::toDto);
+        return shoesDetailsRepository.findAll().stream().map(shoesDetailsMapper::toDto).collect(Collectors.toList());
     }
 
     @Override

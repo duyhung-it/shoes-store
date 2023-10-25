@@ -1,0 +1,51 @@
+{
+  "applications": "*",
+  "changelogDate": "20231025035013",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "discount_shoes_details",
+  "fields": [
+    {
+      "fieldName": "discountAmount",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "createdBy",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "createdDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "lastModifiedBy",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "lastModifiedDate",
+      "fieldType": "Instant"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "DiscountShoesDetails",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "discount",
+      "relationshipName": "discount",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "shoesDetails",
+      "relationshipName": "shoesDetails",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}

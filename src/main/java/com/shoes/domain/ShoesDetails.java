@@ -2,7 +2,6 @@ package com.shoes.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.Instant;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShoesDetails implements Serializable {
+public class ShoesDetails extends AbstractAuditingEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,6 +31,12 @@ public class ShoesDetails implements Serializable {
     @Column(name = "price", precision = 21, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "import_price", precision = 21, scale = 2)
+    private BigDecimal import_price;
+
+    @Column(name = "tax", precision = 21, scale = 2)
+    private BigDecimal tax;
+
     @Column(name = "quantity")
     private Long quantity;
 
@@ -43,4 +48,10 @@ public class ShoesDetails implements Serializable {
 
     @ManyToOne
     private Brand brand;
+
+    @ManyToOne
+    private Size size;
+
+    @ManyToOne
+    private Color color;
 }
