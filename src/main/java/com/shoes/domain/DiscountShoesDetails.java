@@ -36,5 +36,5 @@ public class DiscountShoesDetails extends AbstractAuditingEntity<Long> implement
     private Discount discount;
 
     @ManyToOne
-    private ShoesDetails shoesDetails;
+    private Shoes shoesDetails;
 }
