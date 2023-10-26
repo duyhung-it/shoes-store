@@ -939,4 +939,15 @@
                                  referencedColumnNames="id"
                                  referencedTableName="shoes_details"/>
     </changeSet>
+    <changeSet id="20231025035013-3" author="jhipster">
+
+        <dropForeignKeyConstraint baseTableName="discount_shoes_details"
+                                  constraintName="fk_discount_shoes_details__shoes_details_id" />
+
+        <addForeignKeyConstraint baseColumnNames="shoes_details_id"
+                                 baseTableName="discount_shoes_details"
+                                 constraintName="fk_discount_shoes_details__shoes_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="shoes"/>
+    </changeSet>
 </databaseChangeLog>
