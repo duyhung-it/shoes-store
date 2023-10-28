@@ -23,5 +23,5 @@ public class DiscountShoesDetailsDTO implements Serializable {
 
     private DiscountDTO discount;
 
-    private ShoesDetailsDTO shoesDetails;
+    private ShoesDTO shoesDTO;
 }
