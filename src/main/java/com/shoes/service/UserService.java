@@ -162,7 +162,7 @@ public class UserService {
         }
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
         user.setPassword(encryptedPassword);
-        user.setActivationKey(RandomUtil.generateResetKey());
+        user.setActivationKey(null);
         user.setCreatedDate(Instant.now());
         user.setActivated(true);
         if (userDTO.getAuthorities() != null) {
@@ -173,6 +173,10 @@ public class UserService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
+            user.setAuthorities(authorities);
+        } else {
+            Set<Authority> authorities = new HashSet<>();
+            authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
             user.setAuthorities(authorities);
         }
         userRepository.save(user);
@@ -202,7 +206,7 @@ public class UserService {
                 }
                 user.setImageUrl(userDTO.getImageUrl());
                 user.setActivated(userDTO.isActivated());
-                user.setLangKey(userDTO.getLangKey());
+                user.setLangKey("en");
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
                 userDTO
@@ -223,7 +227,8 @@ public class UserService {
         userRepository
             .findOneByLogin(login)
             .ifPresent(user -> {
-                userRepository.delete(user);
+                user.setActivated(false);
+                userRepository.save(user);
                 this.clearUserCaches(user);
                 log.debug("Deleted User: {}", user);
             });
