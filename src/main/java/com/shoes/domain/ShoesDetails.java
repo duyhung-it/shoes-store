@@ -43,6 +43,9 @@ public class ShoesDetails extends AbstractAuditingEntity<Long> implements Serial
     @Column(name = "status")
     private Integer status;
 
+    @Column(name = "description")
+    private String description;
+
     @ManyToOne
     private Shoes shoes;
 

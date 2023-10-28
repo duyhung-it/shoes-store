@@ -15,6 +15,9 @@ public interface ShoesDetailsMapper extends EntityMapper<ShoesDetailsDTO, ShoesD
     @Mapping(target = "brand", source = "brand", qualifiedByName = "brandId")
     @Mapping(target = "size", source = "size")
     @Mapping(target = "color", source = "color")
+    @Mapping(target = "tax", source = "tax")
+    @Mapping(target = "import_price", source = "import_price")
+    @Mapping(target = "description", source = "description")
     ShoesDetailsDTO toDto(ShoesDetails s);
 
     @Named("shoesId")
