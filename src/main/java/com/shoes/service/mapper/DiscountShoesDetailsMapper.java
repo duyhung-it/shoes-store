@@ -16,8 +16,8 @@ import org.mapstruct.Named;
  */
 @Mapper(componentModel = "spring")
 public interface DiscountShoesDetailsMapper extends EntityMapper<DiscountShoesDetailsDTO, DiscountShoesDetails> {
-    @Mapping(target = "discount", source = "discount", qualifiedByName = "discountId")
-    @Mapping(target = "shoesDTO", source = "shoesDetails", qualifiedByName = "shoesDetailsId")
+    //    @Mapping(target = "discount", source = "discount", qualifiedByName = "discountId")
+    //    @Mapping(target = "shoesDetails", source = "shoesDetails", qualifiedByName = "shoesDetailsId")
     DiscountShoesDetailsDTO toDto(DiscountShoesDetails s);
 
     @Named("discountId")
