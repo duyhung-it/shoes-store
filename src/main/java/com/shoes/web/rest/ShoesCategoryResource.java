@@ -2,9 +2,12 @@ package com.shoes.web.rest;
 
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.shoes.config.Constants;
+import com.shoes.domain.FileUpload;
 import com.shoes.repository.ShoesCategoryRepository;
+import com.shoes.service.FileUploadService;
 import com.shoes.service.ShoesCategoryService;
 import com.shoes.service.dto.*;
+import com.shoes.service.mapper.FileUploadMapper;
 import com.shoes.util.AWSS3Util;
 import com.shoes.util.DataUtils;
 import com.shoes.web.rest.errors.BadRequestAlertException;
@@ -48,6 +51,9 @@ public class ShoesCategoryResource {
     private final ShoesCategoryService shoesCategoryService;
 
     private final ShoesCategoryRepository shoesCategoryRepository;
+
+    private final FileUploadService fileUploadService;
+    private final FileUploadMapper fileUploadMapper;
 
     /**
      * {@code POST  } : Create a new shoesCategory.
@@ -144,15 +150,25 @@ public class ShoesCategoryResource {
     }
 
     @PostMapping("/upload")
-    public String publicEntity(@ModelAttribute ObjectTest objectTest) {
+    public FileUploadDTO publicEntity(@ModelAttribute ObjectTest objectTest) {
         File file = null;
         try {
             file = DataUtils.multipartFileToFile(objectTest.getFile());
         } catch (IOException e) {
             e.printStackTrace();
-            return "error";
         }
+        String path =
+            "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/images/" +
+            Constants.KEY_UPLOAD +
+            objectTest.getFile().getOriginalFilename();
+        FileUpload fileUpload = new FileUpload(
+            null,
+            path,
+            Constants.KEY_UPLOAD + objectTest.getFile().getOriginalFilename(),
+            Constants.STATUS.ACTIVE
+        );
+        FileUploadDTO fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
         new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + objectTest.getFile().getOriginalFilename(), file);
-        return "uploadsucces";
+        return fileUploadDTO;
     }
 }

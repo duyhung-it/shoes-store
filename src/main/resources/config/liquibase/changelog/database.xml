@@ -804,10 +804,10 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="start_date" type="${datetimeType}">
+            <column name="start_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
-            <column name="end_date" type="${datetimeType}">
+            <column name="end_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="discount_method" type="integer">
@@ -825,21 +825,21 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="discount" columnName="start_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="discount" columnName="end_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="discount" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="discount" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="discount" columnName="start_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="discount" columnName="end_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="discount" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="discount" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <!--
         Added the entity DiscountShoesDetails.
@@ -858,13 +858,13 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="discount_id" type="bigint">
@@ -875,8 +875,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="discount_shoes_details" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="discount_shoes_details" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="discount_shoes_details" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="discount_shoes_details" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <!--
         Added the constraints for entity DiscountShoesDetails.
@@ -895,4 +895,20 @@
                                  referencedColumnNames="id"
                                  referencedTableName="shoes_details"/>
     </changeSet>
+    <changeSet id="20231005143333-1" author="vu">
+        <addColumn tableName="shoes">
+            <column name="description" type="text">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="20231005143399-1" author="vu">
+        <addColumn tableName="shoes_details">
+            <column name="description" type="text">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+
 </databaseChangeLog>
