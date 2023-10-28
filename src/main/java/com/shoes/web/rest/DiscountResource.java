@@ -4,6 +4,7 @@ import com.shoes.repository.DiscountRepository;
 import com.shoes.service.DiscountService;
 import com.shoes.service.dto.DiscountCreateDTO;
 import com.shoes.service.dto.DiscountDTO;
+import com.shoes.service.dto.DiscountResDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,9 +52,9 @@ public class DiscountResource {
     @PostMapping("/discounts")
     public ResponseEntity<DiscountDTO> createDiscount(@RequestBody DiscountCreateDTO discountDTO) throws URISyntaxException {
         log.debug("REST request to save Discount : {}", discountDTO);
-        if (discountDTO.getId() != null) {
-            throw new BadRequestAlertException("A new discount cannot already have an ID", ENTITY_NAME, "idexists");
-        }
+        //        if (discountDTO.getId() != null) {
+        //            throw new BadRequestAlertException("A new discount cannot already have an ID", ENTITY_NAME, "idexists");
+        //        }
         DiscountDTO result = discountService.save(discountDTO);
         return ResponseEntity
             .created(new URI("/api/discounts/" + result.getId()))
@@ -149,10 +150,10 @@ public class DiscountResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the discountDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/discounts/{id}")
-    public ResponseEntity<DiscountDTO> getDiscount(@PathVariable Long id) {
+    public ResponseEntity<DiscountResDTO> getDiscount(@PathVariable Long id) {
         log.debug("REST request to get Discount : {}", id);
-        Optional<DiscountDTO> discountDTO = discountService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(discountDTO);
+        DiscountResDTO discountDTO = discountService.findOne(id);
+        return ResponseEntity.ok(discountDTO);
     }
 
     /**

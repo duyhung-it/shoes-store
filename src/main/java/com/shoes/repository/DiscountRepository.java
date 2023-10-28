@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiscountRepository extends JpaRepository<Discount, Long> {
     List<Discount> findAllByStatus(Integer status);
+    Discount findByIdAndStatus(Long id, Integer status);
 
     @Query(value = "select d from Discount d where d.status <> -1 and (d.code like :searchText or d.name like :searchText)")
     List<Discount> searchByNameOrCode(@Param("searchText") String searchText);
