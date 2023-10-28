@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,5 +91,27 @@ public class DataUtils {
             throw e;
         }
         return file;
+    }
+
+    public static Instant parseToInstant_yyyy_MM_dd_HH_mm_ss(String dateString) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startDate = LocalDateTime.parse(dateString, df);
+        Instant instant = startDate.toInstant(ZoneOffset.UTC);
+        return instant;
+    }
+
+    public static Instant getStartOfDay_yyyy_MM_dd_HH_mm_ss(String dateString) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate = LocalDate.parse(dateString, df);
+        Instant instant = startDate.atStartOfDay().toInstant(ZoneOffset.UTC);
+        return instant;
+    }
+
+    public static Instant getEndOfDay_yyyy_MM_dd_HH_mm_ss(String dateString) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dateString, df);
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        Instant instant = endOfDay.toInstant(ZoneOffset.UTC);
+        return instant;
     }
 }
