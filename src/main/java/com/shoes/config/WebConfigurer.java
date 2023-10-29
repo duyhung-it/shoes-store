@@ -1,5 +1,11 @@
 package com.shoes.config;
 
+import static java.net.URLDecoder.decode;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Properties;
 import javax.servlet.*;
 import org.slf4j.Logger;
@@ -23,7 +29,7 @@ import tech.jhipster.config.JHipsterProperties;
  * Configuration of web application with Servlet 3.0 APIs.
  */
 @Configuration
-public class WebConfigurer implements ServletContextInitializer {
+public class WebConfigurer implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory> {
 
     private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
@@ -43,6 +49,39 @@ public class WebConfigurer implements ServletContextInitializer {
         }
 
         log.info("Web application fully configured");
+    }
+
+    @Override
+    public void customize(WebServerFactory server) {
+        // When running in an IDE or with ./mvnw spring-boot:run, set location of the static web assets.
+        try {
+            setLocationForStaticAssets(server);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setLocationForStaticAssets(WebServerFactory server) throws UnsupportedEncodingException {
+        if (server instanceof ConfigurableServletWebServerFactory) {
+            ConfigurableServletWebServerFactory servletWebServer = (ConfigurableServletWebServerFactory) server;
+            File root;
+            String prefixPath = resolvePathPrefix();
+            root = new File(prefixPath + "target/classes/static/");
+            if (root.exists() && root.isDirectory()) {
+                servletWebServer.setDocumentRoot(root);
+            }
+        }
+    }
+
+    private String resolvePathPrefix() throws UnsupportedEncodingException {
+        String fullExecutablePath = decode(this.getClass().getResource("").getPath(), StandardCharsets.UTF_8.toString());
+        String rootPath = Paths.get(".").toUri().normalize().getPath();
+        String extractedPath = fullExecutablePath.replace(rootPath, "");
+        int extractionEndIndex = extractedPath.indexOf("target/");
+        if (extractionEndIndex <= 0) {
+            return "";
+        }
+        return extractedPath.substring(0, extractionEndIndex);
     }
 
     @Bean
