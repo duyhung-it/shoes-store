@@ -1,18 +1,16 @@
 package com.shoes.service.dto;
 
-import com.shoes.util.DataUtils;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class DiscountCreateDTO {
+public class DiscountResDTO {
 
     private Long id;
 
@@ -20,9 +18,9 @@ public class DiscountCreateDTO {
 
     private String name;
 
-    private String startDate;
+    private Instant startDate;
 
-    private String endDate;
+    private Instant endDate;
 
     private Integer discountMethod;
 
@@ -31,12 +29,4 @@ public class DiscountCreateDTO {
     private Integer discountStatus;
 
     private List<DiscountShoesDetailsDTO> discountShoesDetailsDTOS;
-
-    public Instant getStartDate() {
-        return DataUtils.getStartOfDay_yyyy_MM_dd_HH_mm_ss(startDate);
-    }
-
-    public Instant getEndDate() {
-        return DataUtils.getEndOfDay_yyyy_MM_dd_HH_mm_ss(endDate);
-    }
 }

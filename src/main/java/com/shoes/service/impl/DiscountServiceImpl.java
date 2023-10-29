@@ -8,8 +8,11 @@ import com.shoes.repository.DiscountShoesDetailsRepository;
 import com.shoes.service.DiscountService;
 import com.shoes.service.dto.DiscountCreateDTO;
 import com.shoes.service.dto.DiscountDTO;
+import com.shoes.service.dto.DiscountResDTO;
+import com.shoes.service.dto.DiscountShoesDetailsDTO;
 import com.shoes.service.mapper.DiscountMapper;
 import com.shoes.service.mapper.DiscountShoesDetailsMapper;
+import com.shoes.service.mapper.ShoesMapper;
 import com.shoes.util.DataUtils;
 import com.shoes.util.Translator;
 import com.shoes.web.rest.errors.BadRequestAlertException;
@@ -17,6 +20,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +46,7 @@ public class DiscountServiceImpl implements DiscountService {
     private final DiscountShoesDetailsRepository discountShoesDetailsRepository;
 
     private final DiscountShoesDetailsMapper discountShoesDetailsMapper;
+    private final ShoesMapper shoesMapper;
 
     @Override
     public DiscountDTO save(DiscountCreateDTO discountDTO) {
@@ -52,17 +57,30 @@ public class DiscountServiceImpl implements DiscountService {
         discount.setCreatedBy(loggedUser);
         discount.setLastModifiedBy(loggedUser);
         discountRepository.save(discount);
-        List<DiscountShoesDetails> discountShoesDetailsList = discountShoesDetailsMapper.toEntity(
-            discountDTO.getDiscountShoesDetailsDTOS()
-        );
+        List<DiscountShoesDetails> discountShoesDetailsList = discountDTO
+            .getDiscountShoesDetailsDTOS()
+            .stream()
+            .map(this::mapDiscountShoesDetails)
+            .collect(Collectors.toList());
         discountShoesDetailsList.forEach(discountShoesDetails -> {
-            discountShoesDetails.setDiscount(discount);
             discountShoesDetails.setLastModifiedBy(loggedUser);
-            discountShoesDetails.setCreatedBy(loggedUser);
-            discountShoesDetails.setStatus(Constants.STATUS.ACTIVE);
+            discountShoesDetails.setDiscount(discount);
+            if (Objects.isNull(discountShoesDetails.getId())) {
+                discountShoesDetails.setCreatedBy(loggedUser);
+                discountShoesDetails.setStatus(Constants.STATUS.ACTIVE);
+            }
         });
         discountShoesDetailsRepository.saveAll(discountShoesDetailsList);
         return discountMapper.toDto(discount);
+    }
+
+    private DiscountShoesDetails mapDiscountShoesDetails(DiscountShoesDetailsDTO discountShoesDetailsDTO) {
+        DiscountShoesDetails discountShoesDetails = new DiscountShoesDetails();
+        discountShoesDetails.setShoesDetails(shoesMapper.toEntity(discountShoesDetailsDTO.getShoesDetails()));
+        discountShoesDetails.setDiscountAmount(discountShoesDetailsDTO.getDiscountAmount());
+        discountShoesDetails.setId(discountShoesDetailsDTO.getId());
+        discountShoesDetails.setStatus(discountShoesDetailsDTO.getStatus());
+        return discountShoesDetails;
     }
 
     @Override
@@ -111,9 +129,16 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<DiscountDTO> findOne(Long id) {
+    public DiscountResDTO findOne(Long id) {
         log.debug("Request to get Discount : {}", id);
-        return discountRepository.findById(id).map(discountMapper::toDto);
+        Discount discount = discountRepository.findByIdAndStatus(id, Constants.STATUS.ACTIVE);
+        DiscountResDTO discountCreateDTO = discountMapper.toDiscountDTO(discount);
+        List<DiscountShoesDetails> discountShoesDetailsList = discountShoesDetailsRepository.findAllByDiscount_IdAndStatus(
+            id,
+            Constants.STATUS.ACTIVE
+        );
+        discountCreateDTO.setDiscountShoesDetailsDTOS(discountShoesDetailsMapper.toDto(discountShoesDetailsList));
+        return discountCreateDTO;
     }
 
     @Override

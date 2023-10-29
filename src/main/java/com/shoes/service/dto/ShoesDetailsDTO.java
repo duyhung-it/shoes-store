@@ -19,7 +19,13 @@ public class ShoesDetailsDTO implements Serializable {
 
     private BigDecimal price;
 
+    private BigDecimal import_price;
+
+    private BigDecimal tax;
+
     private Long quantity;
+
+    private String description;
 
     private Integer status;
 
