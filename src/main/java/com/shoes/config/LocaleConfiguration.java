@@ -1,5 +1,6 @@
 package com.shoes.config;
 
+import java.util.Locale;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -14,6 +15,7 @@ public class LocaleConfiguration implements WebMvcConfigurer {
     public LocaleResolver localeResolver() {
         AngularCookieLocaleResolver cookieLocaleResolver = new AngularCookieLocaleResolver();
         cookieLocaleResolver.setCookieName("NG_TRANSLATE_LANG_KEY");
+        cookieLocaleResolver.setDefaultLocale(new Locale("vi"));
         return cookieLocaleResolver;
     }
 
