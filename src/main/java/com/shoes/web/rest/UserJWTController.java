@@ -29,6 +29,7 @@ public class UserJWTController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@RequestBody LoginVM loginVM) {
+        System.out.println(loginVM);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             loginVM.getLogin(),
             loginVM.getPasswordHash()
