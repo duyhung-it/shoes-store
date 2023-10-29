@@ -160,7 +160,7 @@ public class UserService {
         } else {
             user.setLangKey(userDTO.getLangKey());
         }
-        String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
+        String encryptedPassword = passwordEncoder.encode(userDTO.getPasswordHash());
         user.setPassword(encryptedPassword);
         user.setActivationKey(null);
         user.setCreatedDate(Instant.now());
@@ -285,6 +285,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllPublicUsers(Pageable pageable) {
         return userRepository.findAllByIdNotNullAndActivatedIsTrue(pageable).map(UserDTO::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdminUserDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAllByIdNotNullAndActivatedIsTrue(pageable).map(AdminUserDTO::new);
     }
 
     @Transactional(readOnly = true)
