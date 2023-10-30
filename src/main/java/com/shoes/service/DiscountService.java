@@ -2,6 +2,7 @@ package com.shoes.service;
 
 import com.shoes.service.dto.DiscountCreateDTO;
 import com.shoes.service.dto.DiscountDTO;
+import com.shoes.service.dto.DiscountResDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ public interface DiscountService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<DiscountDTO> findOne(Long id);
+    DiscountResDTO findOne(Long id);
 
     /**
      * Delete the "id" discount.

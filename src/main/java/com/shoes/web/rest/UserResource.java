@@ -8,6 +8,7 @@ import com.shoes.service.MailService;
 import com.shoes.service.UserService;
 import com.shoes.service.dto.AdminUserDTO;
 import com.shoes.service.dto.OrderDTO;
+import com.shoes.service.dto.UserDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import com.shoes.web.rest.errors.EmailAlreadyUsedException;
 import com.shoes.web.rest.errors.LoginAlreadyUsedException;
@@ -116,7 +117,6 @@ public class UserResource {
             throw new EmailAlreadyUsedException();
         } else {
             User newUser = userService.createUser(userDTO);
-            mailService.sendCreationEmail(newUser);
             return ResponseEntity
                 .created(new URI("/api/admin/users/" + newUser.getLogin()))
                 .headers(
@@ -169,6 +169,19 @@ public class UserResource {
         }
 
         final Page<AdminUserDTO> page = userService.getAllManagedUsers(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/users/activatedTrue")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<List<AdminUserDTO>> getAllPublicUsers(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get all public User names");
+        if (!onlyContainsAllowedProperties(pageable)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        final Page<AdminUserDTO> page = userService.getAllUsers(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

@@ -1,6 +1,8 @@
 package com.shoes.repository;
 
+import com.shoes.config.Constants;
 import com.shoes.domain.DiscountShoesDetails;
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +11,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface DiscountShoesDetailsRepository extends JpaRepository<DiscountShoesDetails, Long> {}
+public interface DiscountShoesDetailsRepository extends JpaRepository<DiscountShoesDetails, Long> {
+    List<DiscountShoesDetails> findAllByDiscount_IdAndStatus(Long idDiscount, Integer status);
+}

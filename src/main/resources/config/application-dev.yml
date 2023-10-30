@@ -81,6 +81,7 @@ spring:
           enable: true
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
+    encoding: UTF-8
   thymeleaf:
     cache: false
 
