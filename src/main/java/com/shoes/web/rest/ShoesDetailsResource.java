@@ -1,14 +1,26 @@
 package com.shoes.web.rest;
 
+import com.shoes.config.Constants;
+import com.shoes.domain.FileUpload;
 import com.shoes.repository.ShoesDetailsRepository;
+import com.shoes.service.FileUploadService;
 import com.shoes.service.ShoesDetailsService;
+import com.shoes.service.ShoesFileUploadMappingService;
+import com.shoes.service.dto.FileUploadDTO;
 import com.shoes.service.dto.ShoesDetailsDTO;
+import com.shoes.service.dto.ShoesFileUploadMappingDTO;
+import com.shoes.service.mapper.FileUploadMapper;
+import com.shoes.util.AWSS3Util;
+import com.shoes.util.DataUtils;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -39,9 +52,14 @@ public class ShoesDetailsResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    private final FileUploadResource fileUploadResource;
+
     private final ShoesDetailsService shoesDetailsService;
 
     private final ShoesDetailsRepository shoesDetailsRepository;
+    private final FileUploadService fileUploadService;
+    private final FileUploadMapper fileUploadMapper;
+    private final ShoesFileUploadMappingService shoesFileUploadMappingService;
 
     /**
      * {@code POST  /shoes-details} : Create a new shoesDetails.
@@ -61,6 +79,20 @@ public class ShoesDetailsResource {
             .created(new URI("/api/shoes-details/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
+    }
+
+    public FileUploadDTO uploadNewToS3(MultipartFile file) {
+        File fileOut = null;
+        try {
+            fileOut = DataUtils.multipartFileToFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String path = "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/images/" + Constants.KEY_UPLOAD + file.getOriginalFilename();
+        FileUpload fileUpload = new FileUpload(null, path, Constants.KEY_UPLOAD + file.getOriginalFilename(), Constants.STATUS.ACTIVE);
+        FileUploadDTO fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
+        new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + file.getOriginalFilename(), fileOut);
+        return fileUploadDTO;
     }
 
     /**

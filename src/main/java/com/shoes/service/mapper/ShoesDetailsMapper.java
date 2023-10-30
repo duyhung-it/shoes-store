@@ -5,12 +5,17 @@ import com.shoes.service.dto.BrandDTO;
 import com.shoes.service.dto.ShoesDTO;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
 
 /**
  * Mapper for the entity {@link ShoesDetails} and its DTO {@link ShoesDetailsDTO}.
  */
 @Mapper(componentModel = "spring")
 public interface ShoesDetailsMapper extends EntityMapper<ShoesDetailsDTO, ShoesDetails> {
+    ShoesDetailsMapper INSTANCE = Mappers.getMapper(ShoesDetailsMapper.class);
+
+    ShoesDetails toEntity(ShoesDetailsDTO shoesDetailsDTO);
+
     @Mapping(target = "shoes", source = "shoes", qualifiedByName = "shoesId")
     @Mapping(target = "brand", source = "brand", qualifiedByName = "brandId")
     @Mapping(target = "size", source = "size")
@@ -18,6 +23,7 @@ public interface ShoesDetailsMapper extends EntityMapper<ShoesDetailsDTO, ShoesD
     @Mapping(target = "tax", source = "tax")
     @Mapping(target = "import_price", source = "import_price")
     @Mapping(target = "description", source = "description")
+    @Mapping(target = "images", ignore = true)
     ShoesDetailsDTO toDto(ShoesDetails s);
 
     @Named("shoesId")
