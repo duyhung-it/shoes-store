@@ -150,25 +150,18 @@ public class ShoesCategoryResource {
     }
 
     @PostMapping("/upload")
-    public FileUploadDTO publicEntity(@ModelAttribute ObjectTest objectTest) {
-        File file = null;
+    public FileUploadDTO publicEntity(@ModelAttribute MultipartFile file) {
+        File fileOut = null;
         try {
-            file = DataUtils.multipartFileToFile(objectTest.getFile());
+            fileOut = DataUtils.multipartFileToFile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String path =
-            "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/images/" +
-            Constants.KEY_UPLOAD +
-            objectTest.getFile().getOriginalFilename();
-        FileUpload fileUpload = new FileUpload(
-            null,
-            path,
-            Constants.KEY_UPLOAD + objectTest.getFile().getOriginalFilename(),
-            Constants.STATUS.ACTIVE
-        );
+        String path = "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/images/" + Constants.KEY_UPLOAD + file.getOriginalFilename();
+        FileUpload fileUpload = new FileUpload(null, path, Constants.KEY_UPLOAD + file.getOriginalFilename(), Constants.STATUS.ACTIVE);
         FileUploadDTO fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
-        new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + objectTest.getFile().getOriginalFilename(), file);
+
+        new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + file.getOriginalFilename(), fileOut);
         return fileUploadDTO;
     }
 }

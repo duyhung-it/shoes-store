@@ -3,8 +3,10 @@ package com.shoes.service.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * A DTO for the {@link com.shoes.domain.ShoesDetails} entity.
@@ -44,6 +46,8 @@ public class ShoesDetailsDTO implements Serializable {
     private SizeDTO size;
 
     private ColorDTO color;
+
+    private MultipartFile[] images;
 
     public Long getId() {
         return id;

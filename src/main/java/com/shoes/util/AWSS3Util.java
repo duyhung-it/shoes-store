@@ -6,11 +6,12 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,21 @@ public class AWSS3Util {
 
     public void uploadPhoto(String key, File file) {
         this.s3Client.putObject(bucketName, key, file);
+    }
+
+    private static boolean checkForDuplicates(String bucketName) {
+        ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request().withBucketName(bucketName);
+        ListObjectsV2Result listObjectsResponse = s3Client.listObjectsV2(listObjectsRequest);
+        Set<String> seenKeys = new HashSet<>();
+        for (S3ObjectSummary objectSummary : listObjectsResponse.getObjectSummaries()) {
+            String objectKey = objectSummary.getKey();
+            if (seenKeys.contains(objectKey)) {
+                return true; // Duplicates found
+            } else {
+                seenKeys.add(objectKey);
+            }
+        }
+        return false; // No duplicates found
     }
 
     public byte[] downloadPhoto(String key) {
