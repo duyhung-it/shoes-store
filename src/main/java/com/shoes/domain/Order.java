@@ -58,4 +58,7 @@ public class Order extends AbstractAuditingEntity<Long> implements Serializable 
 
     @ManyToOne
     private User owner;
+
+    @ManyToOne
+    private Payment payment;
 }

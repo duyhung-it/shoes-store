@@ -1,0 +1,20 @@
+entity OrderDetails {
+    quantity Integer,
+    price BigDecimal,
+    discount BigDecimal,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+entity ShoesDetails
+entity Order
+relationship ManyToOne {
+    OrderDetails{order} to Order
+}
+relationship ManyToOne {
+    OrderDetails{shoesDetails} to ShoesDetails
+}
+service *  with serviceImpl
+dto * with mapstruct

@@ -1,12 +1,20 @@
 {
   "applications": "*",
-  "changelogDate": "20231025035013",
+  "changelogDate": "20231031022050",
   "dto": "mapstruct",
   "embedded": false,
-  "entityTableName": "discount_shoes_details",
+  "entityTableName": "order_details",
   "fields": [
     {
-      "fieldName": "discountAmount",
+      "fieldName": "quantity",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "price",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "discount",
       "fieldType": "BigDecimal"
     },
     {
@@ -32,13 +40,13 @@
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
-  "name": "DiscountShoesDetails",
+  "name": "OrderDetails",
   "pagination": "no",
   "readOnly": false,
   "relationships": [
     {
-      "otherEntityName": "discount",
-      "relationshipName": "discount",
+      "otherEntityName": "order",
+      "relationshipName": "order",
       "relationshipType": "many-to-one"
     },
     {
