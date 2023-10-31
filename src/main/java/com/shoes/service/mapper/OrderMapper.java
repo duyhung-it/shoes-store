@@ -4,6 +4,7 @@ import com.shoes.domain.Order;
 import com.shoes.domain.User;
 import com.shoes.service.dto.OrderCreateDTO;
 import com.shoes.service.dto.OrderDTO;
+import com.shoes.service.dto.OrderResDTO;
 import com.shoes.service.dto.UserDTO;
 import org.mapstruct.*;
 
@@ -12,7 +13,7 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface OrderMapper extends EntityMapper<OrderDTO, Order> {
-    @Mapping(target = "owner", source = "owner", qualifiedByName = "userId")
+    //    @Mapping(target = "owner", source = "owner", qualifiedByName = "userId")
     OrderDTO toDto(Order s);
 
     @Named("userId")
@@ -22,4 +23,7 @@ public interface OrderMapper extends EntityMapper<OrderDTO, Order> {
 
     @Named("toOrderEntity")
     Order toOrderEntity(OrderCreateDTO orderCreateDTO);
+
+    @Named("toOderResDTO")
+    OrderResDTO toOderResDTO(Order order);
 }

@@ -5,6 +5,7 @@ import com.shoes.repository.OrderRepository;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.OrderCreateDTO;
 import com.shoes.service.dto.OrderDTO;
+import com.shoes.service.dto.OrderResDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -163,10 +164,10 @@ public class OrderResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the orderDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/orders/{id}")
-    public ResponseEntity<OrderDTO> getOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResDTO> getOrder(@PathVariable Long id) {
         log.debug("REST request to get Order : {}", id);
-        Optional<OrderDTO> orderDTO = orderService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(orderDTO);
+        OrderResDTO orderDTO = orderService.findOne(id);
+        return ResponseEntity.ok(orderDTO);
     }
 
     /**
