@@ -1,8 +1,8 @@
 package com.shoes.service;
 
-import com.shoes.domain.Order;
 import com.shoes.service.dto.OrderCreateDTO;
 import com.shoes.service.dto.OrderDTO;
+import com.shoes.service.dto.OrderResDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +49,7 @@ public interface OrderService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<OrderDTO> findOne(Long id);
+    OrderResDTO findOne(Long id);
 
     /**
      * Delete the "id" order.

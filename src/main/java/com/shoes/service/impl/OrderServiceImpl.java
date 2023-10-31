@@ -11,10 +11,10 @@ import com.shoes.service.OrderService;
 import com.shoes.service.dto.OrderCreateDTO;
 import com.shoes.service.dto.OrderDTO;
 import com.shoes.service.dto.OrderDetailsDTO;
+import com.shoes.service.dto.OrderResDTO;
 import com.shoes.service.mapper.OrderDetailsMapper;
 import com.shoes.service.mapper.OrderMapper;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -104,9 +104,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<OrderDTO> findOne(Long id) {
+    public OrderResDTO findOne(Long id) {
         log.debug("Request to get Order : {}", id);
-        return orderRepository.findById(id).map(orderMapper::toDto);
+        Order order = orderRepository.findByIdAndStatus(id, Constants.STATUS.ACTIVE).orElse(null);
+        if (Objects.nonNull(order)) {
+            OrderResDTO orderResDTO = orderMapper.toOderResDTO(order);
+            List<OrderDetails> orderDetailsList = orderDetailsRepository.findAllByOrder_IdAndStatus(id, Constants.STATUS.ACTIVE);
+            orderResDTO.setOrderDetailsDTOList(orderDetailsMapper.toDto(orderDetailsList));
+            return orderResDTO;
+        }
+        return new OrderResDTO();
     }
 
     @Override
