@@ -1,6 +1,7 @@
 package com.shoes.service;
 
 import com.shoes.domain.Order;
+import com.shoes.service.dto.OrderCreateDTO;
 import com.shoes.service.dto.OrderDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ public interface OrderService {
      * @param orderDTO the entity to save.
      * @return the persisted entity.
      */
-    OrderDTO save(OrderDTO orderDTO);
+    OrderDTO save(OrderCreateDTO orderDTO);
 
     /**
      * Updates a order.
