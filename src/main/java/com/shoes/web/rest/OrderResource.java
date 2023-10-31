@@ -3,6 +3,7 @@ package com.shoes.web.rest;
 import com.shoes.domain.Order;
 import com.shoes.repository.OrderRepository;
 import com.shoes.service.OrderService;
+import com.shoes.service.dto.OrderCreateDTO;
 import com.shoes.service.dto.OrderDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -52,7 +53,7 @@ public class OrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/orders")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) throws URISyntaxException {
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderCreateDTO orderDTO) throws URISyntaxException {
         log.debug("REST request to save Order : {}", orderDTO);
         if (orderDTO.getId() != null) {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");

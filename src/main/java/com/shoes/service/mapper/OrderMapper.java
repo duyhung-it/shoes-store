@@ -2,6 +2,7 @@ package com.shoes.service.mapper;
 
 import com.shoes.domain.Order;
 import com.shoes.domain.User;
+import com.shoes.service.dto.OrderCreateDTO;
 import com.shoes.service.dto.OrderDTO;
 import com.shoes.service.dto.UserDTO;
 import org.mapstruct.*;
@@ -18,4 +19,7 @@ public interface OrderMapper extends EntityMapper<OrderDTO, Order> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     UserDTO toDtoUserId(User user);
+
+    @Named("toOrderEntity")
+    Order toOrderEntity(OrderCreateDTO orderCreateDTO);
 }

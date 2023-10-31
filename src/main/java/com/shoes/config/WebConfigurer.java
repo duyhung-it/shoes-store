@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Properties;
 import javax.servlet.*;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
     }
 
     private String resolvePathPrefix() throws UnsupportedEncodingException {
-        String fullExecutablePath = decode(this.getClass().getResource("").getPath(), StandardCharsets.UTF_8.toString());
+        String fullExecutablePath = decode(Objects.requireNonNull(this.getClass().getResource("")).getPath(), StandardCharsets.UTF_8);
         String rootPath = Paths.get(".").toUri().normalize().getPath();
         String extractedPath = fullExecutablePath.replace(rootPath, "");
         int extractionEndIndex = extractedPath.indexOf("target/");
