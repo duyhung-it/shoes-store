@@ -3,10 +3,17 @@ package com.shoes.service.dto;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * A DTO for the {@link com.shoes.domain.ShoesFileUploadMapping} entity.
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShoesFileUploadMappingDTO implements Serializable {
 
@@ -25,6 +32,12 @@ public class ShoesFileUploadMappingDTO implements Serializable {
     private FileUploadDTO fileUpload;
 
     private ShoesDetailsDTO shoesDetails;
+
+    public ShoesFileUploadMappingDTO(Integer status, FileUploadDTO fileUpload, ShoesDetailsDTO shoesDetails) {
+        this.status = status;
+        this.fileUpload = fileUpload;
+        this.shoesDetails = shoesDetails;
+    }
 
     public Long getId() {
         return id;

@@ -56,4 +56,6 @@ public interface ShoesDetailsService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    void deleteSoft(Long id);
 }

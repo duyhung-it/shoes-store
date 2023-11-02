@@ -81,6 +81,44 @@ public class ShoesDetailsResource {
             .body(result);
     }
 
+    @PostMapping("/shoes-details-image")
+    public ResponseEntity<ShoesDetailsDTO> createShoesDetailsImages(
+        @RequestPart ShoesDetailsDTO shoesDetailsDTO,
+        @RequestPart MultipartFile[] images
+    ) throws URISyntaxException {
+        log.debug("REST request to save ShoesDetails : {}", shoesDetailsDTO);
+        if (shoesDetailsDTO.getId() != null) {
+            throw new BadRequestAlertException("A new shoesDetails cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        ShoesDetailsDTO result = shoesDetailsService.save(shoesDetailsDTO);
+        if (images == null) {
+            throw new BadRequestAlertException("Null image", ENTITY_NAME, "idexists");
+        } else {
+            for (MultipartFile image : images) {
+                FileUploadDTO ss = uploadNewToS3(image);
+                System.out.println(ss);
+                ShoesFileUploadMappingDTO ShoesFileUploadMappingDTO = fileUploadMapping(
+                    new ShoesFileUploadMappingDTO(Constants.STATUS.ACTIVE, ss, result)
+                );
+                System.out.println(ShoesFileUploadMappingDTO);
+            }
+        }
+
+        return ResponseEntity
+            .created(new URI("/api/shoes-details/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
+    public ShoesFileUploadMappingDTO fileUploadMapping(ShoesFileUploadMappingDTO shoesFileUploadMappingDTO) {
+        log.debug("REST request to save ShoesFileUploadMapping : {}", shoesFileUploadMappingDTO);
+        if (shoesFileUploadMappingDTO.getId() != null) {
+            throw new BadRequestAlertException("A new shoesFileUploadMapping cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        ShoesFileUploadMappingDTO result = shoesFileUploadMappingService.save(shoesFileUploadMappingDTO);
+        return result;
+    }
+
     public FileUploadDTO uploadNewToS3(MultipartFile file) {
         File fileOut = null;
         try {
@@ -88,10 +126,16 @@ public class ShoesDetailsResource {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        FileUploadDTO fileUploadDTO;
         String path = "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/images/" + Constants.KEY_UPLOAD + file.getOriginalFilename();
-        FileUpload fileUpload = new FileUpload(null, path, Constants.KEY_UPLOAD + file.getOriginalFilename(), Constants.STATUS.ACTIVE);
-        FileUploadDTO fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
-        new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + file.getOriginalFilename(), fileOut);
+        Optional<FileUploadDTO> oneByPath = fileUploadService.findOneByPath(path);
+        if (oneByPath.isPresent()) {
+            fileUploadDTO = oneByPath.get();
+        } else {
+            FileUpload fileUpload = new FileUpload(null, path, Constants.KEY_UPLOAD + file.getOriginalFilename(), Constants.STATUS.ACTIVE);
+            fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
+            new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + file.getOriginalFilename(), fileOut);
+        }
         return fileUploadDTO;
     }
 
@@ -200,10 +244,10 @@ public class ShoesDetailsResource {
     @DeleteMapping("/shoes-details/{id}")
     public ResponseEntity<Void> deleteShoesDetails(@PathVariable Long id) {
         log.debug("REST request to delete ShoesDetails : {}", id);
-        shoesDetailsService.delete(id);
+        shoesDetailsService.deleteSoft(id);
         return ResponseEntity
             .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
 }

@@ -49,6 +49,8 @@ public interface FileUploadService {
      */
     Optional<FileUploadDTO> findOne(Long id);
 
+    Optional<FileUploadDTO> findOneByPath(String path);
+
     /**
      * Delete the "id" fileUpload.
      *
