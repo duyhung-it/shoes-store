@@ -1,5 +1,9 @@
 package com.shoes.domain;
 
+import com.shoes.service.dto.OrderDTO;
+import com.shoes.service.dto.OrderResDTO;
+import com.shoes.service.dto.OrderSearchResDTO;
+import com.shoes.service.dto.ShoesCategorySearchResDTO;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,6 +20,27 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SqlResultSetMappings(
+    value = @SqlResultSetMapping(
+        name = "orders_result",
+        classes = {
+            @ConstructorResult(
+                targetClass = OrderSearchResDTO.class,
+                columns = {
+                    @ColumnResult(name = "id", type = Long.class),
+                    @ColumnResult(name = "code", type = String.class),
+                    @ColumnResult(name = "idCustomer", type = Long.class),
+                    @ColumnResult(name = "customer", type = String.class),
+                    @ColumnResult(name = "phone", type = String.class),
+                    @ColumnResult(name = "totalPrice", type = BigDecimal.class),
+                    @ColumnResult(name = "status", type = Integer.class),
+                    @ColumnResult(name = "createdDate", type = Instant.class),
+                    @ColumnResult(name = "lastModifiedBy", type = String.class),
+                }
+            ),
+        }
+    )
+)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Order extends AbstractAuditingEntity<Long> implements Serializable {
 
