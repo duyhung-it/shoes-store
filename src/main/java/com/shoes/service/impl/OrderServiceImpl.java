@@ -8,13 +8,13 @@ import com.shoes.repository.OrderDetailsRepository;
 import com.shoes.repository.OrderRepository;
 import com.shoes.repository.PaymentRepository;
 import com.shoes.service.OrderService;
-import com.shoes.service.dto.OrderCreateDTO;
-import com.shoes.service.dto.OrderDTO;
-import com.shoes.service.dto.OrderDetailsDTO;
-import com.shoes.service.dto.OrderResDTO;
+import com.shoes.service.dto.*;
 import com.shoes.service.mapper.OrderDetailsMapper;
 import com.shoes.service.mapper.OrderMapper;
+import com.shoes.util.Translator;
+import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -125,5 +125,28 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderDTO> getOrderByOwnerId(Long id, Pageable pageable) {
         return orderRepository.getOrderByOwnerId(id, pageable).map(orderMapper::toDto);
+    }
+
+    @Override
+    public List<OrderSearchResDTO> search(OrderSearchReqDTO searchReqDTO) {
+        return orderRepository.search(searchReqDTO);
+    }
+
+    @Override
+    public OrderDTO updateStatus(Long idOrder, Integer currentStatus, Integer updateStatus) {
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        Order order = this.validateUpdateStatus(idOrder, currentStatus, updateStatus);
+        order.setStatus(updateStatus);
+        order.setLastModifiedBy(loggedUser);
+        order.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
+        orderRepository.save(order);
+        return orderMapper.toDto(order);
+    }
+
+    private Order validateUpdateStatus(Long idOrder, Integer currentStatus, Integer updateStatus) {
+        Order order =
+            this.orderRepository.findByIdAndStatus(idOrder, currentStatus)
+                .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.order.not.exist"), "Order", "not_exist"));
+        return order;
     }
 }
