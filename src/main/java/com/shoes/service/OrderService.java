@@ -1,7 +1,7 @@
 package com.shoes.service;
 
-import com.shoes.domain.Order;
-import com.shoes.service.dto.OrderDTO;
+import com.shoes.service.dto.*;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ public interface OrderService {
      * @param orderDTO the entity to save.
      * @return the persisted entity.
      */
-    OrderDTO save(OrderDTO orderDTO);
+    OrderDTO save(OrderCreateDTO orderDTO);
 
     /**
      * Updates a order.
@@ -48,7 +48,7 @@ public interface OrderService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<OrderDTO> findOne(Long id);
+    OrderResDTO findOne(Long id);
 
     /**
      * Delete the "id" order.
@@ -58,4 +58,8 @@ public interface OrderService {
     void delete(Long id);
 
     Page<OrderDTO> getOrderByOwnerId(Long id, Pageable pageable);
+
+    List<OrderSearchResDTO> search(OrderSearchReqDTO searchReqDTO);
+
+    OrderDTO updateStatus(Long idOrder, Integer currentStatus, Integer updateStatus);
 }

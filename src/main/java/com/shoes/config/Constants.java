@@ -18,6 +18,16 @@ public final class Constants {
         public static final Integer DELETE = -1;
     }
 
+    public static class ORDER_STATUS {
+
+        public static final Integer PENDING = 0;
+        public static final Integer WAIT_DELIVERY = 1;
+        public static final Integer SHIPPING = 2;
+        public static final Integer SUCCESS = 3;
+        public static final Integer CANCELED = -1;
+        public static final Integer PENDING_CHECKOUT = 4;
+    }
+
     private Constants() {}
 
     public static final String KEY_UPLOAD = "bad";
