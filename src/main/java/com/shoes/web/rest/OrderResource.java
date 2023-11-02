@@ -3,9 +3,7 @@ package com.shoes.web.rest;
 import com.shoes.domain.Order;
 import com.shoes.repository.OrderRepository;
 import com.shoes.service.OrderService;
-import com.shoes.service.dto.OrderCreateDTO;
-import com.shoes.service.dto.OrderDTO;
-import com.shoes.service.dto.OrderResDTO;
+import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.EntityResponse;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -184,5 +183,10 @@ public class OrderResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/orders/search")
+    public ResponseEntity<List<OrderSearchResDTO>> search(@RequestBody OrderSearchReqDTO orderSearchReqDTO) {
+        return ResponseEntity.ok(orderService.search(orderSearchReqDTO));
     }
 }
