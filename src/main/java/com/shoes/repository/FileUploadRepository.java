@@ -1,6 +1,7 @@
 package com.shoes.repository;
 
 import com.shoes.domain.FileUpload;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface FileUploadRepository extends JpaRepository<FileUpload, Long> {}
+public interface FileUploadRepository extends JpaRepository<FileUpload, Long> {
+    Optional<FileUpload> findByPath(String path);
+}

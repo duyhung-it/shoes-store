@@ -47,8 +47,6 @@ public class ShoesDetailsDTO implements Serializable {
 
     private ColorDTO color;
 
-    private MultipartFile[] images;
-
     public Long getId() {
         return id;
     }

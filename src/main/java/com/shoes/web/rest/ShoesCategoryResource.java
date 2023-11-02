@@ -160,7 +160,6 @@ public class ShoesCategoryResource {
         String path = "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/images/" + Constants.KEY_UPLOAD + file.getOriginalFilename();
         FileUpload fileUpload = new FileUpload(null, path, Constants.KEY_UPLOAD + file.getOriginalFilename(), Constants.STATUS.ACTIVE);
         FileUploadDTO fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
-
         new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + file.getOriginalFilename(), fileOut);
         return fileUploadDTO;
     }
