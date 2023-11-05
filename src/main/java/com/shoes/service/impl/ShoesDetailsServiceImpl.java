@@ -80,4 +80,10 @@ public class ShoesDetailsServiceImpl implements ShoesDetailsService {
         log.debug("Request to delete ShoesDetails : {}", id);
         shoesDetailsRepository.deleteById(id);
     }
+
+    @Override
+    public void deleteSoft(Long id) {
+        log.debug("Request to delete ShoesDetails : {}", id);
+        shoesDetailsRepository.softDeleteShoesDetailsById(id);
+    }
 }

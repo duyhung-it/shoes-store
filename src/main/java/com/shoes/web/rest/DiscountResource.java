@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,11 +51,8 @@ public class DiscountResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/discounts")
-    public ResponseEntity<DiscountDTO> createDiscount(@RequestBody DiscountCreateDTO discountDTO) throws URISyntaxException {
+    public ResponseEntity<DiscountDTO> createDiscount(@Valid @RequestBody DiscountCreateDTO discountDTO) throws URISyntaxException {
         log.debug("REST request to save Discount : {}", discountDTO);
-        //        if (discountDTO.getId() != null) {
-        //            throw new BadRequestAlertException("A new discount cannot already have an ID", ENTITY_NAME, "idexists");
-        //        }
         DiscountDTO result = discountService.save(discountDTO);
         return ResponseEntity
             .created(new URI("/api/discounts/" + result.getId()))

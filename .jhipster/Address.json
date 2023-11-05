@@ -1,13 +1,25 @@
 {
   "applications": "*",
-  "changelogDate": "20231025035013",
-  "dto": "mapstruct",
+  "changelogDate": "20231102033601",
+  "dto": "no",
   "embedded": false,
-  "entityTableName": "discount_shoes_details",
+  "entityTableName": "address",
   "fields": [
     {
-      "fieldName": "discountAmount",
-      "fieldType": "BigDecimal"
+      "fieldName": "province",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "district",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "ward",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "addressDetails",
+      "fieldType": "String"
     },
     {
       "fieldName": "status",
@@ -32,20 +44,9 @@
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
-  "name": "DiscountShoesDetails",
+  "name": "Address",
   "pagination": "no",
   "readOnly": false,
-  "relationships": [
-    {
-      "otherEntityName": "discount",
-      "relationshipName": "discount",
-      "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "shoesDetails",
-      "relationshipName": "shoesDetails",
-      "relationshipType": "many-to-one"
-    }
-  ],
-  "service": "serviceImpl"
+  "relationships": [],
+  "service": "no"
 }

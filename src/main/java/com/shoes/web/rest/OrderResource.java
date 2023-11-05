@@ -3,7 +3,7 @@ package com.shoes.web.rest;
 import com.shoes.domain.Order;
 import com.shoes.repository.OrderRepository;
 import com.shoes.service.OrderService;
-import com.shoes.service.dto.OrderDTO;
+import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.EntityResponse;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -52,7 +53,7 @@ public class OrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/orders")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) throws URISyntaxException {
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderCreateDTO orderDTO) throws URISyntaxException {
         log.debug("REST request to save Order : {}", orderDTO);
         if (orderDTO.getId() != null) {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");
@@ -162,10 +163,10 @@ public class OrderResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the orderDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/orders/{id}")
-    public ResponseEntity<OrderDTO> getOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResDTO> getOrder(@PathVariable Long id) {
         log.debug("REST request to get Order : {}", id);
-        Optional<OrderDTO> orderDTO = orderService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(orderDTO);
+        OrderResDTO orderDTO = orderService.findOne(id);
+        return ResponseEntity.ok(orderDTO);
     }
 
     /**
@@ -182,5 +183,10 @@ public class OrderResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/orders/search")
+    public ResponseEntity<List<OrderSearchResDTO>> search(@RequestBody OrderSearchReqDTO orderSearchReqDTO) {
+        return ResponseEntity.ok(orderService.search(orderSearchReqDTO));
     }
 }

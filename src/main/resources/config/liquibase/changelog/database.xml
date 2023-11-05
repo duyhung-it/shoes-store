@@ -909,6 +909,117 @@
             </column>
         </addColumn>
     </changeSet>
+    <!--
+            Added the entity OrderDetails.
+        -->
+    <changeSet id="20231031022050-1" author="jhipster">
+        <createTable tableName="order_details">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="quantity" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="price" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="discount" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="order_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="shoes_details_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="order_details" columnName="created_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="order_details" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+    </changeSet>
+    <!--
+            Added the constraints for entity OrderDetails.
+        -->
+    <changeSet id="20231031022050-2" author="jhipster">
 
+        <addForeignKeyConstraint baseColumnNames="order_id"
+                                 baseTableName="order_details"
+                                 constraintName="fk_order_details__order_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_order"/>
 
+        <addForeignKeyConstraint baseColumnNames="shoes_details_id"
+                                 baseTableName="order_details"
+                                 constraintName="fk_order_details__shoes_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="shoes_details"/>
+    </changeSet>
+    <!--
+        Added the entity Address.
+    -->
+    <changeSet id="20231102033601-1" author="jhipster">
+        <createTable tableName="address">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="province" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="district" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="ward" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="address_details" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="address" columnName="created_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="address" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+    </changeSet>
+    <changeSet id="20231031022050-3" author="jhipster">
+        <addColumn tableName="jhi_order">
+            <column name="address_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="address_id"
+                                 baseTableName="jhi_order"
+                                 constraintName="fk_order_address_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="address"/>
+    </changeSet>
 </databaseChangeLog>
