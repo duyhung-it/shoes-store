@@ -1,0 +1,12 @@
+entity Address {
+    province Integer,
+    district Integer,
+    ward Integer,
+    addressDetails String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
