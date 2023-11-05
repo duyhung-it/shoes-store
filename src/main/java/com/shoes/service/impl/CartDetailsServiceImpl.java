@@ -1,11 +1,17 @@
 package com.shoes.service.impl;
 
+import com.shoes.domain.Cart;
 import com.shoes.domain.CartDetails;
 import com.shoes.repository.CartDetailsRepository;
 import com.shoes.service.CartDetailsService;
 import com.shoes.service.dto.CartDetailsDTO;
 import com.shoes.service.mapper.CartDetailsMapper;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,5 +83,13 @@ public class CartDetailsServiceImpl implements CartDetailsService {
     public void delete(Long id) {
         log.debug("Request to delete CartDetails : {}", id);
         cartDetailsRepository.deleteById(id);
+    }
+
+    @Override
+    public List<CartDetailsDTO> findCartDetailsByCart(Cart cart) {
+        return cartDetailsRepository.findCartDetailsByCart(cart)
+            .stream()
+            .map(cartDetailsMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 }
