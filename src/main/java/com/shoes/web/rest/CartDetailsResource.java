@@ -1,7 +1,11 @@
 package com.shoes.web.rest;
 
+import com.shoes.domain.Cart;
+import com.shoes.domain.CartDetails;
 import com.shoes.repository.CartDetailsRepository;
 import com.shoes.service.CartDetailsService;
+import com.shoes.service.CartService;
+import com.shoes.service.ShoesDetailsService;
 import com.shoes.service.dto.CartDetailsDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -42,6 +46,11 @@ public class CartDetailsResource {
     private final CartDetailsService cartDetailsService;
 
     private final CartDetailsRepository cartDetailsRepository;
+
+    private final CartService cartService;
+
+    private final ShoesDetailsService shoesDetailsService;
+
 
     /**
      * {@code POST  /cart-details} : Create a new cartDetails.
@@ -174,5 +183,13 @@ public class CartDetailsResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/carts/all")
+    public ResponseEntity<List<CartDetailsDTO>> getAllCartDetail() {
+        List<Cart> cart = cartService.findByOwnerIsCurrentUser();
+        Cart cart1 = cart.get(0);
+        List<CartDetailsDTO> cartDetailsDTOS = cartDetailsService.findCartDetailsByCart(cart1);
+        return ResponseEntity.ok().body(cartDetailsDTOS);
     }
 }

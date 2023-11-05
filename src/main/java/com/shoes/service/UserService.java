@@ -146,6 +146,17 @@ public class UserService {
         return true;
     }
 
+    public <S extends User> S save(S entity) {
+        Set<Authority> authorities = new HashSet<>();
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        entity.setAuthorities(authorities);
+        return userRepository.save(entity);
+    }
+
+    public Optional<User> findOneByEmailIgnoreCase(String email) {
+        return userRepository.findOneByEmailIgnoreCase(email);
+    }
+
     public User createUser(AdminUserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin().toLowerCase());
@@ -205,7 +216,7 @@ public class UserService {
                     user.setEmail(userDTO.getEmail().toLowerCase());
                 }
                 user.setImageUrl(userDTO.getImageUrl());
-                user.setActivated(userDTO.isActivated());
+                user.setActivated(true);
                 user.setLangKey("en");
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
@@ -300,6 +311,16 @@ public class UserService {
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthorities() {
         return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> existEmail(String email) {
+        return userRepository.findOneByEmailIgnoreCase(email);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> usernameExist(String email) {
+        return userRepository.findOneByLogin(email);
     }
 
     /**
