@@ -146,6 +146,17 @@ public class UserService {
         return true;
     }
 
+    public <S extends User> S save(S entity) {
+        Set<Authority> authorities = new HashSet<>();
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        entity.setAuthorities(authorities);
+        return userRepository.save(entity);
+    }
+
+    public Optional<User> findOneByEmailIgnoreCase(String email) {
+        return userRepository.findOneByEmailIgnoreCase(email);
+    }
+
     public User createUser(AdminUserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin().toLowerCase());
