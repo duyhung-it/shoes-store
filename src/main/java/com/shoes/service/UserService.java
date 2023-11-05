@@ -205,7 +205,7 @@ public class UserService {
                     user.setEmail(userDTO.getEmail().toLowerCase());
                 }
                 user.setImageUrl(userDTO.getImageUrl());
-                user.setActivated(userDTO.isActivated());
+                user.setActivated(true);
                 user.setLangKey("en");
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
@@ -300,6 +300,16 @@ public class UserService {
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthorities() {
         return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> existEmail(String email) {
+        return userRepository.findOneByEmailIgnoreCase(email);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> usernameExist(String email) {
+        return userRepository.findOneByLogin(email);
     }
 
     /**
