@@ -1,6 +1,8 @@
 package com.shoes.repository;
 
 import com.shoes.domain.Shoes;
+import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +11,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ShoesRepository extends JpaRepository<Shoes, Long> {}
+public interface ShoesRepository extends JpaRepository<Shoes, Long> {
+    List<Shoes> findAllByStatus(Integer status);
+}

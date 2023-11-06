@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,10 +21,13 @@ public class OrderDetailsDTO implements Serializable {
 
     private Long id;
 
+    @NotNull
     private Integer quantity;
 
+    @NotNull
     private BigDecimal price;
 
+    @NotNull
     private BigDecimal discount;
 
     private Integer status;
@@ -37,5 +42,6 @@ public class OrderDetailsDTO implements Serializable {
 
     private OrderDTO order;
 
+    @NotNull
     private ShoesDetailsDTO shoesDetails;
 }

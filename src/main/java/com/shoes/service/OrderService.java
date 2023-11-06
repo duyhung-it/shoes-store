@@ -2,6 +2,7 @@ package com.shoes.service;
 
 import com.shoes.service.dto.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,4 +63,5 @@ public interface OrderService {
     List<OrderSearchResDTO> search(OrderSearchReqDTO searchReqDTO);
 
     OrderDTO updateStatus(Long idOrder, Integer currentStatus, Integer updateStatus);
+    Map<Integer, Integer> getQuantityPerOrderStatus();
 }

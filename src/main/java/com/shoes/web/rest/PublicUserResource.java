@@ -1,5 +1,6 @@
 package com.shoes.web.rest;
 
+import com.shoes.domain.User;
 import com.shoes.service.UserService;
 import com.shoes.service.dto.UserDTO;
 import java.util.*;
@@ -61,5 +62,15 @@ public class PublicUserResource {
     @GetMapping("/authorities")
     public List<String> getAuthorities() {
         return userService.getAuthorities();
+    }
+
+    @GetMapping("/email-exist/{email}")
+    public Optional<User> emailExist(@PathVariable String email) {
+        return userService.existEmail(email);
+    }
+
+    @GetMapping("/username-exist/{username}")
+    public Optional<User> usernameExist(@PathVariable String username) {
+        return userService.usernameExist(username);
     }
 }

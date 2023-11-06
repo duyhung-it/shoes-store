@@ -10,3 +10,7 @@ entity Address {
     lastModifiedDate Instant
 }
 
+
+service Address  with serviceImpl
+dto Address with mapstruct
+

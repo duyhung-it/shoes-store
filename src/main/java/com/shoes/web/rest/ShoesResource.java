@@ -142,9 +142,8 @@ public class ShoesResource {
     @GetMapping("/shoes")
     public ResponseEntity<List<ShoesDTO>> getAllShoes(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Shoes");
-        Page<ShoesDTO> page = shoesService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<ShoesDTO> page = shoesService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     /**
