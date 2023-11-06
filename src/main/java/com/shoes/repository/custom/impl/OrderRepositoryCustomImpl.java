@@ -4,6 +4,7 @@ import com.shoes.repository.custom.OrderRepositoryCustom;
 import com.shoes.service.dto.OrderDTO;
 import com.shoes.service.dto.OrderSearchReqDTO;
 import com.shoes.service.dto.OrderSearchResDTO;
+import com.shoes.service.dto.OrderStatusDTO;
 import com.shoes.util.DataUtils;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         return list;
     }
 
+    @Override
+    public List<OrderStatusDTO> getQuantityOrders() {
+        Query query = this.buildQueryGetQuantity();
+        List<OrderStatusDTO> list = query.getResultList();
+        return list;
+    }
+
     public Query buildQuery(OrderSearchReqDTO orderSearchReqDTO) {
         Map<String, Object> params = new HashMap<>();
         StringBuilder query = new StringBuilder(
@@ -41,7 +49,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             query.append(" and o.status = :status");
             params.put("status", orderSearchReqDTO.getStatus());
         }
+        query.append(" order by o.last_modified_date desc");
         Query query1 = entityManager.createNativeQuery(query.toString(), "orders_result");
+        params.forEach(query1::setParameter);
+        return query1;
+    }
+
+    public Query buildQueryGetQuantity() {
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder query = new StringBuilder(
+            " select jo.status ,count(*) as quantity from `shoes-store`.jhi_order jo\n" + " group by jo.status "
+        );
+        Query query1 = entityManager.createNativeQuery(query.toString(), "orders_quantity_result");
         params.forEach(query1::setParameter);
         return query1;
     }

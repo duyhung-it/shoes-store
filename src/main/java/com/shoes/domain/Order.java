@@ -1,9 +1,6 @@
 package com.shoes.domain;
 
-import com.shoes.service.dto.OrderDTO;
-import com.shoes.service.dto.OrderResDTO;
-import com.shoes.service.dto.OrderSearchResDTO;
-import com.shoes.service.dto.ShoesCategorySearchResDTO;
+import com.shoes.service.dto.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -21,25 +18,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @SqlResultSetMappings(
-    value = @SqlResultSetMapping(
-        name = "orders_result",
-        classes = {
-            @ConstructorResult(
-                targetClass = OrderSearchResDTO.class,
-                columns = {
-                    @ColumnResult(name = "id", type = Long.class),
-                    @ColumnResult(name = "code", type = String.class),
-                    @ColumnResult(name = "idCustomer", type = Long.class),
-                    @ColumnResult(name = "customer", type = String.class),
-                    @ColumnResult(name = "phone", type = String.class),
-                    @ColumnResult(name = "totalPrice", type = BigDecimal.class),
-                    @ColumnResult(name = "status", type = Integer.class),
-                    @ColumnResult(name = "createdDate", type = Instant.class),
-                    @ColumnResult(name = "lastModifiedBy", type = String.class),
-                }
-            ),
-        }
-    )
+    value = {
+        @SqlResultSetMapping(
+            name = "orders_result",
+            classes = {
+                @ConstructorResult(
+                    targetClass = OrderSearchResDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "code", type = String.class),
+                        @ColumnResult(name = "idCustomer", type = Long.class),
+                        @ColumnResult(name = "customer", type = String.class),
+                        @ColumnResult(name = "phone", type = String.class),
+                        @ColumnResult(name = "totalPrice", type = BigDecimal.class),
+                        @ColumnResult(name = "status", type = Integer.class),
+                        @ColumnResult(name = "createdDate", type = Instant.class),
+                        @ColumnResult(name = "lastModifiedBy", type = String.class),
+                    }
+                ),
+            }
+        ),
+        @SqlResultSetMapping(
+            name = "orders_quantity_result",
+            classes = {
+                @ConstructorResult(
+                    targetClass = OrderStatusDTO.class,
+                    columns = {
+                        @ColumnResult(name = "status", type = Integer.class), @ColumnResult(name = "quantity", type = Integer.class),
+                    }
+                ),
+            }
+        ),
+    }
 )
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Order extends AbstractAuditingEntity<Long> implements Serializable {
@@ -86,4 +96,8 @@ public class Order extends AbstractAuditingEntity<Long> implements Serializable 
 
     @ManyToOne
     private Payment payment;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address userAddress;
 }

@@ -8,6 +8,7 @@ import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -188,5 +189,10 @@ public class OrderResource {
     @PostMapping("/orders/search")
     public ResponseEntity<List<OrderSearchResDTO>> search(@RequestBody OrderSearchReqDTO orderSearchReqDTO) {
         return ResponseEntity.ok(orderService.search(orderSearchReqDTO));
+    }
+
+    @GetMapping("/orders/quantity")
+    public ResponseEntity<Map<Integer, Integer>> getQuantity() {
+        return ResponseEntity.ok(orderService.getQuantityPerOrderStatus());
     }
 }

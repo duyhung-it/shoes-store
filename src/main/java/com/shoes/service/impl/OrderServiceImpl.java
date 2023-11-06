@@ -1,23 +1,35 @@
 package com.shoes.service.impl;
 
 import com.shoes.config.Constants;
+import com.shoes.domain.Address;
 import com.shoes.domain.Order;
 import com.shoes.domain.OrderDetails;
 import com.shoes.domain.Payment;
+import com.shoes.repository.AddressRepository;
 import com.shoes.repository.OrderDetailsRepository;
 import com.shoes.repository.OrderRepository;
 import com.shoes.repository.PaymentRepository;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
+import com.shoes.service.mapper.AddressMapper;
 import com.shoes.service.mapper.OrderDetailsMapper;
 import com.shoes.service.mapper.OrderMapper;
+import com.shoes.util.DataUtils;
 import com.shoes.util.Translator;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import io.undertow.util.DateUtils;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,21 +56,34 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final OrderDetailsMapper orderDetailsMapper;
     private final OrderDetailsRepository orderDetailsRepository;
+    private final AddressRepository addressRepository;
+    private final AddressMapper addressMapper;
+    private final String baseCode = "HD";
 
     @Override
     public OrderDTO save(OrderCreateDTO orderDTO) {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         log.debug("Request to save Order : {}", orderDTO);
         Order order = orderMapper.toOrderEntity(orderDTO);
-        order.setStatus(Constants.STATUS.ACTIVE);
+        Address address = addressMapper.toEntity(orderDTO.getUserAddress());
+        address.setStatus(Constants.STATUS.ACTIVE);
+        address.setCreatedBy(loggedUser);
+        address.setLastModifiedBy(loggedUser);
+        order.setUserAddress(addressRepository.save(address));
         if (Objects.isNull(order.getId())) {
             order.setCreatedBy(loggedUser);
+            order.setStatus(Constants.ORDER_STATUS.PENDING_CHECKOUT);
+            order.setCode(this.generateCode());
         }
         order.setLastModifiedBy(loggedUser);
+
         Payment payment = new Payment();
         payment.setPaymentMethod(orderDTO.getPaymentMethod());
         payment.setCode(orderDTO.getCode() + Instant.EPOCH.getNano());
         payment.setPaymentStatus(orderDTO.getPaymentStatus() != null ? orderDTO.getPaymentStatus() : -1);
+        payment.setStatus(Constants.STATUS.ACTIVE);
+        payment.setLastModifiedBy(loggedUser);
+        payment.setCreatedBy(loggedUser);
         paymentRepository.save(payment);
         order.setPayment(payment);
         order = orderRepository.save(order);
@@ -106,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public OrderResDTO findOne(Long id) {
         log.debug("Request to get Order : {}", id);
-        Order order = orderRepository.findByIdAndStatus(id, Constants.STATUS.ACTIVE).orElse(null);
+        Order order = orderRepository.findById(id).orElse(null);
         if (Objects.nonNull(order)) {
             OrderResDTO orderResDTO = orderMapper.toOderResDTO(order);
             List<OrderDetails> orderDetailsList = orderDetailsRepository.findAllByOrder_IdAndStatus(id, Constants.STATUS.ACTIVE);
@@ -114,6 +139,17 @@ public class OrderServiceImpl implements OrderService {
             return orderResDTO;
         }
         return new OrderResDTO();
+    }
+
+    public String generateCode() {
+        Instant currentDateTime = DataUtils.getCurrentDateTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = formatter.format(LocalDate.ofInstant(currentDateTime, ZoneId.of("UTC")));
+        String dateString = DataUtils.makeLikeStr(formattedDate);
+        List<Order> list = orderRepository.findByCreatedDate(dateString);
+        int numberInDay = list.size() + 1;
+        String code = DataUtils.replaceSpecialCharacters(formattedDate);
+        return baseCode + code + numberInDay;
     }
 
     @Override
@@ -141,6 +177,15 @@ public class OrderServiceImpl implements OrderService {
         order.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
         orderRepository.save(order);
         return orderMapper.toDto(order);
+    }
+
+    @Override
+    public Map<Integer, Integer> getQuantityPerOrderStatus() {
+        Map<Integer, Integer> mapQuantity =
+            this.orderRepository.getQuantityOrders()
+                .stream()
+                .collect(Collectors.toMap(OrderStatusDTO::getStatus, OrderStatusDTO::getQuantity));
+        return mapQuantity;
     }
 
     private Order validateUpdateStatus(Long idOrder, Integer currentStatus, Integer updateStatus) {

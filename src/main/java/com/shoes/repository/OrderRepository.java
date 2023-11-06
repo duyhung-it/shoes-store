@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -22,4 +23,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     Page<Order> getOrderByOwnerId(Long id, Pageable pageable);
 
     Optional<Order> findByIdAndStatus(Long id, Integer status);
+
+    @Query(value = "SELECT * FROM jhi_order jo WHERE jo.created_date LIKE :date", nativeQuery = true)
+    List<Order> findByCreatedDate(@Param("date") String date);
 }
