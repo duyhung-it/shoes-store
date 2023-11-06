@@ -49,5 +49,5 @@ public class OrderDTO implements Serializable {
     private Instant lastModifiedDate;
 
     private UserDTO owner;
-    private AddressDTO ownerAddress;
+    private AddressDTO userAddress;
 }

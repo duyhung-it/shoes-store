@@ -3,7 +3,9 @@ package com.shoes.service.mapper;
 import com.shoes.domain.*;
 import com.shoes.service.dto.BrandDTO;
 import com.shoes.service.dto.ShoesDTO;
+import com.shoes.service.dto.ShoesDetailsCustomeDTO;
 import com.shoes.service.dto.ShoesDetailsDTO;
+import java.util.List;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -23,8 +25,15 @@ public interface ShoesDetailsMapper extends EntityMapper<ShoesDetailsDTO, ShoesD
     @Mapping(target = "tax", source = "tax")
     @Mapping(target = "import_price", source = "import_price")
     @Mapping(target = "description", source = "description")
-    @Mapping(target = "images", ignore = true)
+    //    @Mapping(target = "images", ignore = true)
     ShoesDetailsDTO toDto(ShoesDetails s);
+
+    @Named(value = "toShoesCustomDTO")
+    ShoesDetailsCustomeDTO toShoesCustomDTO(ShoesDetails s);
+
+    @Named(value = "toShoesCustomDTOList")
+    @IterableMapping(qualifiedByName = "toShoesCustomDTO")
+    List<ShoesDetailsCustomeDTO> toShoesCustomDTO(List<ShoesDetails> shoesDetails);
 
     @Named("shoesId")
     @Mapping(target = "id", source = "id")

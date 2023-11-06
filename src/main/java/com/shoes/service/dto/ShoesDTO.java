@@ -3,7 +3,9 @@ package com.shoes.service.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,58 +37,8 @@ public class ShoesDTO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private Instant lastModifiedDate;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ShoesDTO)) {
-            return false;
-        }
-
-        ShoesDTO shoesDTO = (ShoesDTO) o;
-        if (this.id == null) {
-            return false;
-        }
-        return Objects.equals(this.id, shoesDTO.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.id);
-    }
-
-    // prettier-ignore
-    @Override
-    public String toString() {
-        return "ShoesDTO{" +
-            "id=" + getId() +
-            ", code='" + getCode() + "'" +
-            ", name='" + getName() + "'" +
-            "}";
-    }
+    private List<ShoesDetailsDTO> shoesDetails;
+    private List<ShoesDetailsCustomeDTO> shoesDetailsCustomeDTOS;
+    private Set<SizeDTO> sizeDTOS;
+    private Set<ColorDTO> colorDTOS;
 }
