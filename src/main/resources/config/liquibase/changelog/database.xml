@@ -932,13 +932,13 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="order_id" type="bigint">
@@ -949,8 +949,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="order_details" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="order_details" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="order_details" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="order_details" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <!--
             Added the constraints for entity OrderDetails.
@@ -995,19 +995,19 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="address" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="address" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="address" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="address" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <changeSet id="20231031022050-3" author="jhipster">
         <addColumn tableName="jhi_order">

@@ -1,6 +1,10 @@
 package com.shoes.service;
 
+import com.shoes.domain.Cart;
+import com.shoes.domain.CartDetails;
 import com.shoes.service.dto.CartDetailsDTO;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,4 +59,6 @@ public interface CartDetailsService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<CartDetailsDTO> findCartDetailsByCart(Cart cart);
 }

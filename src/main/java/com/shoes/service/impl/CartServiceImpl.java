@@ -5,6 +5,8 @@ import com.shoes.repository.CartRepository;
 import com.shoes.service.CartService;
 import com.shoes.service.dto.CartDTO;
 import com.shoes.service.mapper.CartMapper;
+
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -77,5 +79,10 @@ public class CartServiceImpl implements CartService {
     public void delete(Long id) {
         log.debug("Request to delete Cart : {}", id);
         cartRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Cart> findByOwnerIsCurrentUser() {
+        return cartRepository.findByOwnerIsCurrentUser();
     }
 }
