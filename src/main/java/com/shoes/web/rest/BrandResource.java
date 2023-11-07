@@ -143,7 +143,7 @@ public class BrandResource {
     @GetMapping("/brands")
     public ResponseEntity<List<BrandDTO>> getAllBrands(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Brands");
-        Page<BrandDTO> page = brandService.findAll(pageable);
+        Page<BrandDTO> page = brandService.findAllWithStatus1(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

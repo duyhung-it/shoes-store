@@ -33,4 +33,7 @@ public class Brand extends AbstractAuditingEntity<Long> implements Serializable 
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "status")
+    private Integer status;
 }
