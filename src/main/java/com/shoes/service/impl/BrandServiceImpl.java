@@ -30,7 +30,7 @@ public class BrandServiceImpl implements BrandService {
     private final BrandMapper brandMapper;
 
     /**
-     * Save a brand.
+     * Save a brand with status = 1 by default.
      *
      * @param brandDTO The entity to save.
      * @return The saved {@link BrandDTO}.
@@ -42,12 +42,16 @@ public class BrandServiceImpl implements BrandService {
         // Convert BrandDTO to Brand entity
         Brand brand = brandMapper.toEntity(brandDTO);
 
+        // Set the status to 1 by default
+        brand.setStatus(1);
+
         // Save the Brand entity to the repository
         brand = brandRepository.save(brand);
 
         // Convert the saved Brand entity back to BrandDTO
         return brandMapper.toDto(brand);
     }
+
 
     /**
      * Update an existing brand.
@@ -123,17 +127,22 @@ public class BrandServiceImpl implements BrandService {
     }
 
     /**
-     * Delete a brand by its ID.
+     * Mark a brand as inactive (status = 0) instead of deleting it.
      *
-     * @param id The ID of the brand to delete.
+     * @param id The ID of the brand to mark as inactive.
      */
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Brand : {}", id);
+        log.debug("Request to mark Brand as inactive: {}", id);
 
-        // Delete the brand with the given ID from the repository
-        brandRepository.deleteById(id);
+        Optional<Brand> brandOptional = brandRepository.findById(id);
+        if (brandOptional.isPresent()) {
+            Brand brand = brandOptional.get();
+            brand.setStatus(0); // Cập nhật trường status thành 0
+            brandRepository.save(brand);
+        }
     }
+
 
     /**
      * Search for brands by their code and/or name with optional pagination.
@@ -167,4 +176,20 @@ public class BrandServiceImpl implements BrandService {
         // Map the results to a Page<BrandDTO>
         return resultPage.map(brandMapper::toDto);
     }
+    /**
+     * Retrieve all brands with status = 1 and optional pagination.
+     *
+     * @param pageable The pagination information to control the result size and page number.
+     * @return A page of {@link BrandDTO} objects representing all brands with status = 1, wrapped in a {@link Page}.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BrandDTO> findAllWithStatus1(Pageable pageable) {
+        log.debug("Request to get all Brands with status = 1");
+
+        // Retrieve all brands with status = 1 from the repository and map them to BrandDTO
+        Page<Brand> brandsWithStatus1 = brandRepository.findByStatus(1, pageable);
+        return brandsWithStatus1.map(brandMapper::toDto);
+    }
+
 }

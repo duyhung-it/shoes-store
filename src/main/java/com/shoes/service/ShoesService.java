@@ -1,8 +1,8 @@
 package com.shoes.service;
 
 import com.shoes.service.dto.ShoesDTO;
+import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -39,7 +39,7 @@ public interface ShoesService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<ShoesDTO> findAll(Pageable pageable);
+    List<ShoesDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" shoes.

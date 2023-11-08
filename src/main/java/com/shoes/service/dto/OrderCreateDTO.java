@@ -3,7 +3,13 @@ package com.shoes.service.dto;
 import com.shoes.util.DataUtils;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,13 +21,18 @@ public class OrderCreateDTO {
 
     private Long id;
 
+    @NotBlank
     private String code;
 
-    private String address;
+    @NotNull
+    private AddressDTO userAddress;
 
+    @NotBlank
     private String phone;
 
+    @NotNull
     private Integer paymentMethod;
+
     private Integer paymentStatus;
 
     private BigDecimal shipPrice;
@@ -36,13 +47,16 @@ public class OrderCreateDTO {
 
     private Integer status;
     private UserDTO owner;
-    private List<OrderDetailsDTO> orderDetailsDTOList;
+
+    @NotEmpty
+    @Valid
+    private List<OrderDetailsDTO> orderDetailsDTOList = new ArrayList<>();
 
     public Instant getReceivedDate() {
-        return DataUtils.getStartOfDay_yyyy_MM_dd_HH_mm_ss(receivedDate);
+        return Objects.isNull(receivedDate) ? null : DataUtils.getStartOfDay_yyyy_MM_dd_HH_mm_ss(receivedDate);
     }
 
     public Instant getShippedDate() {
-        return DataUtils.getEndOfDay_yyyy_MM_dd_HH_mm_ss(shippedDate);
+        return Objects.isNull(receivedDate) ? null : DataUtils.getEndOfDay_yyyy_MM_dd_HH_mm_ss(shippedDate);
     }
 }

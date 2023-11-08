@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -113,5 +114,17 @@ public class DataUtils {
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         Instant instant = endOfDay.toInstant(ZoneOffset.UTC);
         return instant;
+    }
+
+    public static Instant getCurrentDateTime() {
+        return Instant.now().plus(7, ChronoUnit.HOURS);
+    }
+
+    public static String replaceSpecialCharacters(String str) {
+        str = str.trim();
+        str = str.replace("-", "");
+        str = str.replace("%", "");
+        str = str.replace("/", "");
+        return str;
     }
 }

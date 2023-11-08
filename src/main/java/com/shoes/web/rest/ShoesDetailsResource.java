@@ -2,7 +2,10 @@ package com.shoes.web.rest;
 
 import com.shoes.config.Constants;
 import com.shoes.domain.FileUpload;
+import com.shoes.domain.ShoesDetails;
+import com.shoes.domain.ShoesFileUploadMapping;
 import com.shoes.repository.ShoesDetailsRepository;
+import com.shoes.repository.ShoesFileUploadMappingRepository;
 import com.shoes.service.FileUploadService;
 import com.shoes.service.ShoesDetailsService;
 import com.shoes.service.ShoesFileUploadMappingService;
@@ -10,6 +13,7 @@ import com.shoes.service.dto.FileUploadDTO;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import com.shoes.service.dto.ShoesFileUploadMappingDTO;
 import com.shoes.service.mapper.FileUploadMapper;
+import com.shoes.service.mapper.ShoesDetailsMapper;
 import com.shoes.util.AWSS3Util;
 import com.shoes.util.DataUtils;
 import com.shoes.web.rest.errors.BadRequestAlertException;
@@ -60,6 +64,8 @@ public class ShoesDetailsResource {
     private final FileUploadService fileUploadService;
     private final FileUploadMapper fileUploadMapper;
     private final ShoesFileUploadMappingService shoesFileUploadMappingService;
+
+    private final ShoesFileUploadMappingRepository shoesFileUploadMappingRepository;
 
     /**
      * {@code POST  /shoes-details} : Create a new shoesDetails.
@@ -219,7 +225,17 @@ public class ShoesDetailsResource {
     public ResponseEntity<List<ShoesDetailsDTO>> getAllShoesDetails(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of ShoesDetails");
         List<ShoesDetailsDTO> page = shoesDetailsService.findAll(pageable);
+        for (ShoesDetailsDTO x : page) {
+            ShoesDetails shoesDetails = ShoesDetailsMapper.INSTANCE.toEntity(x);
+            x.setImgPath(getAllFilePathsForShoesDetails(shoesDetails));
+        }
         return ResponseEntity.ok().body(page);
+    }
+
+    public List<String> getAllFilePathsForShoesDetails(ShoesDetails shoesDetails) {
+        List<ShoesFileUploadMapping> mappings = shoesFileUploadMappingRepository.findByShoesDetails(shoesDetails);
+        List<String> filePaths = mappings.stream().map(mapping -> mapping.getFileUpload().getPath()).collect(Collectors.toList());
+        return filePaths;
     }
 
     /**

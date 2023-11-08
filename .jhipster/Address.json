@@ -1,7 +1,7 @@
 {
   "applications": "*",
   "changelogDate": "20231102033601",
-  "dto": "no",
+  "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "address",
   "fields": [
@@ -48,5 +48,5 @@
   "pagination": "no",
   "readOnly": false,
   "relationships": [],
-  "service": "no"
+  "service": "serviceImpl"
 }

@@ -1,5 +1,6 @@
 package com.shoes.service.dto;
 
+import com.shoes.domain.Address;
 import com.shoes.domain.Payment;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -37,6 +38,7 @@ public class OrderResDTO {
     private Integer status;
     private UserDTO owner;
     private Payment payment;
+    private Address userAddress;
     private String lastModifiedBy;
     private Instant lastModifiedDate;
     private List<OrderDetailsDTO> orderDetailsDTOList;
