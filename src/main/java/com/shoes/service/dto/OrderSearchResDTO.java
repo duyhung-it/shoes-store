@@ -16,6 +16,7 @@ public class OrderSearchResDTO {
     private Long idCustomer;
     private String customer;
     private String phone;
+    private String receivedBy;
     private BigDecimal totalPrice;
     private Integer status;
     private Instant createdDate;
