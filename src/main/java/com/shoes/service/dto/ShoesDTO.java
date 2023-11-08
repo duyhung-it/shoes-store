@@ -29,12 +29,10 @@ public class ShoesDTO implements Serializable {
 
     private String createdBy;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private Instant createdDate;
 
     private String lastModifiedBy;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private Instant lastModifiedDate;
 
     private List<ShoesDetailsDTO> shoesDetails;
