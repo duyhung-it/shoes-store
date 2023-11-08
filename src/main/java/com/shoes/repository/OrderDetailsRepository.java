@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderDetailsRepository extends JpaRepository<OrderDetails, Long> {
     List<OrderDetails> findAllByOrder_IdAndStatus(Long id, Integer active);
+    List<OrderDetails> findAllByOrder_IdInAndStatus(List<Long> orderId, Integer active);
 }
