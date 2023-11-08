@@ -62,6 +62,7 @@ public interface OrderService {
 
     List<OrderSearchResDTO> search(OrderSearchReqDTO searchReqDTO);
 
-    OrderDTO updateStatus(Long idOrder, Integer currentStatus, Integer updateStatus);
+    OrderDTO updateStatus(Long idOrder);
     Map<Integer, Integer> getQuantityPerOrderStatus();
+    void verifyOrder(List<Long> orderId);
 }

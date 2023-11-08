@@ -23,6 +23,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     Page<Order> getOrderByOwnerId(Long id, Pageable pageable);
 
     Optional<Order> findByIdAndStatus(Long id, Integer status);
+    List<Order> findAllByIdInAndStatus(List<Long> orderIds, Integer status);
 
     @Query(value = "SELECT * FROM jhi_order jo WHERE jo.created_date LIKE :date", nativeQuery = true)
     List<Order> findByCreatedDate(@Param("date") String date);

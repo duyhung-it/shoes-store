@@ -69,7 +69,7 @@ public class OrderResource {
     /**
      * {@code PUT  /orders/:id} : Updates an existing order.
      *
-     * @param id the id of the orderDTO to save.
+     * @param id       the id of the orderDTO to save.
      * @param orderDTO the orderDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated orderDTO,
      * or with status {@code 400 (Bad Request)} if the orderDTO is not valid,
@@ -103,7 +103,7 @@ public class OrderResource {
     /**
      * {@code PATCH  /orders/:id} : Partial updates given fields of an existing order, field will ignore if it is null
      *
-     * @param id the id of the orderDTO to save.
+     * @param id       the id of the orderDTO to save.
      * @param orderDTO the orderDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated orderDTO,
      * or with status {@code 400 (Bad Request)} if the orderDTO is not valid,
@@ -194,5 +194,17 @@ public class OrderResource {
     @GetMapping("/orders/quantity")
     public ResponseEntity<Map<Integer, Integer>> getQuantity() {
         return ResponseEntity.ok(orderService.getQuantityPerOrderStatus());
+    }
+
+    @PostMapping("/orders/verifyOrder")
+    public ResponseEntity<Void> verifyOrder(@RequestBody List<Long> orderIds) {
+        this.orderService.verifyOrder(orderIds);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orders/update-status/{id}")
+    public ResponseEntity<Void> updateStatus(@PathVariable("id") Long id) {
+        this.orderService.updateStatus(id);
+        return ResponseEntity.ok().build();
     }
 }
