@@ -30,4 +30,7 @@ public class Color extends AbstractAuditingEntity<Long> implements Serializable 
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "status")
+    private Integer status;
 }
