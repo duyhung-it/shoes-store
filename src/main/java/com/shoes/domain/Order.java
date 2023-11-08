@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
                         @ColumnResult(name = "idCustomer", type = Long.class),
                         @ColumnResult(name = "customer", type = String.class),
                         @ColumnResult(name = "phone", type = String.class),
+                        @ColumnResult(name = "receivedBy", type = String.class),
                         @ColumnResult(name = "totalPrice", type = BigDecimal.class),
                         @ColumnResult(name = "status", type = Integer.class),
                         @ColumnResult(name = "createdDate", type = Instant.class),
