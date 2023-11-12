@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+
+import com.shoes.domain.ShoesDetails;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,6 +48,24 @@ public class ShoesDetailsDTO implements Serializable {
     private SizeDTO size;
 
     private ColorDTO color;
+
+    public ShoesDetailsDTO() {
+    }
+
+    public ShoesDetailsDTO(ShoesDetails shoesDetails) {
+        this.id = shoesDetails.getId();
+        this.code = shoesDetails.getCode();
+        this.price = shoesDetails.getPrice();
+        this.import_price = shoesDetails.getImport_price();
+        this.tax = shoesDetails.getTax();
+        this.quantity = shoesDetails.getQuantity();
+        this.status = shoesDetails.getStatus();
+        this.description = shoesDetails.getDescription();
+        this.shoes = new ShoesDTO(shoesDetails.getShoes());
+        this.brand = new BrandDTO(shoesDetails.getBrand());
+        this.size = new SizeDTO(shoesDetails.getSize());
+        this.color = new ColorDTO(shoesDetails.getColor());
+    }
 
     public Long getId() {
         return id;
@@ -135,6 +155,22 @@ public class ShoesDetailsDTO implements Serializable {
         this.brand = brand;
     }
 
+    public SizeDTO getSize() {
+        return size;
+    }
+
+    public void setSize(SizeDTO size) {
+        this.size = size;
+    }
+
+    public ColorDTO getColor() {
+        return color;
+    }
+
+    public void setColor(ColorDTO color) {
+        this.color = color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -171,6 +207,8 @@ public class ShoesDetailsDTO implements Serializable {
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             ", shoes=" + getShoes() +
             ", brand=" + getBrand() +
+            ", size=" + getSize() +
+            ", color=" + getColor() +
             "}";
     }
 }
