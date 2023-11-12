@@ -1,14 +1,8 @@
 package com.shoes.service.impl;
 
 import com.shoes.config.Constants;
-import com.shoes.domain.Address;
-import com.shoes.domain.Order;
-import com.shoes.domain.OrderDetails;
-import com.shoes.domain.Payment;
-import com.shoes.repository.AddressRepository;
-import com.shoes.repository.OrderDetailsRepository;
-import com.shoes.repository.OrderRepository;
-import com.shoes.repository.PaymentRepository;
+import com.shoes.domain.*;
+import com.shoes.repository.*;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
 import com.shoes.service.mapper.AddressMapper;
@@ -24,13 +18,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -52,13 +44,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     private final OrderMapper orderMapper;
-
+    private static final String ENTITY_NAME = "order";
     private final PaymentRepository paymentRepository;
     private final OrderDetailsMapper orderDetailsMapper;
     private final OrderDetailsRepository orderDetailsRepository;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
     private final String baseCode = "HD";
+    private final ShoesDetailsRepository shoesDetailsRepository;
 
     @Override
     public OrderDTO save(OrderCreateDTO orderDTO) {
@@ -169,13 +162,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO updateStatus(Long idOrder, Integer currentStatus, Integer updateStatus) {
+    public OrderDTO updateStatus(Long idOrder) {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        Order order = this.validateUpdateStatus(idOrder, currentStatus, updateStatus);
-        order.setStatus(updateStatus);
-        order.setLastModifiedBy(loggedUser);
-        order.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
-        orderRepository.save(order);
+        Order order = this.validateUpdateStatus(idOrder);
+        if (!Constants.ORDER_STATUS.SUCCESS.equals(order.getStatus()) && !Constants.ORDER_STATUS.CANCELED.equals(order.getStatus())) {
+            order.setStatus(order.getStatus() + 1);
+            order.setLastModifiedBy(loggedUser);
+            order.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
+            orderRepository.save(order);
+        }
         return orderMapper.toDto(order);
     }
 
@@ -188,9 +183,34 @@ public class OrderServiceImpl implements OrderService {
         return mapQuantity;
     }
 
-    private Order validateUpdateStatus(Long idOrder, Integer currentStatus, Integer updateStatus) {
+    @Override
+    public void verifyOrder(List<Long> orderId) {
+        List<Order> orders = orderRepository.findAllByIdInAndStatus(orderId, Constants.ORDER_STATUS.PENDING);
+        if (!Objects.equals(orderId.size(), orders.size())) {
+            throw new BadRequestAlertException(Translator.toLocal("Hóa đơn không tồn tại"), ENTITY_NAME, "not_exist");
+        }
+        List<OrderDetails> orderDetailsList = orderDetailsRepository.findAllByOrder_IdInAndStatus(orderId, Constants.STATUS.ACTIVE);
+        for (Order order : orders) {
+            order.setStatus(Constants.ORDER_STATUS.WAIT_DELIVERY);
+        }
+        orderRepository.saveAll(orders);
+        List<ShoesDetails> shoesDetails = orderDetailsList
+            .stream()
+            .map(orderDetails -> {
+                ShoesDetails shoesDetails1 = orderDetails.getShoesDetails();
+                if (ObjectUtils.compare(shoesDetails1.getQuantity(), (long) orderDetails.getQuantity()) < 0) {
+                    throw new BadRequestAlertException(Translator.toLocal("Số lượng không đủ"), ENTITY_NAME, "not_exist");
+                }
+                shoesDetails1.setQuantity(shoesDetails1.getQuantity() - orderDetails.getQuantity());
+                return shoesDetails1;
+            })
+            .collect(Collectors.toList());
+        shoesDetailsRepository.saveAll(shoesDetails);
+    }
+
+    private Order validateUpdateStatus(Long idOrder) {
         Order order =
-            this.orderRepository.findByIdAndStatus(idOrder, currentStatus)
+            this.orderRepository.findById(idOrder)
                 .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.order.not.exist"), "Order", "not_exist"));
         return order;
     }

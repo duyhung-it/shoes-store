@@ -7,13 +7,17 @@ import java.util.List;
 import java.util.Objects;
 
 import com.shoes.domain.ShoesDetails;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  * A DTO for the {@link com.shoes.domain.ShoesDetails} entity.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShoesDetailsDTO implements Serializable {
 
@@ -49,6 +53,7 @@ public class ShoesDetailsDTO implements Serializable {
 
     private ColorDTO color;
 
+    private List<String> imgPath;
     public ShoesDetailsDTO() {
     }
 

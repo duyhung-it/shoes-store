@@ -15,4 +15,5 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
     Page<Brand> findByNameContainingAndCodeContaining(String name, String code, Pageable pageable);
     Page<Brand> findByNameContaining(String name, Pageable pageable);
     Page<Brand> findByCodeContaining(String code, Pageable pageable);
+    Page<Brand> findByStatus(int status, Pageable pageable);
 }
