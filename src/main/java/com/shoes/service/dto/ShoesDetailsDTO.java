@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
  * A DTO for the {@link com.shoes.domain.ShoesDetails} entity.
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShoesDetailsDTO implements Serializable {
