@@ -1,5 +1,7 @@
 package com.shoes.service.dto;
 
+import com.shoes.domain.CartDetails;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -27,6 +29,21 @@ public class CartDetailsDTO implements Serializable {
     private CartDTO cart;
 
     private ShoesDetailsDTO shoesDetails;
+
+    public CartDetailsDTO() {
+    }
+
+    public CartDetailsDTO(CartDetails cartDetails) {
+        this.id = cartDetails.getId();
+        this.quantity = cartDetails.getQuantity();
+        this.status = cartDetails.getStatus();
+        this.createdBy = cartDetails.getCreatedBy();
+        this.createdDate = cartDetails.getCreatedDate();
+        this.lastModifiedBy = cartDetails.getLastModifiedBy();
+        this.lastModifiedDate = cartDetails.getLastModifiedDate();
+        this.shoesDetails = new ShoesDetailsDTO(cartDetails.getShoesDetails());
+        this.cart = new CartDTO(cartDetails.getCart());
+    }
 
     public Long getId() {
         return id;

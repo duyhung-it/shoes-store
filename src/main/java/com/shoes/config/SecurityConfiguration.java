@@ -97,7 +97,7 @@ public class SecurityConfiguration {
                 @Override
                 public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    response.sendRedirect("http://localhost:4200/home");
+                    response.sendRedirect("http://localhost:4200/client/home");
                 }
             });
         return http.build();

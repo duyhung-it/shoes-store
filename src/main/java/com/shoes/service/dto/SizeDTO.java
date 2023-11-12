@@ -1,5 +1,7 @@
 package com.shoes.service.dto;
 
+import com.shoes.domain.Size;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -25,6 +27,17 @@ public class SizeDTO implements Serializable {
     private String lastModifiedBy;
 
     private Instant lastModifiedDate;
+
+    public SizeDTO() {
+    }
+
+    public SizeDTO(Size size) {
+        this.id = size.getId();
+        this.code = size.getCode();
+        this.name = size.getName();
+        this.lastModifiedBy = size.getLastModifiedBy();
+        this.lastModifiedDate = size.getLastModifiedDate();
+    }
 
     public Long getId() {
         return id;
