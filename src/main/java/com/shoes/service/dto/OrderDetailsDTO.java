@@ -27,7 +27,6 @@ public class OrderDetailsDTO implements Serializable {
     @NotNull
     private BigDecimal price;
 
-    @NotNull
     private BigDecimal discount;
 
     private Integer status;

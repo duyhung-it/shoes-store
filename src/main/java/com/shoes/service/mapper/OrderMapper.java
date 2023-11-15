@@ -1,11 +1,9 @@
 package com.shoes.service.mapper;
 
 import com.shoes.domain.Order;
+import com.shoes.domain.ShoesDetails;
 import com.shoes.domain.User;
-import com.shoes.service.dto.OrderCreateDTO;
-import com.shoes.service.dto.OrderDTO;
-import com.shoes.service.dto.OrderResDTO;
-import com.shoes.service.dto.UserDTO;
+import com.shoes.service.dto.*;
 import org.mapstruct.*;
 
 /**

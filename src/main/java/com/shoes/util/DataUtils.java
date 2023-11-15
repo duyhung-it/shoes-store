@@ -87,11 +87,13 @@ public class DataUtils {
         File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(multipartFile.getBytes());
+            return file;
         } catch (IOException e) {
             // Handle the exception, e.g., log it or return an error response.
             throw e;
+        } finally {
+            file.deleteOnExit();
         }
-        return file;
     }
 
     public static Instant parseToInstant_yyyy_MM_dd_HH_mm_ss(String dateString) {
