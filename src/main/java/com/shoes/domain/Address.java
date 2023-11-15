@@ -28,11 +28,20 @@ public class Address extends AbstractAuditingEntity<Long> implements Serializabl
     @Column(name = "province")
     private Integer province;
 
+    @Column(name = "province_name")
+    private String provinceName;
+
     @Column(name = "district")
     private Integer district;
 
+    @Column(name = "district_name")
+    private String districtName;
+
     @Column(name = "ward")
     private Integer ward;
+
+    @Column(name = "ward_name")
+    private String wardName;
 
     @Column(name = "address_details")
     private String addressDetails;

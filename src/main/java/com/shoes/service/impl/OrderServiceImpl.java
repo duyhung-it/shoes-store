@@ -57,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO save(OrderCreateDTO orderDTO) {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         log.debug("Request to save Order : {}", orderDTO);
+
         Order order = orderMapper.toOrderEntity(orderDTO);
         Address address = addressMapper.toEntity(orderDTO.getUserAddress());
         address.setStatus(Constants.STATUS.ACTIVE);
@@ -81,6 +82,18 @@ public class OrderServiceImpl implements OrderService {
         order.setPayment(payment);
         order = orderRepository.save(order);
         List<OrderDetailsDTO> orderDetailsDTOList = orderDTO.getOrderDetailsDTOList();
+        orderDetailsDTOList.forEach(orderDetailsDTO -> {
+            ShoesDetails shoesDetails = shoesDetailsRepository.findByIdAndStatus(
+                orderDetailsDTO.getShoesDetails().getId(),
+                Constants.STATUS.ACTIVE
+            );
+            if (ObjectUtils.isEmpty(shoesDetails)) {
+                throw new BadRequestAlertException("Giày không tồn tại", ENTITY_NAME, "not_exist");
+            }
+            if (ObjectUtils.compare(shoesDetails.getQuantity(), (long) orderDetailsDTO.getQuantity()) < 0) {
+                throw new BadRequestAlertException("Số lượng không đủ", ENTITY_NAME, "not_exist");
+            }
+        });
         List<OrderDetails> orderDetailsList = orderDetailsMapper.toEntity(orderDetailsDTOList);
         for (OrderDetails orderDetails : orderDetailsList) {
             orderDetails.setOrder(order);
@@ -166,7 +179,11 @@ public class OrderServiceImpl implements OrderService {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Order order = this.validateUpdateStatus(idOrder);
         if (!Constants.ORDER_STATUS.SUCCESS.equals(order.getStatus()) && !Constants.ORDER_STATUS.CANCELED.equals(order.getStatus())) {
-            order.setStatus(order.getStatus() + 1);
+            if (Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())) {
+                order.setStatus(order.getStatus() - 1);
+            } else {
+                order.setStatus(order.getStatus() + 1);
+            }
             order.setLastModifiedBy(loggedUser);
             order.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
             orderRepository.save(order);
@@ -206,6 +223,17 @@ public class OrderServiceImpl implements OrderService {
             })
             .collect(Collectors.toList());
         shoesDetailsRepository.saveAll(shoesDetails);
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        Order order =
+            this.orderRepository.findById(orderId)
+                .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.order.not.exist"), "Order", "not_exist"));
+        if (Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) || Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())) {
+            order.setStatus(Constants.ORDER_STATUS.CANCELED);
+            orderRepository.save(order);
+        }
     }
 
     private Order validateUpdateStatus(Long idOrder) {
