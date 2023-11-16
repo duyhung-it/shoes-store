@@ -1,5 +1,7 @@
 package com.shoes.service.dto;
 
+import com.shoes.domain.Brand;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -27,6 +29,18 @@ public class BrandDTO implements Serializable {
     private String lastModifiedBy;
 
     private Instant lastModifiedDate;
+
+    public BrandDTO() {
+    }
+
+    public BrandDTO(Brand brand) {
+        this.id = brand.getId();
+        this.code = brand.getCode();
+        this.name = brand.getName();
+        this.description = brand.getDescription();
+        this.lastModifiedBy = brand.getLastModifiedBy();
+        this.lastModifiedDate = brand.getLastModifiedDate();
+    }
 
     public Long getId() {
         return id;

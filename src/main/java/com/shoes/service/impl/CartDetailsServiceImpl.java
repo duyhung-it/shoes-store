@@ -76,7 +76,7 @@ public class CartDetailsServiceImpl implements CartDetailsService {
     @Transactional(readOnly = true)
     public Optional<CartDetailsDTO> findOne(Long id) {
         log.debug("Request to get CartDetails : {}", id);
-        return cartDetailsRepository.findById(id).map(cartDetailsMapper::toDto);
+        return cartDetailsRepository.findById(id).map(CartDetailsDTO :: new);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class CartDetailsServiceImpl implements CartDetailsService {
     public List<CartDetailsDTO> findCartDetailsByCart(Cart cart) {
         return cartDetailsRepository.findCartDetailsByCart(cart)
             .stream()
-            .map(cartDetailsMapper::toDto)
+            .map(CartDetailsDTO ::new)
             .collect(Collectors.toCollection(LinkedList::new));
     }
 }

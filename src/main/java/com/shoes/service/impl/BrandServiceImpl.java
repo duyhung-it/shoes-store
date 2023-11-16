@@ -66,6 +66,8 @@ public class BrandServiceImpl implements BrandService {
         // Convert BrandDTO to Brand entity
         Brand brand = brandMapper.toEntity(brandDTO);
 
+        brand.setStatus(1);
+
         // Save the updated Brand entity to the repository
         brand = brandRepository.save(brand);
 

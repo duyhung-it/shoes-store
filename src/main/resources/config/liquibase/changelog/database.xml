@@ -1022,4 +1022,17 @@
                                  referencedColumnNames="id"
                                  referencedTableName="address"/>
     </changeSet>
+    <changeSet id="20231031022050-10" author="jhipster">
+        <addColumn tableName="address">
+            <column name="province_name" type="nvarchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="district_name" type="nvarchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ward_name" type="nvarchar(50)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
