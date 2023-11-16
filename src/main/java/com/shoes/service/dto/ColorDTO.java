@@ -1,5 +1,7 @@
 package com.shoes.service.dto;
 
+import com.shoes.domain.Color;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -25,6 +27,17 @@ public class ColorDTO implements Serializable {
     private String lastModifiedBy;
 
     private Instant lastModifiedDate;
+
+    public ColorDTO() {
+    }
+
+    public ColorDTO(Color color) {
+        this.id = color.getId();
+        this.code = color.getCode();
+        this.name = color.getName();
+        this.lastModifiedBy = color.getLastModifiedBy();
+        this.lastModifiedDate = color.getLastModifiedDate();
+    }
 
     public Long getId() {
         return id;

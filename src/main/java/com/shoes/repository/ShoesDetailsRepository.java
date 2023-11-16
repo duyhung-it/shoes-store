@@ -19,6 +19,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
     int softDeleteShoesDetailsById(@Param("shoesDetailsId") Long shoesDetailsId);
 
     List<ShoesDetails> findAllByShoes_IdInAndStatus(List<Long> ids, Integer status);
+    ShoesDetails findByIdAndStatus(Long id, Integer status);
 
     @Query(
         value = "select sd.*\n" +

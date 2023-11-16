@@ -21,7 +21,6 @@ public class OrderCreateDTO {
 
     private Long id;
 
-    @NotBlank
     private String code;
 
     @NotNull
@@ -48,7 +47,7 @@ public class OrderCreateDTO {
     private Integer status;
     private UserDTO owner;
 
-    @NotEmpty
+    @NotEmpty(message = "Vui lòng chọn giày!")
     @Valid
     private List<OrderDetailsDTO> orderDetailsDTOList = new ArrayList<>();
 

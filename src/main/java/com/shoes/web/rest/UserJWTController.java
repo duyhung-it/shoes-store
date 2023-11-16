@@ -57,8 +57,12 @@ public class UserJWTController {
         String email = token.getPrincipal().getAttribute("email");
         String login = RandomUtil.generateResetKey();
         User user = new User();
+        LoginVM loginVM = new LoginVM();
         if(userService.findOneByEmailIgnoreCase(email).isPresent()){
             user = userService.findOneByEmailIgnoreCase(email).get();
+            loginVM.setLogin(user.getLogin());
+            loginVM.setPasswordHash(user.getPassword());
+            loginVM.setRememberMe(false);
         }else{
             user.setEmail(token.getPrincipal().getAttribute("email"));
             user.setLogin(login);
@@ -66,14 +70,13 @@ public class UserJWTController {
             user.setActivated(true);
             user.setPassword(passwordEncoder.encode(login));
             user = userService.save(user);
+            loginVM.setLogin(user.getLogin());
+            loginVM.setPasswordHash(user.getPassword());
+            loginVM.setRememberMe(false);
         }
-        LoginVM loginVM = new LoginVM();
-        loginVM.setLogin(user.getLogin());
-        loginVM.setPasswordHash(user.getPassword());
-        loginVM.setRememberMe(false);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             loginVM.getLogin(),
-            login
+            loginVM.getLogin()
         );
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);

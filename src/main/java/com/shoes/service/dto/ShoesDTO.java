@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import com.shoes.domain.Shoes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,4 +41,11 @@ public class ShoesDTO implements Serializable {
     private List<ShoesDetailsCustomeDTO> shoesDetailsCustomeDTOS;
     private Set<SizeDTO> sizeDTOS;
     private Set<ColorDTO> colorDTOS;
+    public ShoesDTO(Shoes shoes) {
+        this.id = shoes.getId();
+        this.code = shoes.getCode();
+        this.name = shoes.getName();
+        this.lastModifiedBy = shoes.getLastModifiedBy();
+        this.lastModifiedDate = shoes.getLastModifiedDate();
+    }
 }

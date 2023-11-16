@@ -65,4 +65,5 @@ public interface OrderService {
     OrderDTO updateStatus(Long idOrder);
     Map<Integer, Integer> getQuantityPerOrderStatus();
     void verifyOrder(List<Long> orderId);
+    void cancelOrder(Long orderId);
 }
