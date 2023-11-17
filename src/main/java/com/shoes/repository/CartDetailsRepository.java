@@ -16,4 +16,6 @@ import java.util.List;
 public interface CartDetailsRepository extends JpaRepository<CartDetails, Long> {
 
     List<CartDetails> findCartDetailsByCart(Cart cart);
+
+    Long countByCart(Cart cart);
 }
