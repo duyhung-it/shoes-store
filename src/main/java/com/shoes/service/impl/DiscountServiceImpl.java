@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -156,8 +157,11 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public List<DiscountDTO> search(String searchText) {
+        if (StringUtils.isBlank(searchText)) {
+            return findAll();
+        }
         return discountRepository
-            .searchByNameOrCode(DataUtils.likeSpecialToStr(searchText))
+            .searchByNameOrCode(DataUtils.makeLikeStr(DataUtils.likeSpecialToStr(searchText)))
             .stream()
             .map(discountMapper::toDto)
             .collect(Collectors.toList());

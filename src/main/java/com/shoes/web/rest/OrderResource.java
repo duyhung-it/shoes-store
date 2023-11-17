@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class OrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/orders")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderCreateDTO orderDTO) throws URISyntaxException {
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody @Valid OrderCreateDTO orderDTO) throws URISyntaxException {
         log.debug("REST request to save Order : {}", orderDTO);
         if (orderDTO.getId() != null) {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");
@@ -205,6 +206,12 @@ public class OrderResource {
     @GetMapping("/orders/update-status/{id}")
     public ResponseEntity<Void> updateStatus(@PathVariable("id") Long id) {
         this.orderService.updateStatus(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orders/cancel/{id}")
+    public ResponseEntity<Void> cancelOrder(@PathVariable("id") Long id) {
+        this.orderService.cancelOrder(id);
         return ResponseEntity.ok().build();
     }
 }

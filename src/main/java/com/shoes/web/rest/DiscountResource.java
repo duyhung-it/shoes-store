@@ -154,6 +154,13 @@ public class DiscountResource {
         return ResponseEntity.ok(discountDTO);
     }
 
+    @PostMapping("/discounts/search")
+    public ResponseEntity<List<DiscountDTO>> search(@RequestBody String searchText) {
+        log.debug("REST request to get Discount ");
+        List<DiscountDTO> discountDTO = discountService.search(searchText);
+        return ResponseEntity.ok(discountDTO);
+    }
+
     /**
      * {@code DELETE  /discounts/:id} : delete the "id" discount.
      *
