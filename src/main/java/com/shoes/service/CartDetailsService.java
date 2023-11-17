@@ -61,4 +61,6 @@ public interface CartDetailsService {
     void delete(Long id);
 
     List<CartDetailsDTO> findCartDetailsByCart(Cart cart);
+
+    Long countByCart(Cart cart);
 }

@@ -27,4 +27,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         nativeQuery = true
     )
     List<ShoesDetails> findShoesDetailsGroupByColor(@Param("ids") List<Long> ids, @Param("status") Integer status);
+
+    @Query(
+        value = "select * from shoes_details order by created_date desc limit 10",nativeQuery = true
+    )
+    List<ShoesDetails> getNewShoesDetail();
 }
