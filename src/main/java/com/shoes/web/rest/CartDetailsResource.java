@@ -233,4 +233,11 @@ public class CartDetailsResource {
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, cartDetailsDTO.get().getId().toString()))
             .body(result);
     }
+    @GetMapping("/cart-details/count")
+    public ResponseEntity<Long> getCount() {
+        List<Cart> cart = cartService.findByOwnerIsCurrentUser();
+        Cart cart1 = cart.get(0);
+        Long count = cartDetailsService.countByCart(cart1);
+        return ResponseEntity.ok().body(count);
+    }
 }

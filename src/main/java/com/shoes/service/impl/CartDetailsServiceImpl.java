@@ -92,4 +92,9 @@ public class CartDetailsServiceImpl implements CartDetailsService {
             .map(CartDetailsDTO ::new)
             .collect(Collectors.toCollection(LinkedList::new));
     }
+
+    @Override
+    public Long countByCart(Cart cart) {
+        return cartDetailsRepository.countByCart(cart);
+    }
 }

@@ -55,4 +55,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    GROUP BY shoes_id, brand_id;"
     )
     List<ShoesDetailsDTO> findDistinctByShoesAndBrandOrderBySellPriceDesc();
+        value = "select * from shoes_details order by created_date desc limit 10",nativeQuery = true
+    )
+          
+          
+    List<ShoesDetails> getNewShoesDetail();
 }
