@@ -2,6 +2,7 @@ package com.shoes.web.rest;
 
 import com.shoes.domain.Order;
 import com.shoes.repository.OrderRepository;
+import com.shoes.service.MailService;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +48,7 @@ public class OrderResource {
     private final OrderService orderService;
 
     private final OrderRepository orderRepository;
+    private final MailService mailService;
 
     /**
      * {@code POST  /orders} : Create a new order.
@@ -213,5 +216,12 @@ public class OrderResource {
     public ResponseEntity<Void> cancelOrder(@PathVariable("id") Long id) {
         this.orderService.cancelOrder(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orders/get-mail/{id}")
+    public ResponseEntity<byte[]> getMail(@PathVariable("id") Long id) {
+        byte[] byteArrayResource = this.orderService.getMailVerify(id);
+        mailService.sendEmail1("hungndph26995@fpt.edu.vn", "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
+        return ResponseEntity.ok(byteArrayResource);
     }
 }
