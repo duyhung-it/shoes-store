@@ -66,4 +66,5 @@ public interface OrderService {
     Map<Integer, Integer> getQuantityPerOrderStatus();
     void verifyOrder(List<Long> orderId);
     void cancelOrder(Long orderId);
+    byte[] getMailVerify(Long orderId);
 }
