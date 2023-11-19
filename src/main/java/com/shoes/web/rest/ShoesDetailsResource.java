@@ -59,7 +59,7 @@ public class ShoesDetailsResource {
     private final FileUploadService fileUploadService;
     private final FileUploadMapper fileUploadMapper;
     private final ShoesFileUploadMappingService shoesFileUploadMappingService;
-
+    private final ShoesDetailsMapper shoesDetailsMapper;
     private final ShoesFileUploadMappingRepository shoesFileUploadMappingRepository;
 
     /**
@@ -262,8 +262,13 @@ public class ShoesDetailsResource {
             .build();
     }
 
+    @GetMapping("/shoes-details/testing")
+    public ResponseEntity<List<ShoesDetailsDTO>> testing() {
+        return ResponseEntity.ok().body(shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDesc());
+    }
+
     @GetMapping("/shoes-details/new")
-    public ResponseEntity<List<ShoesDetailsDTO>> getNewShoesDetail(){
+    public ResponseEntity<List<ShoesDetailsDTO>> getNewShoesDetail() {
         List<ShoesDetailsDTO> shoesDetailsDTOs = shoesDetailsService.getNewShoesDetail();
         return ResponseEntity.ok().body(shoesDetailsDTOs);
     }
