@@ -1035,4 +1035,11 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="20231031022050-100" author="jhipster">
+        <addColumn tableName="jhi_order">
+            <column name="paid_method" type="Integer">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
