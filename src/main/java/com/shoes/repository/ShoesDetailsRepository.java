@@ -1,10 +1,8 @@
 package com.shoes.repository;
 
 import com.shoes.domain.ShoesDetails;
-import com.shoes.service.dto.SDTest;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import com.shoes.service.dto.ShopShoesDTO;
-import com.shoes.service.dto.TestingProjection;
 import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
