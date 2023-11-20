@@ -214,4 +214,10 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.order.not.exist"), "Order", "not_exist"));
         return order;
     }
+
+    @Transactional
+    @Override
+    public List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login) {
+        return orderRepository.getOrderByStatusAndOwnerLogin(status, login);
+    }
 }

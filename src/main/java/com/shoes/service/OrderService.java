@@ -1,5 +1,6 @@
 package com.shoes.service;
 
+import com.shoes.domain.Order;
 import com.shoes.service.dto.*;
 import java.util.List;
 import java.util.Map;
@@ -65,4 +66,5 @@ public interface OrderService {
     OrderDTO updateStatus(Long idOrder);
     Map<Integer, Integer> getQuantityPerOrderStatus();
     void verifyOrder(List<Long> orderId);
+    List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login);
 }

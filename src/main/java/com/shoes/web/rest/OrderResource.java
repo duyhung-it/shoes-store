@@ -1,6 +1,7 @@
 package com.shoes.web.rest;
 
 import com.shoes.domain.Order;
+import com.shoes.domain.User;
 import com.shoes.repository.OrderRepository;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
@@ -150,7 +151,7 @@ public class OrderResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping("/admin/order-owner/{id}")
+    @GetMapping("/order-owner/{id}")
     public ResponseEntity<List<OrderDTO>> getOrderByOwnerId(Pageable pageable, @PathVariable Long id) {
         Page<OrderDTO> page = orderService.getOrderByOwnerId(id, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -206,5 +207,11 @@ public class OrderResource {
     public ResponseEntity<Void> updateStatus(@PathVariable("id") Long id) {
         this.orderService.updateStatus(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/find")
+    public ResponseEntity<?> findByLogin(@RequestParam Integer status, @RequestParam String login) {
+        List<Order> user = orderService.getOrderByStatusAndOwnerLogin(status, login);
+        return ResponseEntity.ok(user);
     }
 }
