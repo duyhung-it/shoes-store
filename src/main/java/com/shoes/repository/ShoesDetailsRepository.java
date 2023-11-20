@@ -1,6 +1,7 @@
 package com.shoes.repository;
 
 import com.shoes.domain.ShoesDetails;
+import com.shoes.service.dto.ShoesDetailsDTO;
 import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +20,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
     int softDeleteShoesDetailsById(@Param("shoesDetailsId") Long shoesDetailsId);
 
     List<ShoesDetails> findAllByShoes_IdInAndStatus(List<Long> ids, Integer status);
+    ShoesDetails findByIdAndStatus(Long id, Integer status);
 
     @Query(
         value = "select sd.*\n" +
@@ -26,4 +28,34 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         nativeQuery = true
     )
     List<ShoesDetails> findShoesDetailsGroupByColor(@Param("ids") List<Long> ids, @Param("status") Integer status);
+
+    @Query(
+        nativeQuery = true,
+        value = "SELECT\n" +
+        "    sd.code,\n" +
+        "    iu.path as path\n" +
+        "FROM\n" +
+        "    `shoes-store`.shoes_details sd\n" +
+        "JOIN (\n" +
+        "    SELECT\n" +
+        "        shoes_id,\n" +
+        "        brand_id,\n" +
+        "        MIN(price) AS lowest_price\n" +
+        "    FROM\n" +
+        "        `shoes-store`.shoes_details\n" +
+        "    GROUP BY\n" +
+        "        shoes_id, brand_id\n" +
+        ") min_prices ON sd.shoes_id = min_prices.shoes_id\n" +
+        "    AND sd.brand_id = min_prices.brand_id\n" +
+        "    AND sd.price = min_prices.lowest_price\n" +
+        "JOIN\n" +
+        "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
+        "JOIN\n" +
+        "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n" +
+        "    GROUP BY shoes_id, brand_id;"
+    )
+    List<ShoesDetailsDTO> findDistinctByShoesAndBrandOrderBySellPriceDesc();
+
+    @Query(value = "select * from shoes_details order by created_date desc limit 10", nativeQuery = true)
+    List<ShoesDetails> getNewShoesDetail();
 }

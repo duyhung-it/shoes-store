@@ -5,6 +5,7 @@ import com.shoes.repository.ShoesDetailsRepository;
 import com.shoes.service.ShoesDetailsService;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import com.shoes.service.mapper.ShoesDetailsMapper;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,5 +86,14 @@ public class ShoesDetailsServiceImpl implements ShoesDetailsService {
     public void deleteSoft(Long id) {
         log.debug("Request to delete ShoesDetails : {}", id);
         shoesDetailsRepository.softDeleteShoesDetailsById(id);
+    }
+
+    @Override
+    public List<ShoesDetailsDTO> getNewShoesDetail() {
+        return shoesDetailsRepository
+            .getNewShoesDetail()
+            .stream()
+            .map(ShoesDetailsDTO::new)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 }

@@ -58,4 +58,6 @@ public interface ShoesDetailsService {
     void delete(Long id);
 
     void deleteSoft(Long id);
+
+    List<ShoesDetailsDTO> getNewShoesDetail();
 }

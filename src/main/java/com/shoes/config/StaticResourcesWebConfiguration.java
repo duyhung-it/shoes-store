@@ -18,6 +18,7 @@ public class StaticResourcesWebConfiguration implements WebMvcConfigurer {
         "classpath:/static/",
         "classpath:/static/content/",
         "classpath:/static/i18n/",
+        "classpath:/static/images/",
     };
     protected static final String[] RESOURCE_PATHS = new String[] {
         "/*.js",

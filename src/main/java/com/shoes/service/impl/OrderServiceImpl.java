@@ -11,17 +11,22 @@ import com.shoes.service.mapper.OrderMapper;
 import com.shoes.util.DataUtils;
 import com.shoes.util.Translator;
 import com.shoes.web.rest.errors.BadRequestAlertException;
-import io.undertow.util.DateUtils;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +62,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO save(OrderCreateDTO orderDTO) {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         log.debug("Request to save Order : {}", orderDTO);
+
         Order order = orderMapper.toOrderEntity(orderDTO);
         Address address = addressMapper.toEntity(orderDTO.getUserAddress());
         address.setStatus(Constants.STATUS.ACTIVE);
@@ -81,6 +87,18 @@ public class OrderServiceImpl implements OrderService {
         order.setPayment(payment);
         order = orderRepository.save(order);
         List<OrderDetailsDTO> orderDetailsDTOList = orderDTO.getOrderDetailsDTOList();
+        orderDetailsDTOList.forEach(orderDetailsDTO -> {
+            ShoesDetails shoesDetails = shoesDetailsRepository.findByIdAndStatus(
+                orderDetailsDTO.getShoesDetails().getId(),
+                Constants.STATUS.ACTIVE
+            );
+            if (ObjectUtils.isEmpty(shoesDetails)) {
+                throw new BadRequestAlertException("Giày không tồn tại", ENTITY_NAME, "not_exist");
+            }
+            if (ObjectUtils.compare(shoesDetails.getQuantity(), (long) orderDetailsDTO.getQuantity()) < 0) {
+                throw new BadRequestAlertException("Số lượng không đủ", ENTITY_NAME, "not_exist");
+            }
+        });
         List<OrderDetails> orderDetailsList = orderDetailsMapper.toEntity(orderDetailsDTOList);
         for (OrderDetails orderDetails : orderDetailsList) {
             orderDetails.setOrder(order);
@@ -166,7 +184,11 @@ public class OrderServiceImpl implements OrderService {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         Order order = this.validateUpdateStatus(idOrder);
         if (!Constants.ORDER_STATUS.SUCCESS.equals(order.getStatus()) && !Constants.ORDER_STATUS.CANCELED.equals(order.getStatus())) {
-            order.setStatus(order.getStatus() + 1);
+            if (Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())) {
+                order.setStatus(order.getStatus() - 1);
+            } else {
+                order.setStatus(order.getStatus() + 1);
+            }
             order.setLastModifiedBy(loggedUser);
             order.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
             orderRepository.save(order);
@@ -206,6 +228,78 @@ public class OrderServiceImpl implements OrderService {
             })
             .collect(Collectors.toList());
         shoesDetailsRepository.saveAll(shoesDetails);
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        Order order =
+            this.orderRepository.findById(orderId)
+                .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.order.not.exist"), "Order", "not_exist"));
+        if (Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) || Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())) {
+            order.setStatus(Constants.ORDER_STATUS.CANCELED);
+            orderRepository.save(order);
+        }
+    }
+
+    @Override
+    public byte[] getMailVerify(Long orderId) {
+        try {
+            OrderResDTO orderResDTO = this.findOne(orderId);
+            List<TableConverterDTO> tableConverters = new ArrayList<>();
+            for (OrderDetailsDTO orderDetailsDTO : orderResDTO.getOrderDetailsDTOList()) {
+                TableConverterDTO tableConverterDTO = new TableConverterDTO();
+                tableConverterDTO.setName(
+                    orderDetailsDTO.getShoesDetails().getShoes().getName() +
+                    "[" +
+                    orderDetailsDTO.getShoesDetails().getColor().getName() +
+                    "]"
+                );
+                tableConverterDTO.setSize(orderDetailsDTO.getShoesDetails().getSize().getName());
+                tableConverterDTO.setQuantity(orderDetailsDTO.getQuantity());
+                tableConverterDTO.setPrice(orderDetailsDTO.getPrice().toString());
+                tableConverterDTO.setTotalPrice(
+                    BigDecimal.valueOf(orderDetailsDTO.getPrice().doubleValue() * orderDetailsDTO.getQuantity()).toString()
+                );
+                tableConverters.add(tableConverterDTO);
+            }
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            InputStream inputStream = getClass().getResourceAsStream("/templates/doc/stock_transfer_1.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("logoPath", "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/sp.jpg");
+            parameters.put("dataTable", new JRBeanCollectionDataSource(tableConverters));
+            parameters.put("totalMoney", DataUtils.safeToString(orderResDTO.getTotalPrice()));
+            parameters.put(
+                "owner",
+                DataUtils.safeToString(
+                    Objects.nonNull(orderResDTO.getOwner()) ? orderResDTO.getOwner().getLogin() : orderResDTO.getReceivedBy()
+                )
+            );
+            parameters.put("phone", DataUtils.safeToString(orderResDTO.getPhone()));
+            parameters.put("address", DataUtils.safeToString(orderResDTO.getUserAddress().getAddressDetails()));
+            parameters.put("ward", DataUtils.safeToString(orderResDTO.getUserAddress().getWardName()));
+            parameters.put("district", DataUtils.safeToString(orderResDTO.getUserAddress().getDistrictName()));
+            parameters.put("province", DataUtils.safeToString(orderResDTO.getUserAddress().getProvinceName()));
+            parameters.put("paymentMethod", DataUtils.safeToString(orderResDTO.getPayment().getPaymentMethod()));
+            return this.exportJasperReport(jasperReport, parameters, bos);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public byte[] exportJasperReport(JasperReport jasperReport, Map<String, Object> parameters, ByteArrayOutputStream bos) {
+        try {
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+            HtmlExporter exporter = new HtmlExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleHtmlExporterOutput(bos));
+            exporter.exportReport();
+            return bos.toByteArray();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
     private Order validateUpdateStatus(Long idOrder) {

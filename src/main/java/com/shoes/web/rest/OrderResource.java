@@ -1,8 +1,8 @@
 package com.shoes.web.rest;
 
 import com.shoes.domain.Order;
-import com.shoes.domain.User;
 import com.shoes.repository.OrderRepository;
+import com.shoes.service.MailService;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class OrderResource {
     private final OrderService orderService;
 
     private final OrderRepository orderRepository;
+    private final MailService mailService;
 
     /**
      * {@code POST  /orders} : Create a new order.
@@ -55,7 +57,7 @@ public class OrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/orders")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderCreateDTO orderDTO) throws URISyntaxException {
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody @Valid OrderCreateDTO orderDTO) throws URISyntaxException {
         log.debug("REST request to save Order : {}", orderDTO);
         if (orderDTO.getId() != null) {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");
@@ -207,6 +209,19 @@ public class OrderResource {
     public ResponseEntity<Void> updateStatus(@PathVariable("id") Long id) {
         this.orderService.updateStatus(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orders/cancel/{id}")
+    public ResponseEntity<Void> cancelOrder(@PathVariable("id") Long id) {
+        this.orderService.cancelOrder(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orders/get-mail/{id}")
+    public ResponseEntity<byte[]> getMail(@PathVariable("id") Long id) {
+        byte[] byteArrayResource = this.orderService.getMailVerify(id);
+        mailService.sendEmail1("hungndph26995@fpt.edu.vn", "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
+        return ResponseEntity.ok(byteArrayResource);
     }
 
     @GetMapping("/users/find")

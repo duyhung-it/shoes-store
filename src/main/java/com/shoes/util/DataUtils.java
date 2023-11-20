@@ -78,6 +78,22 @@ public class DataUtils {
         return "%" + str + "%";
     }
 
+    public static String safeToString(Object obj1, String defaultValue) {
+        if (obj1 == null || safeEqual(obj1.toString(), "null")) {
+            return defaultValue;
+        }
+        return obj1.toString();
+    }
+
+    public static boolean safeEqual(String obj1, String obj2) {
+        if (obj1 == null && obj2 == null) return true; else if (Objects.equals(obj1, obj2)) return true;
+        return ((obj1 != null) && (obj2 != null) && obj1.equals(obj2));
+    }
+
+    public static String safeToString(Object obj1) {
+        return safeToString(obj1, "");
+    }
+
     public static String toUpperCase(String str) {
         if (isNullOrEmpty(str)) return str;
         return str.toUpperCase();
@@ -87,11 +103,13 @@ public class DataUtils {
         File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(multipartFile.getBytes());
+            return file;
         } catch (IOException e) {
             // Handle the exception, e.g., log it or return an error response.
             throw e;
+        } finally {
+            file.deleteOnExit();
         }
-        return file;
     }
 
     public static Instant parseToInstant_yyyy_MM_dd_HH_mm_ss(String dateString) {

@@ -8,4 +8,7 @@ import org.mapstruct.*;
  * Mapper for the entity {@link Size} and its DTO {@link SizeDTO}.
  */
 @Mapper(componentModel = "spring")
-public interface SizeMapper extends EntityMapper<SizeDTO, Size> {}
+public interface SizeMapper extends EntityMapper<SizeDTO, Size> {
+    @Mapping(target = "status", source = "status")
+    SizeDTO toDto(Size size);
+}
