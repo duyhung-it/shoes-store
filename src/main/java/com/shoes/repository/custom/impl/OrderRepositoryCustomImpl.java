@@ -1,10 +1,7 @@
 package com.shoes.repository.custom.impl;
 
 import com.shoes.repository.custom.OrderRepositoryCustom;
-import com.shoes.service.dto.OrderDTO;
-import com.shoes.service.dto.OrderSearchReqDTO;
-import com.shoes.service.dto.OrderSearchResDTO;
-import com.shoes.service.dto.OrderStatusDTO;
+import com.shoes.service.dto.*;
 import com.shoes.util.DataUtils;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +28,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     public List<OrderStatusDTO> getQuantityOrders() {
         Query query = this.buildQueryGetQuantity();
         List<OrderStatusDTO> list = query.getResultList();
+        return list;
+    }
+
+    @Override
+    public List<RevenueDTO> getRevenueInYear(Integer on) {
+        Query query = this.buildQueryGetRevenue(on);
+        List<RevenueDTO> list = query.getResultList();
         return list;
     }
 
@@ -62,6 +66,17 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         );
         Query query1 = entityManager.createNativeQuery(query.toString(), "orders_quantity_result");
         params.forEach(query1::setParameter);
+        return query1;
+    }
+
+    public Query buildQueryGetRevenue(Integer on) {
+        StringBuilder query = new StringBuilder(
+            "select sum(total_price) 'value',month(jo.created_date) 'month' from jhi_order jo \n" +
+            "where year(now()) = year(jo.created_date) and jo.status = 3 and paid_method = :method\n" +
+            "group by month(jo.created_date)"
+        );
+        Query query1 = entityManager.createNativeQuery(query.toString(), "orders_revenue_result");
+        query1.setParameter("method", on);
         return query1;
     }
 }
