@@ -90,4 +90,15 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
 
     @Query(value = "select * from shoes_details order by created_date desc limit 10", nativeQuery = true)
     List<ShoesDetails> getNewShoesDetail();
+
+    @Query(
+        value = "select sd.*  from order_details od \n" +
+        "join jhi_order jo on jo.id = od.order_id\n" +
+        "join shoes_details sd on sd.id = od.shoes_details_id \n" +
+        "where od.status <> -1\n" +
+        "group by od.shoes_details_id \n" +
+        "order by sum(od.quantity) desc limit 6",
+        nativeQuery = true
+    )
+    List<ShoesDetails> getTopBestSelling();
 }

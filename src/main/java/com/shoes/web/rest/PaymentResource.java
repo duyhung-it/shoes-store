@@ -1,14 +1,21 @@
 package com.shoes.web.rest;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.shoes.config.PaypalConfig;
 import com.shoes.repository.PaymentRepository;
 import com.shoes.service.PaymentService;
 import com.shoes.service.dto.PaymentDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,13 +53,75 @@ public class PaymentResource {
         this.paymentRepository = paymentRepository;
     }
 
-    /**
-     * {@code POST  /payments} : Create a new payment.
-     *
-     * @param paymentDTO the paymentDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new paymentDTO, or with status {@code 400 (Bad Request)} if the payment has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+    @GetMapping("/create-payment")
+    public ResponseEntity<?> newPayments(@RequestParam("price") long price) throws UnsupportedEncodingException {
+        String vnp_Version = "2.1.0";
+        String vnp_Command = "pay";
+        String orderType = "other";
+        long amount = price * 100;
+        String bankCode = "NCB";
+
+        String vnp_TxnRef = PaypalConfig.getRandomNumber(8);
+        String vnp_IpAddr = "127.0.0.1";
+
+        String vnp_TmnCode = PaypalConfig.vnp_TmnCode;
+
+        Map<String, String> vnp_Params = new HashMap<>();
+        vnp_Params.put("vnp_Version", vnp_Version);
+        vnp_Params.put("vnp_Command", vnp_Command);
+        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_Amount", String.valueOf(amount));
+        vnp_Params.put("vnp_CurrCode", "VND");
+
+        vnp_Params.put("vnp_BankCode", bankCode);
+        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_OrderType", orderType);
+
+        vnp_Params.put("vnp_Locale", "vn");
+        vnp_Params.put("vnp_ReturnUrl", PaypalConfig.vnp_ReturnUrl);
+        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+
+        cld.add(Calendar.MINUTE, 15);
+        String vnp_ExpireDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+        List fieldNames = new ArrayList(vnp_Params.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        Iterator itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = (String) itr.next();
+            String fieldValue = (String) vnp_Params.get(fieldName);
+            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                //Build hash data
+                hashData.append(fieldName);
+                hashData.append('=');
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                //Build query
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                query.append('=');
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                if (itr.hasNext()) {
+                    query.append('&');
+                    hashData.append('&');
+                }
+            }
+        }
+        String queryUrl = query.toString();
+        String vnp_SecureHash = PaypalConfig.hmacSHA512(PaypalConfig.secretKey, hashData.toString());
+        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+        String paymentUrl = PaypalConfig.vnp_PayUrl + "?" + queryUrl;
+        System.out.println(queryUrl);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentUrl);
+    }
+
     @PostMapping("/payments")
     public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentDTO paymentDTO) throws URISyntaxException {
         log.debug("REST request to save Payment : {}", paymentDTO);
@@ -69,7 +138,7 @@ public class PaymentResource {
     /**
      * {@code PUT  /payments/:id} : Updates an existing payment.
      *
-     * @param id the id of the paymentDTO to save.
+     * @param id         the id of the paymentDTO to save.
      * @param paymentDTO the paymentDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated paymentDTO,
      * or with status {@code 400 (Bad Request)} if the paymentDTO is not valid,
@@ -103,7 +172,7 @@ public class PaymentResource {
     /**
      * {@code PATCH  /payments/:id} : Partial updates given fields of an existing payment, field will ignore if it is null
      *
-     * @param id the id of the paymentDTO to save.
+     * @param id         the id of the paymentDTO to save.
      * @param paymentDTO the paymentDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated paymentDTO,
      * or with status {@code 400 (Bad Request)} if the paymentDTO is not valid,

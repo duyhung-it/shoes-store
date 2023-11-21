@@ -1,5 +1,6 @@
 package com.shoes.repository;
 
+import com.shoes.domain.Order;
 import com.shoes.domain.User;
 import java.time.Instant;
 import java.util.List;

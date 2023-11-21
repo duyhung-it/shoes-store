@@ -5,22 +5,18 @@ import java.time.Instant;
 import java.util.Objects;
 
 /**
- * A DTO for the {@link com.shoes.domain.Payment} entity.
+ * A DTO for the {@link com.shoes.domain.FeedBack} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class PaymentDTO implements Serializable {
+public class FeedBackDTO implements Serializable {
 
     private Long id;
 
-    private String code;
+    private Integer rate;
 
-    private Integer paymentMethod;
-
-    private Integer paymentStatus;
+    private String comment;
 
     private Integer status;
-
-    private String url;
 
     private String createdBy;
 
@@ -30,6 +26,10 @@ public class PaymentDTO implements Serializable {
 
     private Instant lastModifiedDate;
 
+    private UserDTO user;
+
+    private ShoesDTO shoes;
+
     public Long getId() {
         return id;
     }
@@ -38,28 +38,20 @@ public class PaymentDTO implements Serializable {
         this.id = id;
     }
 
-    public String getCode() {
-        return code;
+    public Integer getRate() {
+        return rate;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setRate(Integer rate) {
+        this.rate = rate;
     }
 
-    public Integer getPaymentMethod() {
-        return paymentMethod;
+    public String getComment() {
+        return comment;
     }
 
-    public void setPaymentMethod(Integer paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public Integer getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(Integer paymentStatus) {
-        this.paymentStatus = paymentStatus;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public Integer getStatus() {
@@ -102,12 +94,20 @@ public class PaymentDTO implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public String getUrl() {
-        return url;
+    public UserDTO getUser() {
+        return user;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUser(UserDTO user) {
+        this.user = user;
+    }
+
+    public ShoesDTO getShoes() {
+        return shoes;
+    }
+
+    public void setShoes(ShoesDTO shoes) {
+        this.shoes = shoes;
     }
 
     @Override
@@ -115,15 +115,15 @@ public class PaymentDTO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof PaymentDTO)) {
+        if (!(o instanceof FeedBackDTO)) {
             return false;
         }
 
-        PaymentDTO paymentDTO = (PaymentDTO) o;
+        FeedBackDTO feedBackDTO = (FeedBackDTO) o;
         if (this.id == null) {
             return false;
         }
-        return Objects.equals(this.id, paymentDTO.id);
+        return Objects.equals(this.id, feedBackDTO.id);
     }
 
     @Override
@@ -134,17 +134,17 @@ public class PaymentDTO implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "PaymentDTO{" +
+        return "FeedBackDTO{" +
             "id=" + getId() +
-            ", code='" + getCode() + "'" +
-            ", paymentMethod=" + getPaymentMethod() +
-            ", paymentStatus=" + getPaymentStatus() +
+            ", rate=" + getRate() +
+            ", comment='" + getComment() + "'" +
             ", status=" + getStatus() +
-            ", url=" + getUrl() +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
+            ", user=" + getUser() +
+            ", shoes=" + getShoes() +
             "}";
     }
 }

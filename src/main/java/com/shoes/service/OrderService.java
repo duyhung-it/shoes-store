@@ -1,5 +1,6 @@
 package com.shoes.service;
 
+import com.shoes.domain.Order;
 import com.shoes.service.dto.*;
 import java.util.List;
 import java.util.Map;
@@ -67,4 +68,5 @@ public interface OrderService {
     void verifyOrder(List<Long> orderId);
     void cancelOrder(Long orderId);
     byte[] getMailVerify(Long orderId);
+    List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login);
 }

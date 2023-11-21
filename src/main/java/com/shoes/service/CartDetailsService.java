@@ -3,7 +3,6 @@ package com.shoes.service;
 import com.shoes.domain.Cart;
 import com.shoes.domain.CartDetails;
 import com.shoes.service.dto.CartDetailsDTO;
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
