@@ -2,6 +2,7 @@ package com.shoes.service;
 
 import com.shoes.config.Constants;
 import com.shoes.domain.Authority;
+import com.shoes.domain.Order;
 import com.shoes.domain.User;
 import com.shoes.repository.AuthorityRepository;
 import com.shoes.repository.UserRepository;

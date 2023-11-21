@@ -51,7 +51,6 @@ public class CartDetailsResource {
 
     private final ShoesDetailsService shoesDetailsService;
 
-
     /**
      * {@code POST  /cart-details} : Create a new cartDetails.
      *
@@ -192,13 +191,12 @@ public class CartDetailsResource {
         List<CartDetailsDTO> cartDetailsDTOS = cartDetailsService.findCartDetailsByCart(cart1);
         return ResponseEntity.ok().body(cartDetailsDTOS);
     }
+
     @PutMapping("/cart-details/add-quantity/{id}")
-    public ResponseEntity<CartDetailsDTO> addQuantityCartDetails(
-        @PathVariable(value = "id", required = false) final Long id
-    ){
+    public ResponseEntity<CartDetailsDTO> addQuantityCartDetails(@PathVariable(value = "id", required = false) final Long id) {
         cartDetailsService.findOne(id);
         Optional<CartDetailsDTO> cartDetailsDTO = cartDetailsService.findOne(id);
-        cartDetailsDTO.get().setQuantity(cartDetailsDTO.get().getQuantity()+1);
+        cartDetailsDTO.get().setQuantity(cartDetailsDTO.get().getQuantity() + 1);
         CartDetailsDTO result = cartDetailsService.update(cartDetailsDTO.get());
         return ResponseEntity
             .ok()
@@ -206,12 +204,10 @@ public class CartDetailsResource {
             .body(result);
     }
 
-        @PutMapping("/cart-details/reduce-quantity/{id}")
-    public ResponseEntity<CartDetailsDTO> reduceQuantityCartDetails(
-        @PathVariable(value = "id", required = false) final Long id
-    ){
+    @PutMapping("/cart-details/reduce-quantity/{id}")
+    public ResponseEntity<CartDetailsDTO> reduceQuantityCartDetails(@PathVariable(value = "id", required = false) final Long id) {
         Optional<CartDetailsDTO> cartDetailsDTO = cartDetailsService.findOne(id);
-        cartDetailsDTO.get().setQuantity(cartDetailsDTO.get().getQuantity()-1);
+        cartDetailsDTO.get().setQuantity(cartDetailsDTO.get().getQuantity() - 1);
         CartDetailsDTO result = cartDetailsService.update(cartDetailsDTO.get());
         return ResponseEntity
             .ok()
@@ -223,7 +219,7 @@ public class CartDetailsResource {
     public ResponseEntity<CartDetailsDTO> addQuantityCartDetail(
         @PathVariable(value = "soluong", required = false) final Long soluong,
         @PathVariable(value = "id", required = false) final Long id
-    ){
+    ) {
         cartDetailsService.findOne(id);
         Optional<CartDetailsDTO> cartDetailsDTO = cartDetailsService.findOne(id);
         cartDetailsDTO.get().setQuantity(soluong);
@@ -233,6 +229,7 @@ public class CartDetailsResource {
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, cartDetailsDTO.get().getId().toString()))
             .body(result);
     }
+
     @GetMapping("/cart-details/count")
     public ResponseEntity<Long> getCount() {
         List<Cart> cart = cartService.findByOwnerIsCurrentUser();
