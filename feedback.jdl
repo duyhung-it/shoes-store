@@ -1,0 +1,21 @@
+entity FeedBack {
+    rate Integer,
+    comment String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+entity Shoes
+relationship ManyToOne {
+    FeedBack{user} to User
+}
+relationship ManyToOne {
+    FeedBack{shoes} to Shoes
+}
+
+
+service *  with serviceImpl
+dto all with mapstruct
+paginate * with pagination
