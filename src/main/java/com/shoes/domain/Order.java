@@ -50,6 +50,17 @@ import lombok.NoArgsConstructor;
                 ),
             }
         ),
+        @SqlResultSetMapping(
+            name = "orders_revenue_result",
+            classes = {
+                @ConstructorResult(
+                    targetClass = RevenueDTO.class,
+                    columns = {
+                        @ColumnResult(name = "month", type = Integer.class), @ColumnResult(name = "value", type = BigDecimal.class),
+                    }
+                ),
+            }
+        ),
     }
 )
 @SuppressWarnings("common-java:DuplicatedBlocks")
@@ -73,6 +84,9 @@ public class Order extends AbstractAuditingEntity<Long> implements Serializable 
 
     @Column(name = "payment_method")
     private Integer paymentMethod;
+
+    @Column(name = "paid_method")
+    private Integer paidMethod;
 
     @Column(name = "ship_price", precision = 21, scale = 2)
     private BigDecimal shipPrice;

@@ -6,6 +6,7 @@ import com.shoes.service.MailService;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
