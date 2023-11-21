@@ -5,7 +5,6 @@ import com.shoes.repository.ShoesDetailsRepository;
 import com.shoes.service.ShoesDetailsService;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import com.shoes.service.mapper.ShoesDetailsMapper;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +90,10 @@ public class ShoesDetailsServiceImpl implements ShoesDetailsService {
 
     @Override
     public List<ShoesDetailsDTO> getNewShoesDetail() {
-        return shoesDetailsRepository.getNewShoesDetail().stream().map(ShoesDetailsDTO :: new).collect(Collectors.toCollection(LinkedList::new));
+        return shoesDetailsRepository
+            .getNewShoesDetail()
+            .stream()
+            .map(ShoesDetailsDTO::new)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 }

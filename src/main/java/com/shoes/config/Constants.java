@@ -28,6 +28,18 @@ public final class Constants {
         public static final Integer PENDING_CHECKOUT = 4;
     }
 
+    public static class PAYMENT_METHOD {
+
+        public static final Integer CASH = 1;
+        public static final Integer CREDIT = 2;
+    }
+
+    public static class PAID_METHOD {
+
+        public static final Integer OFF = 1;
+        public static final Integer ON = 2;
+    }
+
     private Constants() {}
 
     public static final String KEY_UPLOAD = "bad";

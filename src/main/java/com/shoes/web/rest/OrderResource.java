@@ -2,9 +2,11 @@ package com.shoes.web.rest;
 
 import com.shoes.domain.Order;
 import com.shoes.repository.OrderRepository;
+import com.shoes.service.MailService;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -46,6 +48,7 @@ public class OrderResource {
     private final OrderService orderService;
 
     private final OrderRepository orderRepository;
+    private final MailService mailService;
 
     /**
      * {@code POST  /orders} : Create a new order.
@@ -151,7 +154,7 @@ public class OrderResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping("/admin/order-owner/{id}")
+    @GetMapping("/order-owner/{id}")
     public ResponseEntity<List<OrderDTO>> getOrderByOwnerId(Pageable pageable, @PathVariable Long id) {
         Page<OrderDTO> page = orderService.getOrderByOwnerId(id, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -213,5 +216,18 @@ public class OrderResource {
     public ResponseEntity<Void> cancelOrder(@PathVariable("id") Long id) {
         this.orderService.cancelOrder(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orders/get-mail/{id}")
+    public ResponseEntity<byte[]> getMail(@PathVariable("id") Long id) {
+        byte[] byteArrayResource = this.orderService.getMailVerify(id);
+        mailService.sendEmail1("hungndph26995@fpt.edu.vn", "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
+        return ResponseEntity.ok(byteArrayResource);
+    }
+
+    @GetMapping("/users/find")
+    public ResponseEntity<?> findByLogin(@RequestParam Integer status, @RequestParam String login) {
+        List<Order> user = orderService.getOrderByStatusAndOwnerLogin(status, login);
+        return ResponseEntity.ok(user);
     }
 }

@@ -1035,4 +1035,65 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="20231031022050-100" author="jhipster">
+        <addColumn tableName="jhi_order">
+            <column name="paid_method" type="Integer">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <!--
+       Added the entity FeedBack.
+   -->
+    <changeSet id="20231121090531-1" author="jhipster">
+        <createTable tableName="feed_back">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="rate" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="comment" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="shoes_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="feed_back" columnName="created_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="feed_back" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+    </changeSet>
+    <changeSet id="20231121090531-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="feed_back"
+                                 constraintName="fk_feed_back__user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="shoes_id"
+                                 baseTableName="feed_back"
+                                 constraintName="fk_feed_back__shoes_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="shoes"/>
+    </changeSet>
 </databaseChangeLog>

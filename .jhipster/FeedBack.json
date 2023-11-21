@@ -1,24 +1,16 @@
 {
   "applications": "*",
-  "changelogDate": "20231102033601",
+  "changelogDate": "20231121090531",
   "dto": "mapstruct",
   "embedded": false,
-  "entityTableName": "address",
+  "entityTableName": "feed_back",
   "fields": [
     {
-      "fieldName": "province",
+      "fieldName": "rate",
       "fieldType": "Integer"
     },
     {
-      "fieldName": "district",
-      "fieldType": "Integer"
-    },
-    {
-      "fieldName": "ward",
-      "fieldType": "Integer"
-    },
-    {
-      "fieldName": "addressDetails",
+      "fieldName": "comment",
       "fieldType": "String"
     },
     {
@@ -44,9 +36,20 @@
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
-  "name": "Address",
-  "pagination": "no",
+  "name": "FeedBack",
+  "pagination": "pagination",
   "readOnly": false,
-  "relationships": [],
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "shoes",
+      "relationshipName": "shoes",
+      "relationshipType": "many-to-one"
+    }
+  ],
   "service": "serviceImpl"
 }
