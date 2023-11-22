@@ -11,7 +11,10 @@ public interface ShopShoesDTO {
     Integer getRating();
     Integer getShoes_id();
     Integer getBrand_id();
+    Integer getColor_id();
+    Integer getSize_id();
+    String getDescription();
     String getPath();
-
     List<Long> getSize();
+    List<String> getPaths();
 }

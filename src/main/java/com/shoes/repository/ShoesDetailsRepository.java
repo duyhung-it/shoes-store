@@ -35,7 +35,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         value = "SELECT \n" +
         "CONCAT(br.name, ' ', sh.name) as name,  " +
         "sd.* ,\n" +
-        "iu.path\n" +
+        "iu.path, \n" +
+        "GROUP_CONCAT(DISTINCT iu.path) as paths " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
         "JOIN (\n" +
@@ -44,7 +45,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "        brand_id,\n" +
         "        MIN(price) AS lowest_price\n" +
         "    FROM\n" +
-        "        `shoes-store`.shoes_details\n" +
+        "        `shoes-store`.shoes_details \n" +
+        "WHERE status = 1 " +
         "    GROUP BY\n" +
         "        shoes_id, brand_id\n" +
         ") min_prices ON sd.shoes_id = min_prices.shoes_id\n" +
@@ -64,6 +66,27 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP BY shoes_id, brand_id\n"
     )
     List<ShopShoesDTO> findDistinctByShoesAndBrandOrderBySellPriceDesc(@Param("idSizes") List<Long> idSizes);
+
+    @Query(
+        nativeQuery = true,
+        value = "SELECT \n" +
+        "CONCAT(br.name, ' ', sh.name) as name,  " +
+        "sd.* ,\n" +
+        "iu.path, \n" +
+        "GROUP_CONCAT(DISTINCT iu.path) as paths \n" +
+        "FROM\n" +
+        "    `shoes-store`.shoes_details sd \n" +
+        "JOIN\n" +
+        "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
+        "JOIN\n" +
+        "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
+        "JOIN\n" +
+        "    `shoes-store`.brand br ON sd.brand_id = br.id \n" +
+        "JOIN\n" +
+        "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n" +
+        "    where sd.status = 1 AND sd.id = :id  \n"
+    )
+    ShopShoesDTO findDistinctByShoesAndBrandOrderBySellPriceDescOne(@Param("id") Integer id);
 
     @Query(value = "select * from shoes_details order by created_date desc limit 10", nativeQuery = true)
     List<ShoesDetails> getNewShoesDetail();
