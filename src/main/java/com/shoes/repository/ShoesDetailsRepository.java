@@ -76,10 +76,11 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
 
     @Query(
         nativeQuery = true,
-        value = "\n" +
-        "SELECT\n" +
+        value = " SELECT\n" +
         "    size_ids,\n" +
         "    size_names,\n" +
+        "    color_ids,\n" +
+        "    color_names,\n" +
         "    sd.*,\n" +
         "    CONCAT(sh.name, ' ', br.name) as name,\n" +
         "    iu.path,\n" +
@@ -88,7 +89,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    (\n" +
         "        SELECT\n" +
         "            GROUP_CONCAT(distinct sz.id) as size_ids,\n" +
-        "            GROUP_CONCAT(distinct sz.name) as size_names\n" +
+        "            GROUP_CONCAT(distinct sz.name) as size_names,\n" +
+        "            GROUP_CONCAT(distinct cl.id) as color_ids, \n" +
+        "            GROUP_CONCAT(distinct cl.name) as color_names \n" +
         "        FROM\n" +
         "            `shoes-store`.shoes_details sd\n" +
         "            JOIN `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
@@ -96,7 +99,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "            JOIN `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
         "            JOIN `shoes-store`.brand br ON sd.brand_id = br.id \n" +
         "            JOIN `shoes-store`.size sz ON sd.size_id = sz.id \n" +
-        "            JOIN `shoes-store`.color cl ON sd.color_id = cl.id and cl.id = :clid\n" +
+        "            JOIN `shoes-store`.color cl ON sd.color_id = cl.id \n" +
         "        WHERE\n" +
         "            sd.brand_id = :brid and sd.shoes_id = :shid and sd.status = 1\n" +
         "    ) subquery\n" +
