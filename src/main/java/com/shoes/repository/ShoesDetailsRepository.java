@@ -36,7 +36,10 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "CONCAT(br.name, ' ', sh.name) as name,  " +
         "sd.* ,\n" +
         "iu.path, \n" +
-        "GROUP_CONCAT(DISTINCT iu.path) as paths " +
+        "GROUP_CONCAT(distinct sz.id) as sizes,\n" +
+        "GROUP_CONCAT(distinct cl.id) as colors,\n " +
+        "GROUP_CONCAT(distinct cl.name) as color_names ," +
+        "GROUP_CONCAT(distinct iu.path) as paths " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
         "JOIN (\n" +
@@ -59,8 +62,12 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n " +
         "JOIN\n" +
         "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
+        "JOIN\n " +
+        "    `shoes-store`.brand br ON sd.brand_id = br.id\n " +
+        " JOIN\n" +
+        " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
-        "    `shoes-store`.brand br ON sd.brand_id = br.id  " +
+        "`shoes-store`.color cl ON sd.color_id = cl.id\n " +
         "AND iu.status = 1 " +
         "WHERE sd.status = 1 " +
         "GROUP BY shoes_id, brand_id\n"
@@ -69,24 +76,46 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
 
     @Query(
         nativeQuery = true,
-        value = "SELECT \n" +
-        "CONCAT(br.name, ' ', sh.name) as name,  " +
-        "sd.* ,\n" +
-        "iu.path, \n" +
-        "GROUP_CONCAT(DISTINCT iu.path) as paths \n" +
+        value = "\n" +
+        "SELECT\n" +
+        "    size_ids,\n" +
+        "    size_names,\n" +
+        "    sd.*,\n" +
+        "    CONCAT(sh.name, ' ', br.name) as name,\n" +
+        "    iu.path,\n" +
+        "    group_concat(iu.path) as paths\n" +
         "FROM\n" +
-        "    `shoes-store`.shoes_details sd \n" +
-        "JOIN\n" +
-        "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
-        "JOIN\n" +
-        "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
-        "JOIN\n" +
-        "    `shoes-store`.brand br ON sd.brand_id = br.id \n" +
-        "JOIN\n" +
-        "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n" +
-        "    where sd.status = 1 AND sd.id = :id  \n"
+        "    (\n" +
+        "        SELECT\n" +
+        "            GROUP_CONCAT(distinct sz.id) as size_ids,\n" +
+        "            GROUP_CONCAT(distinct sz.name) as size_names\n" +
+        "        FROM\n" +
+        "            `shoes-store`.shoes_details sd\n" +
+        "            JOIN `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
+        "            JOIN `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n" +
+        "            JOIN `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
+        "            JOIN `shoes-store`.brand br ON sd.brand_id = br.id \n" +
+        "            JOIN `shoes-store`.size sz ON sd.size_id = sz.id \n" +
+        "            JOIN `shoes-store`.color cl ON sd.color_id = cl.id and cl.id = :clid\n" +
+        "        WHERE\n" +
+        "            sd.brand_id = :brid and sd.shoes_id = :shid and sd.status = 1\n" +
+        "    ) subquery\n" +
+        "    JOIN `shoes-store`.shoes_details sd ON 1 = 1\n" +
+        "    JOIN `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
+        "    JOIN `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n" +
+        "    JOIN `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
+        "    JOIN `shoes-store`.brand br ON sd.brand_id = br.id \n" +
+        "    JOIN `shoes-store`.size sz ON sd.size_id = sz.id and size_id = :siid \n" +
+        "    JOIN `shoes-store`.color cl ON sd.color_id = cl.id and cl.id = :clid \n" +
+        "WHERE\n" +
+        "    sd.brand_id = :brid and sd.shoes_id = :shid and sd.status = 1\n"
     )
-    ShopShoesDTO findDistinctByShoesAndBrandOrderBySellPriceDescOne(@Param("id") Integer id);
+    ShopShoesDTO findDistinctByShoesAndBrandOrderBySellPriceDescOne(
+        @Param("shid") Integer shid,
+        @Param("brid") Integer brid,
+        @Param("siid") Integer siid,
+        @Param("clid") Integer clid
+    );
 
     @Query(value = "select * from shoes_details order by created_date desc limit 10", nativeQuery = true)
     List<ShoesDetails> getNewShoesDetail();
