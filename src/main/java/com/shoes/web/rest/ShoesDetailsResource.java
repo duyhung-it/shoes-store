@@ -266,9 +266,15 @@ public class ShoesDetailsResource {
         return ResponseEntity.ok().body(shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDesc(ids));
     }
 
-    @GetMapping("/shoes-details/shop/{id}")
-    public ResponseEntity<ShopShoesDTO> getShopShoesById(@PathVariable("id") Integer id) {
-        ShopShoesDTO shopShoesDTO = shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDescOne(id);
+    @PostMapping("/shoes-details/shop/detail")
+    public ResponseEntity<ShopShoesDTO> getShopShoesById(@RequestBody FindingOneDtos x) {
+        System.out.println(x);
+        ShopShoesDTO shopShoesDTO = shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDescOne(
+            x.getShid(),
+            x.getBrid(),
+            x.getSiid(),
+            x.getClid()
+        );
         if (shopShoesDTO != null) {
             return ResponseEntity.ok().body(shopShoesDTO);
         } else {
