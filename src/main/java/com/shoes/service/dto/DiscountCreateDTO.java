@@ -19,7 +19,6 @@ public class DiscountCreateDTO {
 
     private Long id;
 
-    @NotBlank(message = "{error.discount.code.not.blank}")
     private String code;
 
     @NotBlank(message = "{error.discount.name.not.blank}")

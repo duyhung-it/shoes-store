@@ -37,4 +37,7 @@ public class DiscountShoesDetails extends AbstractAuditingEntity<Long> implement
 
     @ManyToOne
     private Shoes shoesDetails;
+
+    @Column(name = "brand_id")
+    private Long brandId;
 }
