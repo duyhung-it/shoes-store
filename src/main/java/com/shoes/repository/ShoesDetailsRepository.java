@@ -33,7 +33,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
     @Query(
         nativeQuery = true,
         value = "SELECT \n" +
-        "CONCAT(br.name, ' ', sh.name) as name,  " +
+        "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName , " +
         "sd.* ,\n" +
         "iu.path, \n" +
         "GROUP_CONCAT(distinct sz.id) as sizes,\n" +
@@ -60,6 +60,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
         "JOIN\n" +
         "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n " +
+        "AND iu.status = 1 " +
         "JOIN\n" +
         "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
         "JOIN\n " +
@@ -68,7 +69,6 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
         "`shoes-store`.color cl ON sd.color_id = cl.id\n " +
-        "AND iu.status = 1 " +
         "WHERE sd.status = 1 " +
         "GROUP BY shoes_id, brand_id\n"
     )
