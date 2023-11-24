@@ -6,6 +6,8 @@ import com.shoes.repository.CartDetailsRepository;
 import com.shoes.service.CartDetailsService;
 import com.shoes.service.CartService;
 import com.shoes.service.ShoesDetailsService;
+import com.shoes.service.dto.CartDTO;
+import com.shoes.service.dto.CartDetailDTO;
 import com.shoes.service.dto.CartDetailsDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -64,6 +66,11 @@ public class CartDetailsResource {
         if (cartDetailsDTO.getId() != null) {
             throw new BadRequestAlertException("A new cartDetails cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        List<Cart> cart = cartService.findByOwnerIsCurrentUser();
+        Cart cart1 = cart.get(0);
+        CartDTO cartDTO = new CartDTO();
+        cartDTO.setId(cart1.getId());
+        cartDetailsDTO.setCart(cartDTO);
         CartDetailsDTO result = cartDetailsService.save(cartDetailsDTO);
         return ResponseEntity
             .created(new URI("/api/cart-details/" + result.getId()))
@@ -192,11 +199,34 @@ public class CartDetailsResource {
         return ResponseEntity.ok().body(cartDetailsDTOS);
     }
 
+    @GetMapping("/cart-details/allpath")
+    public ResponseEntity<List<CartDetailDTO>> getAllPathCartDetail() {
+        List<Cart> cart = cartService.findByOwnerIsCurrentUser();
+        Cart cart1 = cart.get(0);
+        List<CartDetailDTO> cartDetailsDTOS = cartDetailsRepository.findCartDetailsByCart_Id(cart1.getId());
+        return ResponseEntity.ok().body(cartDetailsDTOS);
+    }
+
     @PutMapping("/cart-details/add-quantity/{id}")
     public ResponseEntity<CartDetailsDTO> addQuantityCartDetails(@PathVariable(value = "id", required = false) final Long id) {
         cartDetailsService.findOne(id);
         Optional<CartDetailsDTO> cartDetailsDTO = cartDetailsService.findOne(id);
         cartDetailsDTO.get().setQuantity(cartDetailsDTO.get().getQuantity() + 1);
+        CartDetailsDTO result = cartDetailsService.update(cartDetailsDTO.get());
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, cartDetailsDTO.get().getId().toString()))
+            .body(result);
+    }
+
+    @PutMapping("/cart-details/update-quantity/{id}/{quantity}")
+    public ResponseEntity<CartDetailsDTO> updateQuantityCartDetails(
+        @PathVariable(value = "id", required = false)  Long id,
+        @PathVariable(value = "quantity", required = false)  Long quantity
+    ) {
+        cartDetailsService.findOne(id);
+        Optional<CartDetailsDTO> cartDetailsDTO = cartDetailsService.findOne(id);
+        cartDetailsDTO.get().setQuantity(cartDetailsDTO.get().getQuantity() + quantity);
         CartDetailsDTO result = cartDetailsService.update(cartDetailsDTO.get());
         return ResponseEntity
             .ok()
