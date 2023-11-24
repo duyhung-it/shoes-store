@@ -120,7 +120,33 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         @Param("clid") Integer clid
     );
 
-    @Query(value = "select * from shoes_details order by created_date desc limit 10", nativeQuery = true)
+    @Query(value = "SELECT b.*,p.path\n" +
+        "FROM file_upload p\n" +
+        "join (\n" +
+        "    WITH shoes_file_upload_mapping AS (\n" +
+        "    SELECT \n" +
+        "        *,\n" +
+        "        ROW_NUMBER() OVER(PARTITION BY shoes_details_id  ORDER BY id desc) AS rn\n" +
+        "    FROM \n" +
+        "        shoes_file_upload_mapping\n" +
+        "        )\n" +
+        "        SELECT * \n" +
+        "FROM shoes_file_upload_mapping\n" +
+        "WHERE rn = 1\n" +
+        ") s on p.id = s.file_upload_id\n" +
+        "JOIN (\n" +
+        "    WITH shoes_details AS (\n" +
+        "    SELECT \n" +
+        "        *,\n" +
+        "        ROW_NUMBER() OVER(PARTITION BY shoes_id, brand_id ORDER BY id desc) AS rn\n" +
+        "    FROM \n" +
+        "        shoes_details\n" +
+        ")\n" +
+        "SELECT * \n" +
+        "FROM shoes_details\n" +
+        "WHERE rn = 1\n" +
+        ") b ON s.shoes_details_id = b.id\n" +
+        "order by created_date desc limit 10", nativeQuery = true)
     List<ShoesDetails> getNewShoesDetail();
 
     @Query(
