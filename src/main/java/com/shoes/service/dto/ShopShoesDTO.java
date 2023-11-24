@@ -6,6 +6,8 @@ import java.util.List;
 public interface ShopShoesDTO {
     Integer getId();
     String getName();
+    String getCode();
+    String getBrandName();
     Integer getQuantity();
     BigDecimal getPrice();
     Integer getRating();

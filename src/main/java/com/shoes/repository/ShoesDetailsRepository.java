@@ -33,7 +33,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
     @Query(
         nativeQuery = true,
         value = "SELECT \n" +
-        "CONCAT(br.name, ' ', sh.name) as name,  " +
+        "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName , " +
         "sd.* ,\n" +
         "iu.path, \n" +
         "GROUP_CONCAT(distinct sz.id) as sizes,\n" +
@@ -60,6 +60,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
         "JOIN\n" +
         "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n " +
+        "AND iu.status = 1 " +
         "JOIN\n" +
         "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
         "JOIN\n " +
@@ -68,7 +69,6 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
         "`shoes-store`.color cl ON sd.color_id = cl.id\n " +
-        "AND iu.status = 1 " +
         "WHERE sd.status = 1 " +
         "GROUP BY shoes_id, brand_id\n"
     )
@@ -125,7 +125,33 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         @Param("clid") Integer clid
     );
 
-    @Query(value = "select * from shoes_details order by created_date desc limit 10", nativeQuery = true)
+    @Query(value = "SELECT b.*,p.path\n" +
+        "FROM file_upload p\n" +
+        "join (\n" +
+        "    WITH shoes_file_upload_mapping AS (\n" +
+        "    SELECT \n" +
+        "        *,\n" +
+        "        ROW_NUMBER() OVER(PARTITION BY shoes_details_id  ORDER BY id desc) AS rn\n" +
+        "    FROM \n" +
+        "        shoes_file_upload_mapping\n" +
+        "        )\n" +
+        "        SELECT * \n" +
+        "FROM shoes_file_upload_mapping\n" +
+        "WHERE rn = 1\n" +
+        ") s on p.id = s.file_upload_id\n" +
+        "JOIN (\n" +
+        "    WITH shoes_details AS (\n" +
+        "    SELECT \n" +
+        "        *,\n" +
+        "        ROW_NUMBER() OVER(PARTITION BY shoes_id, brand_id ORDER BY id desc) AS rn\n" +
+        "    FROM \n" +
+        "        shoes_details\n" +
+        ")\n" +
+        "SELECT * \n" +
+        "FROM shoes_details\n" +
+        "WHERE rn = 1\n" +
+        ") b ON s.shoes_details_id = b.id\n" +
+        "order by created_date desc limit 10", nativeQuery = true)
     List<ShoesDetails> getNewShoesDetail();
 
     @Query(

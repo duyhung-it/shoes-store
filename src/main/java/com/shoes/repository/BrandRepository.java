@@ -1,6 +1,7 @@
 package com.shoes.repository;
 
 import com.shoes.domain.Brand;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -16,4 +17,5 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
     Page<Brand> findByNameContaining(String name, Pageable pageable);
     Page<Brand> findByCodeContaining(String code, Pageable pageable);
     Page<Brand> findByStatus(int status, Pageable pageable);
+    List<Brand> findByIdInAndStatus(List<Long> ids, int status);
 }

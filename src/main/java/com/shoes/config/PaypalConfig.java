@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 public class PaypalConfig {
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
+    public static String vnp_ReturnUrl = "http://localhost:8088/api/vnpay-payment";
     public static String vnp_TmnCode = "YYEHSTLP";
     public static String secretKey = "RWMLSDHGWWTUFHXXXJOPONIXHPMHJOSQ";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
