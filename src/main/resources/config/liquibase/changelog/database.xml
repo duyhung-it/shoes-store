@@ -1062,13 +1062,13 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="user_id" type="bigint">
@@ -1079,8 +1079,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="feed_back" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="feed_back" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="feed_back" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="feed_back" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <changeSet id="20231121090531-2" author="jhipster">
 
@@ -1095,5 +1095,12 @@
                                  constraintName="fk_feed_back__shoes_id"
                                  referencedColumnNames="id"
                                  referencedTableName="shoes"/>
+    </changeSet>
+    <changeSet id="20231121090531-10" author="jhipster">
+        <addColumn tableName="discount_shoes_details">
+            <column name="brand_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>
