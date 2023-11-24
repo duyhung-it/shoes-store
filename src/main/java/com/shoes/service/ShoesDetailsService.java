@@ -1,5 +1,6 @@
 package com.shoes.service;
 
+import com.shoes.service.dto.ShoesDetailDTOCustom;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import java.util.List;
 import java.util.Optional;
@@ -59,5 +60,5 @@ public interface ShoesDetailsService {
 
     void deleteSoft(Long id);
 
-    List<ShoesDetailsDTO> getNewShoesDetail();
+    List<ShoesDetailDTOCustom> getNewShoesDetail();
 }
