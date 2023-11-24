@@ -24,5 +24,10 @@ public class DiscountShoesDetailsDTO implements Serializable {
     private DiscountDTO discount;
 
     private ShoesDTO shoesDetails;
+
+    private Long brandId;
+
+    private String brandName;
+
     private Integer status;
 }

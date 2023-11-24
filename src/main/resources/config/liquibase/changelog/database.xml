@@ -1096,4 +1096,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="shoes"/>
     </changeSet>
+    <changeSet id="20231121090531-10" author="jhipster">
+        <addColumn tableName="discount_shoes_details">
+            <column name="brand_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
