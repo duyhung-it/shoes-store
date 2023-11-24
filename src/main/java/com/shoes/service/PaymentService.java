@@ -1,7 +1,9 @@
 package com.shoes.service;
 
 import com.shoes.service.dto.PaymentDTO;
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -55,4 +57,8 @@ public interface PaymentService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    String createPayment(long price) throws UnsupportedEncodingException;
+
+    int orderReturn(HttpServletRequest request);
 }
