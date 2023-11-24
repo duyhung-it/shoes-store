@@ -18,12 +18,14 @@ public interface CartDetailsRepository extends JpaRepository<CartDetails, Long> 
     List<CartDetails> findCartDetailsByCart(Cart cart);
 
     @Query(value = "select cd.*,fu.path,sd.price,s.name as nameshoes," +
-        "sz.name as namesize,c.name as namecolor,sd.id as shoesdetailid,sd.quantity as quantityShoesDetail\n" +
+        "sz.name as namesize,c.name as namecolor,sd.id as shoesdetailid,sd.quantity as quantityShoesDetail," +
+        "s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n"+
         "from cart_details cd\n" +
         "join shoes_details sd on cd.shoes_details_id = sd.id\n" +
         "join shoes s on  sd.shoes_id = s.id\n" +
         "join size sz on sd.size_id = sz.id\n" +
         "join color c on sd.color_id = c.id\n" +
+        "join brand b on sd.brand_id = b.id\n" +
         "join (\n" +
         "\twith shoes_file_upload_mapping as(\n" +
         "\t\tselect * ,row_number() over(partition by shoes_details_id order by id) as rn\n" +

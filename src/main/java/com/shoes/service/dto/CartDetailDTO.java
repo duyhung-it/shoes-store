@@ -8,6 +8,11 @@ public interface CartDetailDTO {
 
     Integer getId();
 
+    Integer getIdsh();
+    Integer getIdsz();
+    Integer getIdc();
+    Integer getIdb();
+
     Integer getQuantity();
 
     Integer getQuantityShoesDetail();
