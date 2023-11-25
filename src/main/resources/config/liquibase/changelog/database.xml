@@ -634,14 +634,14 @@
     <!--
         Added the constraints for entity Order.
     -->
-    <changeSet id="20230919144051-2" author="jhipster">
+<!--        <changeSet id="20230919144051-2" author="jhipster">-->
 
-        <addForeignKeyConstraint baseColumnNames="owner_id"
-                                 baseTableName="jhi_order"
-                                 constraintName="fk_jhi_order__owner_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"/>
-    </changeSet>
+<!--        <addForeignKeyConstraint baseColumnNames="owner_id"-->
+<!--                                 baseTableName="jhi_order"-->
+<!--                                 constraintName="fk_jhi_order__owner_id"-->
+<!--                                 referencedColumnNames="id"-->
+<!--                                 referencedTableName="jhi_user"/>-->
+<!--    </changeSet>-->
     <!--
         Added the entity Payment.
     -->
@@ -1041,5 +1041,74 @@
                 <constraints nullable="true"/>
             </column>
         </addColumn>
+    </changeSet>
+    <!--
+       Added the entity FeedBack.
+   -->
+    <changeSet id="20231121090531-1" author="jhipster">
+        <createTable tableName="feed_back">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="rate" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="comment" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_date" type="datetime(6)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_modified_date" type="datetime(6)">
+                <constraints nullable="true" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="shoes_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="feed_back" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="feed_back" columnName="last_modified_date" columnDataType="datetime(6)"/>
+    </changeSet>
+    <changeSet id="20231121090531-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="feed_back"
+                                 constraintName="fk_feed_back__user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+            <addForeignKeyConstraint baseColumnNames="shoes_id"
+                                     baseTableName="feed_back"
+                                     constraintName="fk_feed_back__shoes_details_id"
+                                     referencedColumnNames="id"
+                                     referencedTableName="shoes_details"/>
+    </changeSet>
+    <changeSet id="20231121090531-10" author="jhipster">
+        <addColumn tableName="discount_shoes_details">
+            <column name="brand_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet  author="liquibase-docs"  id="20231121090531-11">
+        <dropForeignKeyConstraint
+            baseTableName="discount_shoes_details"
+            constraintName="fk_discount_shoes_details__shoes_details_id"/>
+        <addForeignKeyConstraint baseColumnNames="shoes_details_id"
+                                 baseTableName="discount_shoes_details"
+                                 constraintName="fk_discount_shoes_details__shoes_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="shoes"/>
     </changeSet>
 </databaseChangeLog>

@@ -5,6 +5,7 @@ import com.shoes.service.DiscountService;
 import com.shoes.service.dto.DiscountCreateDTO;
 import com.shoes.service.dto.DiscountDTO;
 import com.shoes.service.dto.DiscountResDTO;
+import com.shoes.service.dto.DiscountSearchDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -155,9 +156,9 @@ public class DiscountResource {
     }
 
     @PostMapping("/discounts/search")
-    public ResponseEntity<List<DiscountDTO>> search(@RequestBody String searchText) {
+    public ResponseEntity<List<DiscountSearchDTO>> search(@RequestBody String searchText) {
         log.debug("REST request to get Discount ");
-        List<DiscountDTO> discountDTO = discountService.search(searchText);
+        List<DiscountSearchDTO> discountDTO = discountService.search(searchText);
         return ResponseEntity.ok(discountDTO);
     }
 

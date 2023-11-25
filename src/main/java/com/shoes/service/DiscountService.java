@@ -3,6 +3,7 @@ package com.shoes.service;
 import com.shoes.service.dto.DiscountCreateDTO;
 import com.shoes.service.dto.DiscountDTO;
 import com.shoes.service.dto.DiscountResDTO;
+import com.shoes.service.dto.DiscountSearchDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,5 +58,5 @@ public interface DiscountService {
      */
     void delete(Long id);
 
-    List<DiscountDTO> search(String searchText);
+    List<DiscountSearchDTO> search(String searchText);
 }

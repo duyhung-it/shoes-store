@@ -4,14 +4,14 @@ import com.shoes.config.Constants;
 import com.shoes.domain.FileUpload;
 import com.shoes.domain.ShoesDetails;
 import com.shoes.domain.ShoesFileUploadMapping;
+import com.shoes.domain.Size;
 import com.shoes.repository.ShoesDetailsRepository;
 import com.shoes.repository.ShoesFileUploadMappingRepository;
+import com.shoes.repository.SizeRepository;
 import com.shoes.service.FileUploadService;
 import com.shoes.service.ShoesDetailsService;
 import com.shoes.service.ShoesFileUploadMappingService;
-import com.shoes.service.dto.FileUploadDTO;
-import com.shoes.service.dto.ShoesDetailsDTO;
-import com.shoes.service.dto.ShoesFileUploadMappingDTO;
+import com.shoes.service.dto.*;
 import com.shoes.service.mapper.FileUploadMapper;
 import com.shoes.service.mapper.ShoesDetailsMapper;
 import com.shoes.util.AWSS3Util;
@@ -21,9 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -54,7 +52,7 @@ public class ShoesDetailsResource {
     private final FileUploadResource fileUploadResource;
 
     private final ShoesDetailsService shoesDetailsService;
-
+    private final SizeRepository sizeRepository;
     private final ShoesDetailsRepository shoesDetailsRepository;
     private final FileUploadService fileUploadService;
     private final FileUploadMapper fileUploadMapper;
@@ -262,14 +260,37 @@ public class ShoesDetailsResource {
             .build();
     }
 
-    @GetMapping("/shoes-details/testing")
-    public ResponseEntity<List<ShoesDetailsDTO>> testing() {
-        return ResponseEntity.ok().body(shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDesc());
+    @GetMapping("/shoes-details/shop")
+    public ResponseEntity<List<ShopShoesDTO>> testing() {
+        List<Long> ids = sizeRepository.findAll().stream().map(Size::getId).collect(Collectors.toList());
+        return ResponseEntity.ok().body(shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDesc(ids));
+    }
+
+    @PostMapping("/shoes-details/shop/detail")
+    public ResponseEntity<ShopShoesDTO> getShopShoesById(@RequestBody FindingOneDtos x) {
+        System.out.println(x);
+        ShopShoesDTO shopShoesDTO = shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDescOne(
+            x.getShid(),
+            x.getBrid(),
+            x.getSiid(),
+            x.getClid()
+        );
+        if (shopShoesDTO != null) {
+            return ResponseEntity.ok().body(shopShoesDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/shoes-details/new")
-    public ResponseEntity<List<ShoesDetailsDTO>> getNewShoesDetail() {
-        List<ShoesDetailsDTO> shoesDetailsDTOs = shoesDetailsService.getNewShoesDetail();
+    public ResponseEntity<List<ShoesDetailDTOCustom>> getNewShoesDetail() {
+        List<ShoesDetailDTOCustom> shoesDetailsDTOs = shoesDetailsService.getNewShoesDetail();
+        return ResponseEntity.ok().body(shoesDetailsDTOs);
+    }
+
+    @GetMapping("/shoes-details/discount")
+    public ResponseEntity<List<ShopShoesDTO>> getShoesDiscount() {
+        List<ShopShoesDTO> shoesDetailsDTOs = shoesDetailsService.getDiscountShoes();
         return ResponseEntity.ok().body(shoesDetailsDTOs);
     }
 }

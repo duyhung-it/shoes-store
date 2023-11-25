@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
             order.setCode(this.generateCode());
         }
         order.setLastModifiedBy(loggedUser);
-
+        order.setPaidMethod(Constants.PAID_METHOD.OFF);
         Payment payment = new Payment();
         payment.setPaymentMethod(orderDTO.getPaymentMethod());
         payment.setCode(orderDTO.getCode() + Instant.EPOCH.getNano());
@@ -280,7 +280,12 @@ public class OrderServiceImpl implements OrderService {
             parameters.put("ward", DataUtils.safeToString(orderResDTO.getUserAddress().getWardName()));
             parameters.put("district", DataUtils.safeToString(orderResDTO.getUserAddress().getDistrictName()));
             parameters.put("province", DataUtils.safeToString(orderResDTO.getUserAddress().getProvinceName()));
-            parameters.put("paymentMethod", DataUtils.safeToString(orderResDTO.getPayment().getPaymentMethod()));
+            parameters.put(
+                "paymentMethod",
+                DataUtils.safeToString(
+                    Constants.PAYMENT_METHOD.CASH.equals(orderResDTO.getPayment().getPaymentMethod()) ? "Tiền mặt" : "Chuyển khoản"
+                )
+            );
             return this.exportJasperReport(jasperReport, parameters, bos);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -307,5 +312,11 @@ public class OrderServiceImpl implements OrderService {
             this.orderRepository.findById(idOrder)
                 .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.order.not.exist"), "Order", "not_exist"));
         return order;
+    }
+
+    @Transactional
+    @Override
+    public List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login) {
+        return orderRepository.getOrderByStatusAndOwnerLogin(status, login);
     }
 }

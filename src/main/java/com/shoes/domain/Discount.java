@@ -1,5 +1,9 @@
 package com.shoes.domain;
 
+import com.shoes.service.dto.DiscountSearchDTO;
+import com.shoes.service.dto.OrderSearchResDTO;
+import com.shoes.service.dto.OrderStatusDTO;
+import com.shoes.service.dto.RevenueDTO;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -11,6 +15,31 @@ import lombok.NoArgsConstructor;
 /**
  * A Discount.
  */
+
+@SqlResultSetMappings(
+    value = {
+        @SqlResultSetMapping(
+            name = "discount_search_result",
+            classes = {
+                @ConstructorResult(
+                    targetClass = DiscountSearchDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "code", type = String.class),
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "discountMethod", type = Integer.class),
+                        @ColumnResult(name = "discountMethodName", type = String.class),
+                        @ColumnResult(name = "status", type = String.class),
+                        @ColumnResult(name = "startDate", type = Instant.class),
+                        @ColumnResult(name = "endDate", type = Instant.class),
+                        @ColumnResult(name = "lastModifiedDate", type = Instant.class),
+                        @ColumnResult(name = "lastModifiedBy", type = String.class),
+                    }
+                ),
+            }
+        ),
+    }
+)
 @Entity
 @Table(name = "discount")
 @Data

@@ -6,12 +6,10 @@ import com.shoes.repository.CartDetailsRepository;
 import com.shoes.service.CartDetailsService;
 import com.shoes.service.dto.CartDetailsDTO;
 import com.shoes.service.mapper.CartDetailsMapper;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +74,7 @@ public class CartDetailsServiceImpl implements CartDetailsService {
     @Transactional(readOnly = true)
     public Optional<CartDetailsDTO> findOne(Long id) {
         log.debug("Request to get CartDetails : {}", id);
-        return cartDetailsRepository.findById(id).map(CartDetailsDTO :: new);
+        return cartDetailsRepository.findById(id).map(CartDetailsDTO::new);
     }
 
     @Override
@@ -87,9 +85,10 @@ public class CartDetailsServiceImpl implements CartDetailsService {
 
     @Override
     public List<CartDetailsDTO> findCartDetailsByCart(Cart cart) {
-        return cartDetailsRepository.findCartDetailsByCart(cart)
+        return cartDetailsRepository
+            .findCartDetailsByCart(cart)
             .stream()
-            .map(CartDetailsDTO ::new)
+            .map(CartDetailsDTO::new)
             .collect(Collectors.toCollection(LinkedList::new));
     }
 

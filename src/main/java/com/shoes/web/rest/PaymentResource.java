@@ -1,21 +1,28 @@
 package com.shoes.web.rest;
 
-import com.shoes.repository.PaymentRepository;
+import com.shoes.config.Constants;
+import com.shoes.domain.*;
+import com.shoes.repository.*;
+import com.shoes.service.OrderService;
 import com.shoes.service.PaymentService;
 import com.shoes.service.dto.PaymentDTO;
+import com.shoes.service.mapper.OrderMapper;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -39,20 +46,142 @@ public class PaymentResource {
 
     private final PaymentService paymentService;
 
+    private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
+    private final OrderService orderService;
+    private final OrderMapper orderMapper;
+    private final OrderRepository orderRepository;
+    private final ShoesDetailsRepository shoesDetailsRepository;
+    private final OrderDetailsRepository orderDetailsRepository;
+    private final CartDetailsRepository cartDetailsRepository;
 
-    public PaymentResource(PaymentService paymentService, PaymentRepository paymentRepository) {
+    public PaymentResource(
+        PaymentService paymentService,
+        UserRepository userRepository,
+        PaymentRepository paymentRepository,
+        OrderService orderService,
+        OrderMapper orderMapper,
+        OrderRepository orderRepository,
+        ShoesDetailsRepository shoesDetailsRepository,
+        OrderDetailsRepository orderDetailsRepository,
+        CartDetailsRepository cartDetailsRepository
+    ) {
         this.paymentService = paymentService;
+        this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
+        this.orderService = orderService;
+        this.orderMapper = orderMapper;
+        this.orderRepository = orderRepository;
+        this.shoesDetailsRepository = shoesDetailsRepository;
+        this.orderDetailsRepository = orderDetailsRepository;
+        this.cartDetailsRepository = cartDetailsRepository;
     }
 
-    /**
-     * {@code POST  /payments} : Create a new payment.
-     *
-     * @param paymentDTO the paymentDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new paymentDTO, or with status {@code 400 (Bad Request)} if the payment has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+    @GetMapping("/create-payment")
+    public String newPayments(
+        @RequestParam("price") long price,
+        @RequestParam("receivedBy") String receivedBy,
+        @RequestParam("phone") String phone,
+        @RequestParam("email") String email,
+        @RequestParam("address") String address,
+        @RequestParam("shipPrice") long shipPrice,
+        @RequestParam("idOwner") long idOwner,
+        @RequestParam("arrSanPham") String arrSanPham,
+        @RequestParam("arrQuantity") String arrQuantity
+    ) throws UnsupportedEncodingException {
+        String paymentUrl = paymentService.createPayment(
+            price,
+            receivedBy,
+            phone,
+            email,
+            address,
+            shipPrice,
+            idOwner,
+            arrSanPham,
+            arrQuantity
+        );
+        return paymentUrl;
+    }
+
+    @GetMapping("/payment-callback")
+    public void GetMapping(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int paymentStatus = paymentService.orderReturn(request);
+        String orderInfo = request.getParameter("vnp_OrderInfo");
+        System.out.println(orderInfo);
+        long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
+        String[] orderInfoParts = orderInfo.split("\\|");
+
+        if (paymentStatus == 1) {
+            if (orderInfoParts.length >= 9) {
+                String orderCode = orderInfoParts[0];
+                String receivedBy = orderInfoParts[1];
+                String phone = orderInfoParts[2];
+                String email = orderInfoParts[3];
+                String address = orderInfoParts[4];
+                long shipPrice = Long.parseLong(orderInfoParts[5]);
+                long idOwner = Long.parseLong(orderInfoParts[6]);
+                String arrSanPham = orderInfoParts[7];
+                String arrQuantity = orderInfoParts[8];
+                User owner = userRepository.findOneById(idOwner);
+
+                Payment payment = new Payment();
+                payment.setCode(orderCode);
+                payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
+                payment.setPaymentStatus(Constants.PAID_METHOD.ON);
+                payment.setCreatedBy("system");
+                payment.setCreatedDate(Instant.now());
+                paymentRepository.save(payment);
+
+                Order order = new Order();
+                order.setCode(orderCode);
+                order.setAddress(address);
+                order.setPhone(phone);
+                order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
+                order.setShipPrice(BigDecimal.valueOf(shipPrice));
+                order.setTotalPrice(BigDecimal.valueOf(price));
+                order.setReceivedBy(receivedBy);
+                order.setStatus(2);
+                order.setCreatedBy("system");
+                order.setCreatedDate(Instant.now());
+                order.setOwner(owner);
+                order.setPayment(payment);
+                orderRepository.save(order);
+
+                String[] sanPhamParts = arrSanPham.split("a");
+                String[] quantityParts = arrQuantity.split("b");
+                List<OrderDetails> orderDetailsList = new ArrayList<>();
+                ShoesDetails shoesDetails;
+                OrderDetails orderDetails;
+                CartDetails cartDetails;
+                for (int i = 0; i < sanPhamParts.length; i++) {
+                    orderDetails = new OrderDetails();
+                    long id = Long.parseLong(sanPhamParts[i]);
+                    System.out.println(id);
+                    Integer quantity = Integer.valueOf(quantityParts[i]);
+                    cartDetails = cartDetailsRepository.findByIdAndStatus(id, 1);
+                    shoesDetails = shoesDetailsRepository.findByIdAndStatus(cartDetails.getShoesDetails().getId(), 1);
+
+                    orderDetails.setQuantity(quantity);
+                    orderDetails.setPrice(shoesDetails.getPrice());
+                    orderDetails.setStatus(1);
+                    orderDetails.setCreatedBy("system");
+                    orderDetails.setCreatedDate(Instant.now());
+                    orderDetails.setOrder(order);
+                    orderDetails.setShoesDetails(shoesDetails);
+                    orderDetailsList.add(orderDetails);
+
+                    cartDetailsRepository.delete(cartDetails);
+                }
+                orderDetailsRepository.saveAll(orderDetailsList);
+            } else {
+                System.out.println("Invalid vnp_OrderInfo format");
+            }
+            response.sendRedirect("http://localhost:4200/client/pay-success");
+        } else {
+            response.sendRedirect("http://localhost:4200/client/pay-faile");
+        }
+    }
+
     @PostMapping("/payments")
     public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentDTO paymentDTO) throws URISyntaxException {
         log.debug("REST request to save Payment : {}", paymentDTO);
@@ -69,7 +198,7 @@ public class PaymentResource {
     /**
      * {@code PUT  /payments/:id} : Updates an existing payment.
      *
-     * @param id the id of the paymentDTO to save.
+     * @param id         the id of the paymentDTO to save.
      * @param paymentDTO the paymentDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated paymentDTO,
      * or with status {@code 400 (Bad Request)} if the paymentDTO is not valid,
@@ -103,7 +232,7 @@ public class PaymentResource {
     /**
      * {@code PATCH  /payments/:id} : Partial updates given fields of an existing payment, field will ignore if it is null
      *
-     * @param id the id of the paymentDTO to save.
+     * @param id         the id of the paymentDTO to save.
      * @param paymentDTO the paymentDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated paymentDTO,
      * or with status {@code 400 (Bad Request)} if the paymentDTO is not valid,

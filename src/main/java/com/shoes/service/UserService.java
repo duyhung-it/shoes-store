@@ -2,6 +2,7 @@ package com.shoes.service;
 
 import com.shoes.config.Constants;
 import com.shoes.domain.Authority;
+import com.shoes.domain.Order;
 import com.shoes.domain.User;
 import com.shoes.repository.AuthorityRepository;
 import com.shoes.repository.UserRepository;
@@ -155,6 +156,14 @@ public class UserService {
 
     public Optional<User> findOneByEmailIgnoreCase(String email) {
         return userRepository.findOneByEmailIgnoreCase(email);
+    }
+
+    public UserDTO findOneById(long id) {
+        User user = userRepository.findOneById(id);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setLogin(user.getLogin());
+        return userDTO;
     }
 
     public User createUser(AdminUserDTO userDTO) {

@@ -1,11 +1,13 @@
 package com.shoes.web.rest;
 
 import com.shoes.domain.Order;
+import com.shoes.domain.User;
 import com.shoes.repository.OrderRepository;
 import com.shoes.service.MailService;
 import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -17,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -154,7 +155,7 @@ public class OrderResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping("/admin/order-owner/{id}")
+    @GetMapping("/order-owner/{id}")
     public ResponseEntity<List<OrderDTO>> getOrderByOwnerId(Pageable pageable, @PathVariable Long id) {
         Page<OrderDTO> page = orderService.getOrderByOwnerId(id, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -223,5 +224,11 @@ public class OrderResource {
         byte[] byteArrayResource = this.orderService.getMailVerify(id);
         mailService.sendEmail1("hungndph26995@fpt.edu.vn", "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
         return ResponseEntity.ok(byteArrayResource);
+    }
+
+    @GetMapping("/users/find")
+    public ResponseEntity<?> findByLogin(@RequestParam Integer status, @RequestParam String login) {
+        List<Order> user = orderService.getOrderByStatusAndOwnerLogin(status, login);
+        return ResponseEntity.ok(user);
     }
 }
