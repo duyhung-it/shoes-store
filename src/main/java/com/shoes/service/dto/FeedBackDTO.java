@@ -3,11 +3,13 @@ package com.shoes.service.dto;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
+import lombok.Data;
 
 /**
  * A DTO for the {@link com.shoes.domain.FeedBack} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
+@Data
 public class FeedBackDTO implements Serializable {
 
     private Long id;
@@ -28,7 +30,7 @@ public class FeedBackDTO implements Serializable {
 
     private UserDTO user;
 
-    private ShoesDTO shoes;
+    private ShoesDetailsDTO shoes;
 
     public Long getId() {
         return id;
@@ -102,14 +104,6 @@ public class FeedBackDTO implements Serializable {
         this.user = user;
     }
 
-    public ShoesDTO getShoes() {
-        return shoes;
-    }
-
-    public void setShoes(ShoesDTO shoes) {
-        this.shoes = shoes;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -144,7 +138,7 @@ public class FeedBackDTO implements Serializable {
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             ", user=" + getUser() +
-            ", shoes=" + getShoes() +
+            ", shoes=" + shoes +
             "}";
     }
 }
