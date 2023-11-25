@@ -75,6 +75,7 @@ public class BrandServiceImpl implements BrandService {
         return brandMapper.toDto(brand);
     }
 
+
     /**
      * Partially update an existing brand.
      *
