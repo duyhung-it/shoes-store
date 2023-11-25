@@ -17,9 +17,10 @@ import org.springframework.stereotype.Repository;
 public interface CartDetailsRepository extends JpaRepository<CartDetails, Long> {
     List<CartDetails> findCartDetailsByCart(Cart cart);
 
-    @Query(value = "select cd.*,fu.path,sd.price,s.name as nameshoes," +
+    @Query(
+        value = "select cd.*,fu.path,sd.price,s.name as nameshoes," +
         "sz.name as namesize,c.name as namecolor,sd.id as shoesdetailid,sd.quantity as quantityShoesDetail," +
-        "s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n"+
+        "s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n" +
         "from cart_details cd\n" +
         "join shoes_details sd on cd.shoes_details_id = sd.id\n" +
         "join shoes s on  sd.shoes_id = s.id\n" +
@@ -34,8 +35,11 @@ public interface CartDetailsRepository extends JpaRepository<CartDetails, Long> 
         "    select * from shoes_file_upload_mapping\n" +
         ") sfum on sd.id = sfum.shoes_details_id\n" +
         "join file_upload fu on sfum.file_upload_id = fu.id \n" +
-        "where cd.cart_id = :idCart && rn =1",nativeQuery = true)
+        "where cd.cart_id = :idCart && rn =1",
+        nativeQuery = true
+    )
     List<CartDetailDTO> findCartDetailsByCart_Id(@Param("idCart") Long idCart);
 
     Long countByCart(Cart cart);
+    CartDetails findByIdAndStatus(long id, Integer status);
 }
