@@ -13,4 +13,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShoesRepository extends JpaRepository<Shoes, Long> {
     List<Shoes> findAllByStatus(Integer status);
+    Shoes findByIdAndStatus(Long id, Integer status);
 }

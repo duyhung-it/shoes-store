@@ -34,7 +34,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
     @Query(
         nativeQuery = true,
         value = "SELECT \n" +
-        "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName , " +
+        "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName ,sh.code as shoesCode, " +
         "sd.* ,\n" +
         "iu.path, \n" +
         "GROUP_CONCAT(distinct sz.id) as sizes,\n" +
@@ -131,7 +131,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         @Param("clid") Integer clid
     );
 
-    @Query(value = "select fu.path,sd.price,s.name,s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n" +
+    @Query(
+        value = "select fu.path,sd.price,s.name,s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n" +
         "from (\n" +
         "    WITH shoes_details AS (\n" +
         "        SELECT\n" +
@@ -158,7 +159,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         ") sfum on sd.id = sfum.shoes_details_id\n" +
         "join file_upload fu on sfum.file_upload_id = fu.id \n" +
         "ORDER BY sd.created_date DESC\n" +
-        "LIMIT 10;", nativeQuery = true)
+        "LIMIT 10;",
+        nativeQuery = true
+    )
     List<ShoesDetailDTOCustom> getNewShoesDetail();
 
     @Query(
