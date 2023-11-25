@@ -23,4 +23,6 @@ public interface ShopShoesDTO {
     String getSize_ids();
     String getSize_names();
     String getColor_names();
+    String getDiscount_amount();
+    String getDiscount_method();
 }

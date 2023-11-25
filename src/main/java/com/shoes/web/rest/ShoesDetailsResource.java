@@ -287,4 +287,10 @@ public class ShoesDetailsResource {
         List<ShoesDetailDTOCustom> shoesDetailsDTOs = shoesDetailsService.getNewShoesDetail();
         return ResponseEntity.ok().body(shoesDetailsDTOs);
     }
+
+    @GetMapping("/shoes-details/discount")
+    public ResponseEntity<List<ShopShoesDTO>> getShoesDiscount() {
+        List<ShopShoesDTO> shoesDetailsDTOs = shoesDetailsService.getDiscountShoes();
+        return ResponseEntity.ok().body(shoesDetailsDTOs);
+    }
 }
