@@ -1,19 +1,19 @@
 package com.shoes.web.rest;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.shoes.config.PaypalConfig;
-import com.shoes.repository.PaymentRepository;
+import com.shoes.config.Constants;
+import com.shoes.domain.*;
+import com.shoes.repository.*;
+import com.shoes.service.OrderService;
 import com.shoes.service.PaymentService;
 import com.shoes.service.dto.PaymentDTO;
+import com.shoes.service.mapper.OrderMapper;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -47,34 +46,131 @@ public class PaymentResource {
 
     private final PaymentService paymentService;
 
+    private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
+    private final OrderService orderService;
+    private final OrderMapper orderMapper;
+    private final OrderRepository orderRepository;
+    private final ShoesDetailsRepository shoesDetailsRepository;
+    private final OrderDetailsRepository orderDetailsRepository;
 
-    public PaymentResource(PaymentService paymentService, PaymentRepository paymentRepository) {
+    public PaymentResource(
+        PaymentService paymentService,
+        UserRepository userRepository,
+        PaymentRepository paymentRepository,
+        OrderService orderService,
+        OrderMapper orderMapper,
+        OrderRepository orderRepository,
+        ShoesDetailsRepository shoesDetailsRepository,
+        OrderDetailsRepository orderDetailsRepository
+    ) {
         this.paymentService = paymentService;
+        this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
+        this.orderService = orderService;
+        this.orderMapper = orderMapper;
+        this.orderRepository = orderRepository;
+        this.shoesDetailsRepository = shoesDetailsRepository;
+        this.orderDetailsRepository = orderDetailsRepository;
     }
 
     @GetMapping("/create-payment")
-    public ResponseEntity<?> newPayments(@RequestParam("price") long price) throws UnsupportedEncodingException {
-        String paymentUrl = paymentService.createPayment(price);
-        return ResponseEntity.status(HttpStatus.OK).body(paymentUrl);
+    public String newPayments(
+        @RequestParam("price") long price,
+        @RequestParam("receivedBy") String receivedBy,
+        @RequestParam("phone") String phone,
+        @RequestParam("email") String email,
+        @RequestParam("address") String address,
+        @RequestParam("shipPrice") long shipPrice,
+        @RequestParam("idOwner") long idOwner,
+        @RequestParam("arrSanPham") String arrSanPham,
+        @RequestParam("arrQuantity") String arrQuantity
+    ) throws UnsupportedEncodingException {
+        String paymentUrl = paymentService.createPayment(
+            price,
+            receivedBy,
+            phone,
+            email,
+            address,
+            shipPrice,
+            idOwner,
+            arrSanPham,
+            arrQuantity
+        );
+        return paymentUrl;
     }
 
-    @GetMapping("/vnpay-payment")
-    public ResponseEntity<?> GetMapping(HttpServletRequest request) {
+    @GetMapping("/payment-callback")
+    public void GetMapping(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int paymentStatus = paymentService.orderReturn(request);
-
         String orderInfo = request.getParameter("vnp_OrderInfo");
-        String paymentTime = request.getParameter("vnp_PayDate");
-        String transactionId = request.getParameter("vnp_TransactionNo");
-        String totalPrice = request.getParameter("vnp_Amount");
+        long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
+        String[] orderInfoParts = orderInfo.split("\\|");
+        if (orderInfoParts.length >= 9) {
+            String orderCode = orderInfoParts[0];
+            String receivedBy = orderInfoParts[1];
+            String phone = orderInfoParts[2];
+            String email = orderInfoParts[3];
+            String address = orderInfoParts[4];
+            long shipPrice = Long.parseLong(orderInfoParts[5]);
+            long idOwner = Long.parseLong(orderInfoParts[6]);
+            String arrSanPham = orderInfoParts[7];
+            String arrQuantity = orderInfoParts[8];
+            User owner = userRepository.findOneById(idOwner);
 
-        System.out.println(orderInfo);
-        System.out.println(paymentTime);
-        System.out.println(transactionId);
-        System.out.println(totalPrice);
-        System.out.println(paymentStatus);
-        return ResponseEntity.status(HttpStatus.OK).body(paymentStatus);
+            Payment payment = new Payment();
+            payment.setCode(orderCode);
+            payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
+            payment.setPaymentStatus(Constants.PAID_METHOD.OFF);
+            payment.setCreatedBy("system");
+            payment.setCreatedDate(Instant.now());
+            paymentRepository.save(payment);
+
+            Order order = new Order();
+            order.setCode(orderCode);
+            order.setAddress(address);
+            order.setPhone(phone);
+            order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
+            order.setShipPrice(BigDecimal.valueOf(shipPrice));
+            order.setTotalPrice(BigDecimal.valueOf(price));
+            order.setReceivedBy(receivedBy);
+            order.setStatus(2);
+            order.setCreatedBy("system");
+            order.setCreatedDate(Instant.now());
+            order.setOwner(owner);
+            order.setPayment(payment);
+            orderRepository.save(order);
+
+            String[] sanPhamParts = arrSanPham.split("a");
+            String[] quantityParts = arrQuantity.split("b");
+            List<OrderDetails> orderDetailsList = new ArrayList<>();
+            ShoesDetails shoesDetails;
+            OrderDetails orderDetails;
+            for (int i = 0; i < sanPhamParts.length; i++) {
+                orderDetails = new OrderDetails();
+                shoesDetails = new ShoesDetails();
+                long id = Long.parseLong(sanPhamParts[i]);
+                Integer quantity = Integer.valueOf(quantityParts[i]);
+                shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
+
+                orderDetails.setQuantity(quantity);
+                orderDetails.setPrice(shoesDetails.getPrice());
+                orderDetails.setStatus(1);
+                orderDetails.setCreatedBy("system");
+                orderDetails.setCreatedDate(Instant.now());
+                orderDetails.setOrder(order);
+                orderDetails.setShoesDetails(shoesDetails);
+                orderDetailsList.add(orderDetails);
+            }
+            orderDetailsRepository.saveAll(orderDetailsList);
+        } else {
+            System.out.println("Invalid vnp_OrderInfo format");
+        }
+        if (paymentStatus == 1) {
+            response.sendRedirect("http://localhost:4200/client/pay-success");
+        } else {
+            response.sendRedirect("http://localhost:4200/client/pay-faile");
+        }
     }
 
     @PostMapping("/payments")
