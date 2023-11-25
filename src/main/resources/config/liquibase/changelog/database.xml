@@ -634,14 +634,14 @@
     <!--
         Added the constraints for entity Order.
     -->
-    <changeSet id="20230919144051-2" author="jhipster">
+<!--        <changeSet id="20230919144051-2" author="jhipster">-->
 
-        <addForeignKeyConstraint baseColumnNames="owner_id"
-                                 baseTableName="jhi_order"
-                                 constraintName="fk_jhi_order__owner_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"/>
-    </changeSet>
+<!--        <addForeignKeyConstraint baseColumnNames="owner_id"-->
+<!--                                 baseTableName="jhi_order"-->
+<!--                                 constraintName="fk_jhi_order__owner_id"-->
+<!--                                 referencedColumnNames="id"-->
+<!--                                 referencedTableName="jhi_user"/>-->
+<!--    </changeSet>-->
     <!--
         Added the entity Payment.
     -->
@@ -1100,5 +1100,15 @@
                 <constraints nullable="true"/>
             </column>
         </addColumn>
+    </changeSet>
+    <changeSet  author="liquibase-docs"  id="20231121090531-11">
+        <dropForeignKeyConstraint
+            baseTableName="discount_shoes_details"
+            constraintName="fk_discount_shoes_details__shoes_details_id"/>
+        <addForeignKeyConstraint baseColumnNames="shoes_details_id"
+                                 baseTableName="discount_shoes_details"
+                                 constraintName="fk_discount_shoes_details__shoes_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="shoes"/>
     </changeSet>
 </databaseChangeLog>

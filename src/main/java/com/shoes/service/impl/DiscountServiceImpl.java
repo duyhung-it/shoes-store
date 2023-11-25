@@ -57,6 +57,20 @@ public class DiscountServiceImpl implements DiscountService {
         if (discountDTO.getStartDate().isAfter(discountDTO.getEndDate())) {
             throw new BadRequestAlertException("Ngày hiệu lực không được lớn hơn ngày hết hiệu lực", ENTITY_NAME, "date");
         }
+        if (Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discountDTO.getDiscountMethod())) {
+            if (discountDTO.getDiscountAmount().doubleValue() > 100 || discountDTO.getDiscountAmount().doubleValue() <= 0) {
+                throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
+            }
+        } else if (Constants.DISCOUNT_METHOD.PER_PERCENT.equals(discountDTO.getDiscountMethod())) {
+            for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
+                if (
+                    discountShoesDetails.getDiscountAmount().doubleValue() > 100 ||
+                    discountShoesDetails.getDiscountAmount().doubleValue() <= 0
+                ) {
+                    throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
+                }
+            }
+        }
         Discount discount = discountMapper.toDiscountEntity(discountDTO);
         discount.setCode(generateCode());
         discount.setStatus(Constants.STATUS.ACTIVE);
@@ -76,6 +90,15 @@ public class DiscountServiceImpl implements DiscountService {
                 discountShoesDetails.setStatus(Constants.STATUS.ACTIVE);
             }
         });
+        for (DiscountShoesDetails discountShoesDetails : discountShoesDetailsList) {
+            DiscountShoesDetails discountShoesDetails1 = discountShoesDetailsRepository.findByShoesIdAndStatus(
+                discountShoesDetails.getShoesDetails().getId(),
+                discountShoesDetails.getBrandId()
+            );
+            if (Objects.nonNull(discountShoesDetails1)) {
+                throw new BadRequestAlertException("Giày đã được sử dụng trong chương trình giảm giá khác!", ENTITY_NAME, "used");
+            }
+        }
         discountShoesDetailsRepository.saveAll(discountShoesDetailsList);
         return discountMapper.toDto(discount);
     }
@@ -104,6 +127,15 @@ public class DiscountServiceImpl implements DiscountService {
         discountShoesDetailsList.forEach(discountShoesDetails -> {
             discountShoesDetails.setLastModifiedBy(loggedUser);
         });
+        for (DiscountShoesDetails discountShoesDetails : discountShoesDetailsList) {
+            DiscountShoesDetails discountShoesDetails1 = discountShoesDetailsRepository.findByShoesIdAndStatus(
+                discountShoesDetails.getShoesDetails().getId(),
+                discountShoesDetails.getBrandId()
+            );
+            if (Objects.nonNull(discountShoesDetails1) && !Objects.equals(discountShoesDetails.getId(), discountShoesDetails1.getId())) {
+                throw new BadRequestAlertException("Giày đã được sử dụng trong chương trình giảm giá khác!", ENTITY_NAME, "used");
+            }
+        }
         discountShoesDetailsRepository.saveAll(discountShoesDetailsList);
         return discountMapper.toDto(discount);
     }

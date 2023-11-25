@@ -53,6 +53,7 @@ public class PaymentResource {
     private final OrderRepository orderRepository;
     private final ShoesDetailsRepository shoesDetailsRepository;
     private final OrderDetailsRepository orderDetailsRepository;
+    private final CartDetailsRepository cartDetailsRepository;
 
     public PaymentResource(
         PaymentService paymentService,
@@ -62,7 +63,8 @@ public class PaymentResource {
         OrderMapper orderMapper,
         OrderRepository orderRepository,
         ShoesDetailsRepository shoesDetailsRepository,
-        OrderDetailsRepository orderDetailsRepository
+        OrderDetailsRepository orderDetailsRepository,
+        CartDetailsRepository cartDetailsRepository
     ) {
         this.paymentService = paymentService;
         this.userRepository = userRepository;
@@ -72,6 +74,7 @@ public class PaymentResource {
         this.orderRepository = orderRepository;
         this.shoesDetailsRepository = shoesDetailsRepository;
         this.orderDetailsRepository = orderDetailsRepository;
+        this.cartDetailsRepository = cartDetailsRepository;
     }
 
     @GetMapping("/create-payment")
@@ -104,69 +107,75 @@ public class PaymentResource {
     public void GetMapping(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int paymentStatus = paymentService.orderReturn(request);
         String orderInfo = request.getParameter("vnp_OrderInfo");
+        System.out.println(orderInfo);
         long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
         String[] orderInfoParts = orderInfo.split("\\|");
-        if (orderInfoParts.length >= 9) {
-            String orderCode = orderInfoParts[0];
-            String receivedBy = orderInfoParts[1];
-            String phone = orderInfoParts[2];
-            String email = orderInfoParts[3];
-            String address = orderInfoParts[4];
-            long shipPrice = Long.parseLong(orderInfoParts[5]);
-            long idOwner = Long.parseLong(orderInfoParts[6]);
-            String arrSanPham = orderInfoParts[7];
-            String arrQuantity = orderInfoParts[8];
-            User owner = userRepository.findOneById(idOwner);
 
-            Payment payment = new Payment();
-            payment.setCode(orderCode);
-            payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
-            payment.setPaymentStatus(Constants.PAID_METHOD.OFF);
-            payment.setCreatedBy("system");
-            payment.setCreatedDate(Instant.now());
-            paymentRepository.save(payment);
-
-            Order order = new Order();
-            order.setCode(orderCode);
-            order.setAddress(address);
-            order.setPhone(phone);
-            order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
-            order.setShipPrice(BigDecimal.valueOf(shipPrice));
-            order.setTotalPrice(BigDecimal.valueOf(price));
-            order.setReceivedBy(receivedBy);
-            order.setStatus(2);
-            order.setCreatedBy("system");
-            order.setCreatedDate(Instant.now());
-            order.setOwner(owner);
-            order.setPayment(payment);
-            orderRepository.save(order);
-
-            String[] sanPhamParts = arrSanPham.split("a");
-            String[] quantityParts = arrQuantity.split("b");
-            List<OrderDetails> orderDetailsList = new ArrayList<>();
-            ShoesDetails shoesDetails;
-            OrderDetails orderDetails;
-            for (int i = 0; i < sanPhamParts.length; i++) {
-                orderDetails = new OrderDetails();
-                shoesDetails = new ShoesDetails();
-                long id = Long.parseLong(sanPhamParts[i]);
-                Integer quantity = Integer.valueOf(quantityParts[i]);
-                shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
-
-                orderDetails.setQuantity(quantity);
-                orderDetails.setPrice(shoesDetails.getPrice());
-                orderDetails.setStatus(1);
-                orderDetails.setCreatedBy("system");
-                orderDetails.setCreatedDate(Instant.now());
-                orderDetails.setOrder(order);
-                orderDetails.setShoesDetails(shoesDetails);
-                orderDetailsList.add(orderDetails);
-            }
-            orderDetailsRepository.saveAll(orderDetailsList);
-        } else {
-            System.out.println("Invalid vnp_OrderInfo format");
-        }
         if (paymentStatus == 1) {
+            if (orderInfoParts.length >= 9) {
+                String orderCode = orderInfoParts[0];
+                String receivedBy = orderInfoParts[1];
+                String phone = orderInfoParts[2];
+                String email = orderInfoParts[3];
+                String address = orderInfoParts[4];
+                long shipPrice = Long.parseLong(orderInfoParts[5]);
+                long idOwner = Long.parseLong(orderInfoParts[6]);
+                String arrSanPham = orderInfoParts[7];
+                String arrQuantity = orderInfoParts[8];
+                User owner = userRepository.findOneById(idOwner);
+
+                Payment payment = new Payment();
+                payment.setCode(orderCode);
+                payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
+                payment.setPaymentStatus(Constants.PAID_METHOD.ON);
+                payment.setCreatedBy("system");
+                payment.setCreatedDate(Instant.now());
+                paymentRepository.save(payment);
+
+                Order order = new Order();
+                order.setCode(orderCode);
+                order.setAddress(address);
+                order.setPhone(phone);
+                order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
+                order.setShipPrice(BigDecimal.valueOf(shipPrice));
+                order.setTotalPrice(BigDecimal.valueOf(price));
+                order.setReceivedBy(receivedBy);
+                order.setStatus(2);
+                order.setCreatedBy("system");
+                order.setCreatedDate(Instant.now());
+                order.setOwner(owner);
+                order.setPayment(payment);
+                orderRepository.save(order);
+
+                String[] sanPhamParts = arrSanPham.split("a");
+                String[] quantityParts = arrQuantity.split("b");
+                List<OrderDetails> orderDetailsList = new ArrayList<>();
+                ShoesDetails shoesDetails;
+                OrderDetails orderDetails;
+                CartDetails cartDetails;
+                for (int i = 0; i < sanPhamParts.length; i++) {
+                    orderDetails = new OrderDetails();
+                    long id = Long.parseLong(sanPhamParts[i]);
+                    System.out.println(id);
+                    Integer quantity = Integer.valueOf(quantityParts[i]);
+                    cartDetails = cartDetailsRepository.findByIdAndStatus(id, 1);
+                    shoesDetails = shoesDetailsRepository.findByIdAndStatus(cartDetails.getShoesDetails().getId(), 1);
+
+                    orderDetails.setQuantity(quantity);
+                    orderDetails.setPrice(shoesDetails.getPrice());
+                    orderDetails.setStatus(1);
+                    orderDetails.setCreatedBy("system");
+                    orderDetails.setCreatedDate(Instant.now());
+                    orderDetails.setOrder(order);
+                    orderDetails.setShoesDetails(shoesDetails);
+                    orderDetailsList.add(orderDetails);
+
+                    cartDetailsRepository.delete(cartDetails);
+                }
+                orderDetailsRepository.saveAll(orderDetailsList);
+            } else {
+                System.out.println("Invalid vnp_OrderInfo format");
+            }
             response.sendRedirect("http://localhost:4200/client/pay-success");
         } else {
             response.sendRedirect("http://localhost:4200/client/pay-faile");
