@@ -57,6 +57,20 @@ public class DiscountServiceImpl implements DiscountService {
         if (discountDTO.getStartDate().isAfter(discountDTO.getEndDate())) {
             throw new BadRequestAlertException("Ngày hiệu lực không được lớn hơn ngày hết hiệu lực", ENTITY_NAME, "date");
         }
+        if (Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discountDTO.getDiscountMethod())) {
+            if (discountDTO.getDiscountAmount().doubleValue() > 100 || discountDTO.getDiscountAmount().doubleValue() <= 0) {
+                throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
+            }
+        } else if (Constants.DISCOUNT_METHOD.PER_PERCENT.equals(discountDTO.getDiscountMethod())) {
+            for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
+                if (
+                    discountShoesDetails.getDiscountAmount().doubleValue() > 100 ||
+                    discountShoesDetails.getDiscountAmount().doubleValue() <= 0
+                ) {
+                    throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
+                }
+            }
+        }
         Discount discount = discountMapper.toDiscountEntity(discountDTO);
         discount.setCode(generateCode());
         discount.setStatus(Constants.STATUS.ACTIVE);
