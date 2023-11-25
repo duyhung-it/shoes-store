@@ -1,6 +1,7 @@
 package com.shoes.service.impl;
 
 import com.shoes.config.Constants;
+import com.shoes.domain.Color;
 import com.shoes.domain.Shoes;
 import com.shoes.domain.ShoesDetails;
 import com.shoes.repository.ShoesDetailsRepository;
@@ -43,6 +44,7 @@ public class ShoesServiceImpl implements ShoesService {
     public ShoesDTO save(ShoesDTO shoesDTO) {
         log.debug("Request to save Shoes : {}", shoesDTO);
         Shoes shoes = shoesMapper.toEntity(shoesDTO);
+        shoes.setStatus(1);
         shoes = shoesRepository.save(shoes);
         return shoesMapper.toDto(shoes);
     }
@@ -51,6 +53,7 @@ public class ShoesServiceImpl implements ShoesService {
     public ShoesDTO update(ShoesDTO shoesDTO) {
         log.debug("Request to update Shoes : {}", shoesDTO);
         Shoes shoes = shoesMapper.toEntity(shoesDTO);
+        shoes.setStatus(1);
         shoes = shoesRepository.save(shoes);
         return shoesMapper.toDto(shoes);
     }
@@ -129,6 +132,16 @@ public class ShoesServiceImpl implements ShoesService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Shoes : {}", id);
-        shoesRepository.deleteById(id);
+
+        // Find the Color entity by ID
+        Optional<Shoes> optionalColor = shoesRepository.findById(id);
+
+        // Check if the Color entity exists
+        if (optionalColor.isPresent()) {
+            // Update the status to 0 (inactive) instead of deleting
+            Shoes shoes = optionalColor.get();
+            shoes.setStatus(0);
+            shoesRepository.save(shoes);
+        }
     }
 }
