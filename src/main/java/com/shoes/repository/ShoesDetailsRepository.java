@@ -85,7 +85,12 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    sd.*,\n" +
         "    CONCAT(sh.name, ' ', br.name) as name,\n" +
         "    iu.path,\n" +
-        "    GROUP_CONCAT(iu.path) as paths\n" +
+        "    GROUP_CONCAT(iu.path) as paths ,\n" +
+        "    (SELECT CAST(COALESCE(avg(fb.rate), 5) AS SIGNED)\n" +
+        "FROM feed_back fb\n" +
+        "JOIN shoes_details ad ON fb.shoes_id = ad.id\n" +
+        "JOIN jhi_user u ON fb.user_id = u.id\n" +
+        "WHERE ad.shoes_id = :shid AND sd.brand_id = :brid AND fb.status = 1 ) as rating\n" +
         "FROM\n" +
         "    (\n" +
         "        SELECT\n" +
@@ -125,7 +130,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         @Param("clid") Integer clid
     );
 
-    @Query(value = "SELECT b.*,p.path\n" +
+    @Query(
+        value = "SELECT b.*,p.path\n" +
         "FROM file_upload p\n" +
         "join (\n" +
         "    WITH shoes_file_upload_mapping AS (\n" +
@@ -151,7 +157,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "FROM shoes_details\n" +
         "WHERE rn = 1\n" +
         ") b ON s.shoes_details_id = b.id\n" +
-        "order by created_date desc limit 10", nativeQuery = true)
+        "order by created_date desc limit 10",
+        nativeQuery = true
+    )
     List<ShoesDetails> getNewShoesDetail();
 
     @Query(

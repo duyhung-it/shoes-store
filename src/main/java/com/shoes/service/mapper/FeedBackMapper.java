@@ -14,7 +14,6 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface FeedBackMapper extends EntityMapper<FeedBackDTO, FeedBack> {
     @Mapping(target = "user", source = "user", qualifiedByName = "userId")
-    @Mapping(target = "shoes", source = "shoes", qualifiedByName = "shoesId")
     FeedBackDTO toDto(FeedBack s);
 
     @Named("userId")

@@ -3,6 +3,7 @@ package com.shoes.web.rest;
 import com.shoes.repository.FeedBackRepository;
 import com.shoes.service.FeedBackService;
 import com.shoes.service.dto.FeedBackDTO;
+import com.shoes.service.dto.ShoesFeedBackDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -177,5 +178,11 @@ public class FeedBackResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/shop/feed-back")
+    public ResponseEntity<List<ShoesFeedBackDTO>> getAllFeedBacks(@RequestParam Integer shid, @RequestParam Integer brid) {
+        log.debug("REST request to get a page of FeedBacks");
+        return ResponseEntity.ok().body(feedBackRepository.findAllFeedBackByShoesAndBrandDTO(shid, brid));
     }
 }
