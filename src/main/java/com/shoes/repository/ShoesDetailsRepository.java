@@ -34,7 +34,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
     @Query(
         nativeQuery = true,
         value = "SELECT \n" +
-        "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName , " +
+        "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName ,sh.code as shoesCode, " +
         "sd.* ,\n" +
         "iu.path, \n" +
         "GROUP_CONCAT(distinct sz.id) as sizes,\n" +
@@ -57,16 +57,16 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    AND sd.brand_id = min_prices.brand_id\n" +
         "    AND sd.price = min_prices.lowest_price\n" +
         "    AND sd.size_id in (:idSizes)" +
-        "JOIN\n" +
+        "LEFT JOIN\n" +
         "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
-        "JOIN\n" +
+        "LEFT JOIN\n" +
         "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n " +
         "AND iu.status = 1 " +
         "JOIN\n" +
         "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
         "JOIN\n " +
         "    `shoes-store`.brand br ON sd.brand_id = br.id\n " +
-        " JOIN\n" +
+        "JOIN\n" +
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
         "`shoes-store`.color cl ON sd.color_id = cl.id\n " +
@@ -122,7 +122,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "JOIN `shoes-store`.size sz ON sd.size_id = sz.id and (:siid IS NULL OR sz.id = :siid) \n" +
         "JOIN `shoes-store`.color cl ON sd.color_id = cl.id and cl.id = :clid \n" +
         "WHERE\n" +
-        "    sd.brand_id = :brid and sd.shoes_id = :shid and sd.status = 1;\n"
+        "sd.brand_id = :brid and sd.shoes_id = :shid and sd.status = 1;\n"
     )
     ShopShoesDTO findDistinctByShoesAndBrandOrderBySellPriceDescOne(
         @Param("shid") Integer shid,
@@ -131,7 +131,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         @Param("clid") Integer clid
     );
 
-    @Query(value = "select fu.path,sd.price,s.name,s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n" +
+    @Query(
+        value = "select fu.path,sd.price,s.name,s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n" +
         "from (\n" +
         "    WITH shoes_details AS (\n" +
         "        SELECT\n" +
@@ -158,7 +159,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         ") sfum on sd.id = sfum.shoes_details_id\n" +
         "join file_upload fu on sfum.file_upload_id = fu.id \n" +
         "ORDER BY sd.created_date DESC\n" +
-        "LIMIT 10;", nativeQuery = true)
+        "LIMIT 10;",
+        nativeQuery = true
+    )
     List<ShoesDetailDTOCustom> getNewShoesDetail();
 
     @Query(
@@ -171,4 +174,35 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         nativeQuery = true
     )
     List<ShoesDetails> getTopBestSelling();
+
+    @Query(
+        value = "SELECT\n" +
+        "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName , \n" +
+        "sd.*,\n" +
+        "iu.path,\n" +
+        "case \n" +
+        "\twhen d.discount_method = 1 or d.discount_method = 2 then d.discount_amount\n" +
+        "\twhen d.discount_method = 3 or d.discount_method = 4 then dsd.discount_amount\n" +
+        "end as discount_amount,\n" +
+        "d.discount_method\n" +
+        "FROM\n" +
+        "`shoes-store`.shoes_details sd\n" +
+        "JOIN \n" +
+        "    `shoes-store`.brand br ON sd.brand_id = br.id \n" +
+        "join `shoes-store`.discount_shoes_details dsd\n" +
+        "on dsd.shoes_details_id = sd.shoes_id and dsd.status = 1 and dsd.brand_id = br.id\n" +
+        "join `shoes-store`.discount d \n" +
+        "on dsd.discount_id = d.id and d.start_date <= now() and d.end_date >= now() and d.status = 1\n" +
+        "JOIN\n" +
+        "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
+        "JOIN\n" +
+        "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id \n" +
+        "AND iu.status = 1 \n" +
+        "JOIN\n" +
+        "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
+        "WHERE sd.status = 1 \n" +
+        "group by sh.id ,br.id",
+        nativeQuery = true
+    )
+    List<ShopShoesDTO> getShoesDiscount();
 }

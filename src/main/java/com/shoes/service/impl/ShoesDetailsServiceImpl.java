@@ -5,6 +5,7 @@ import com.shoes.repository.ShoesDetailsRepository;
 import com.shoes.service.ShoesDetailsService;
 import com.shoes.service.dto.ShoesDetailDTOCustom;
 import com.shoes.service.dto.ShoesDetailsDTO;
+import com.shoes.service.dto.ShopShoesDTO;
 import com.shoes.service.mapper.ShoesDetailsMapper;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,5 +93,10 @@ public class ShoesDetailsServiceImpl implements ShoesDetailsService {
     @Override
     public List<ShoesDetailDTOCustom> getNewShoesDetail() {
         return shoesDetailsRepository.getNewShoesDetail();
+    }
+
+    @Override
+    public List<ShopShoesDTO> getDiscountShoes() {
+        return shoesDetailsRepository.getShoesDiscount();
     }
 }

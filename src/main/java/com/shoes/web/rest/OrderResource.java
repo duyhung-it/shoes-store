@@ -1,6 +1,7 @@
 package com.shoes.web.rest;
 
 import com.shoes.domain.Order;
+import com.shoes.domain.User;
 import com.shoes.repository.OrderRepository;
 import com.shoes.service.MailService;
 import com.shoes.service.OrderService;
