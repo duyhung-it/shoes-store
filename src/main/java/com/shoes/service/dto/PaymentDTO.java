@@ -20,8 +20,6 @@ public class PaymentDTO implements Serializable {
 
     private Integer status;
 
-    private String url;
-
     private String createdBy;
 
     private Instant createdDate;
@@ -102,14 +100,6 @@ public class PaymentDTO implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -140,7 +130,6 @@ public class PaymentDTO implements Serializable {
             ", paymentMethod=" + getPaymentMethod() +
             ", paymentStatus=" + getPaymentStatus() +
             ", status=" + getStatus() +
-            ", url=" + getUrl() +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +

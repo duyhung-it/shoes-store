@@ -1,5 +1,6 @@
 package com.shoes.service;
 
+import com.shoes.domain.Order;
 import com.shoes.service.dto.PaymentDTO;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
@@ -58,7 +59,17 @@ public interface PaymentService {
      */
     void delete(Long id);
 
-    String createPayment(long price) throws UnsupportedEncodingException;
+    String createPayment(
+        long price,
+        String receivedBy,
+        String phone,
+        String email,
+        String address,
+        long shipPrice,
+        long idOwner,
+        String arrSanPham,
+        String arrQuantity
+    ) throws UnsupportedEncodingException;
 
     int orderReturn(HttpServletRequest request);
 }
