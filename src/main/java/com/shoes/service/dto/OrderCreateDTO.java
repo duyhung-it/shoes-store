@@ -23,7 +23,7 @@ public class OrderCreateDTO {
 
     private String code;
 
-    @NotNull
+    //    @NotNull
     private AddressDTO userAddress;
 
     @NotBlank
@@ -41,7 +41,7 @@ public class OrderCreateDTO {
     private String receivedBy;
 
     private String receivedDate;
-
+    private String address;
     private String shippedDate;
 
     private Integer status;

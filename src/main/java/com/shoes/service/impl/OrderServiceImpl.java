@@ -64,14 +64,14 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Request to save Order : {}", orderDTO);
 
         Order order = orderMapper.toOrderEntity(orderDTO);
-        Address address = addressMapper.toEntity(orderDTO.getUserAddress());
-        address.setStatus(Constants.STATUS.ACTIVE);
-        address.setCreatedBy(loggedUser);
-        address.setLastModifiedBy(loggedUser);
-        order.setUserAddress(addressRepository.save(address));
+        //        Address address = addressMapper.toEntity(orderDTO.getUserAddress());
+        //        address.setStatus(Constants.STATUS.ACTIVE);
+        //        address.setCreatedBy(loggedUser);
+        //        address.setLastModifiedBy(loggedUser);
+        //        order.setUserAddress(addressRepository.save(address));
         if (Objects.isNull(order.getId())) {
             order.setCreatedBy(loggedUser);
-            order.setStatus(Constants.ORDER_STATUS.PENDING_CHECKOUT);
+            order.setStatus(Constants.ORDER_STATUS.PENDING);
             order.setCode(this.generateCode());
         }
         order.setLastModifiedBy(loggedUser);
