@@ -4,9 +4,11 @@ import com.shoes.config.Constants;
 import com.shoes.domain.Brand;
 import com.shoes.domain.Discount;
 import com.shoes.domain.DiscountShoesDetails;
+import com.shoes.domain.Shoes;
 import com.shoes.repository.BrandRepository;
 import com.shoes.repository.DiscountRepository;
 import com.shoes.repository.DiscountShoesDetailsRepository;
+import com.shoes.repository.ShoesRepository;
 import com.shoes.service.DiscountService;
 import com.shoes.service.dto.*;
 import com.shoes.service.mapper.DiscountMapper;
@@ -49,6 +51,7 @@ public class DiscountServiceImpl implements DiscountService {
     private static final String ENTITY_NAME = "discount";
     private final String baseCode = "KM";
     private final BrandRepository brandRepository;
+    private final ShoesRepository shoesRepository;
 
     @Override
     public DiscountDTO save(DiscountCreateDTO discountDTO) {
@@ -71,7 +74,16 @@ public class DiscountServiceImpl implements DiscountService {
                 }
             }
         }
-        Discount discount = discountMapper.toDiscountEntity(discountDTO);
+        Discount discount = discountRepository.findByIdAndStatus(discountDTO.getId(), Constants.STATUS.ACTIVE);
+        if (Objects.nonNull(discount)) {
+            if (
+                discount.getStartDate().isBefore(DataUtils.getCurrentDateTime()) &&
+                discount.getEndDate().isAfter(DataUtils.getCurrentDateTime())
+            ) {
+                throw new BadRequestAlertException("Bạn không thể cập nhật chương trình khuyến mãi này!", ENTITY_NAME, "date");
+            }
+        }
+        discount = discountMapper.toDiscountEntity(discountDTO);
         discount.setCode(generateCode());
         discount.setStatus(Constants.STATUS.ACTIVE);
         discount.setCreatedBy(loggedUser);
@@ -82,21 +94,30 @@ public class DiscountServiceImpl implements DiscountService {
             .stream()
             .map(this::mapDiscountShoesDetails)
             .collect(Collectors.toList());
-        discountShoesDetailsList.forEach(discountShoesDetails -> {
+        for (DiscountShoesDetails discountShoesDetails : discountShoesDetailsList) {
             discountShoesDetails.setLastModifiedBy(loggedUser);
             discountShoesDetails.setDiscount(discount);
             if (Objects.isNull(discountShoesDetails.getId())) {
                 discountShoesDetails.setCreatedBy(loggedUser);
                 discountShoesDetails.setStatus(Constants.STATUS.ACTIVE);
             }
-        });
+        }
         for (DiscountShoesDetails discountShoesDetails : discountShoesDetailsList) {
             DiscountShoesDetails discountShoesDetails1 = discountShoesDetailsRepository.findByShoesIdAndStatus(
                 discountShoesDetails.getShoesDetails().getId(),
                 discountShoesDetails.getBrandId()
             );
-            if (Objects.nonNull(discountShoesDetails1)) {
-                throw new BadRequestAlertException("Giày đã được sử dụng trong chương trình giảm giá khác!", ENTITY_NAME, "used");
+            if (Objects.nonNull(discountShoesDetails1) && !Objects.equals(discountShoesDetails.getId(), discountShoesDetails1.getId())) {
+                Brand brand = brandRepository.findByIdAndStatus(discountShoesDetails.getBrandId(), Constants.STATUS.ACTIVE);
+                Shoes shoes = shoesRepository.findByIdAndStatus(discountShoesDetails.getShoesDetails().getId(), Constants.STATUS.ACTIVE);
+                throw new BadRequestAlertException(
+                    "Giày đã được sử dụng trong chương trình giảm giá khác! Mã: " +
+                    (shoes == null ? "" : shoes.getCode()) +
+                    " - " +
+                    (brand == null ? "" : brand.getName()),
+                    ENTITY_NAME,
+                    "used"
+                );
             }
         }
         discountShoesDetailsRepository.saveAll(discountShoesDetailsList);
@@ -117,7 +138,31 @@ public class DiscountServiceImpl implements DiscountService {
     public DiscountDTO update(DiscountCreateDTO discountDTO, Long id) {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         log.debug("Request to update Discount : {}", discountDTO);
-        Discount discount = discountMapper.toDiscountEntity(discountDTO);
+        if (discountDTO.getStartDate().isAfter(discountDTO.getEndDate())) {
+            throw new BadRequestAlertException("Ngày hiệu lực không được lớn hơn ngày hết hiệu lực", ENTITY_NAME, "date");
+        }
+        if (Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discountDTO.getDiscountMethod())) {
+            if (discountDTO.getDiscountAmount().doubleValue() > 100 || discountDTO.getDiscountAmount().doubleValue() <= 0) {
+                throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
+            }
+        } else if (Constants.DISCOUNT_METHOD.PER_PERCENT.equals(discountDTO.getDiscountMethod())) {
+            for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
+                if (
+                    discountShoesDetails.getDiscountAmount().doubleValue() > 100 ||
+                    discountShoesDetails.getDiscountAmount().doubleValue() <= 0
+                ) {
+                    throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
+                }
+            }
+        }
+        Discount discount = discountRepository.findByIdAndStatus(id, Constants.STATUS.ACTIVE);
+        if (
+            discount.getStartDate().isBefore(DataUtils.getCurrentDateTime()) &&
+            discount.getEndDate().isAfter(DataUtils.getCurrentDateTime())
+        ) {
+            throw new BadRequestAlertException("Bạn không thể cập nhật chương trình khuyến mãi này!", ENTITY_NAME, "date");
+        }
+        discount = discountMapper.toDiscountEntity(discountDTO);
         discount.setId(id);
         discount.setLastModifiedBy(loggedUser);
         discountRepository.save(discount);

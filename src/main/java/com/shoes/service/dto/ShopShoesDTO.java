@@ -8,6 +8,8 @@ public interface ShopShoesDTO {
     String getName();
     String getCode();
     String getBrandName();
+    String getShoesCode();
+
     Integer getQuantity();
     BigDecimal getPrice();
     Integer getRating();

@@ -34,6 +34,12 @@ public final class Constants {
         public static final Integer CREDIT = 2;
     }
 
+    public static class PAYMENT_STATUS {
+
+        public static final Integer DONE = 1;
+        public static final Integer NONE = 2;
+    }
+
     public static class PAID_METHOD {
 
         public static final Integer OFF = 1;
