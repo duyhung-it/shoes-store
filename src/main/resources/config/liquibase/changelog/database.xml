@@ -1083,18 +1083,16 @@
         <dropDefaultValue tableName="feed_back" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <changeSet id="20231121090531-2" author="jhipster">
-
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="feed_back"
                                  constraintName="fk_feed_back__user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"/>
-
-        <addForeignKeyConstraint baseColumnNames="shoes_id"
-                                 baseTableName="feed_back"
-                                 constraintName="fk_feed_back__shoes_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="shoes"/>
+            <addForeignKeyConstraint baseColumnNames="shoes_id"
+                                     baseTableName="feed_back"
+                                     constraintName="fk_feed_back__shoes_details_id"
+                                     referencedColumnNames="id"
+                                     referencedTableName="shoes_details"/>
     </changeSet>
     <changeSet id="20231121090531-10" author="jhipster">
         <addColumn tableName="discount_shoes_details">
