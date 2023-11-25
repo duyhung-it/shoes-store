@@ -158,6 +158,14 @@ public class UserService {
         return userRepository.findOneByEmailIgnoreCase(email);
     }
 
+    public UserDTO findOneById(long id) {
+        User user = userRepository.findOneById(id);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setLogin(user.getLogin());
+        return userDTO;
+    }
+
     public User createUser(AdminUserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin().toLowerCase());

@@ -283,8 +283,8 @@ public class ShoesDetailsResource {
     }
 
     @GetMapping("/shoes-details/new")
-    public ResponseEntity<List<ShoesDetailsDTO>> getNewShoesDetail() {
-        List<ShoesDetailsDTO> shoesDetailsDTOs = shoesDetailsService.getNewShoesDetail();
+    public ResponseEntity<List<ShoesDetailDTOCustom>> getNewShoesDetail() {
+        List<ShoesDetailDTOCustom> shoesDetailsDTOs = shoesDetailsService.getNewShoesDetail();
         return ResponseEntity.ok().body(shoesDetailsDTOs);
     }
 }

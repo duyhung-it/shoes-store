@@ -50,4 +50,40 @@ public class OrderDTO implements Serializable {
 
     private UserDTO owner;
     private AddressDTO userAddress;
+
+    public OrderDTO(
+        String code,
+        String address,
+        String phone,
+        Integer paymentMethod,
+        BigDecimal shipPrice,
+        BigDecimal totalPrice,
+        String receivedBy,
+        Instant receivedDate,
+        Instant shippedDate,
+        Integer status,
+        String createdBy,
+        Instant createdDate,
+        String lastModifiedBy,
+        Instant lastModifiedDate,
+        UserDTO owner,
+        AddressDTO userAddress
+    ) {
+        this.code = code;
+        this.address = address;
+        this.phone = phone;
+        this.paymentMethod = paymentMethod;
+        this.shipPrice = shipPrice;
+        this.totalPrice = totalPrice;
+        this.receivedBy = receivedBy;
+        this.receivedDate = receivedDate;
+        this.shippedDate = shippedDate;
+        this.status = status;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedDate = lastModifiedDate;
+        this.owner = owner;
+        this.userAddress = userAddress;
+    }
 }

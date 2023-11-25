@@ -1,6 +1,7 @@
 package com.shoes.service.impl;
 
 import com.shoes.config.PaypalConfig;
+import com.shoes.domain.Order;
 import com.shoes.domain.Payment;
 import com.shoes.repository.PaymentRepository;
 import com.shoes.service.PaymentService;
@@ -89,7 +90,17 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public String createPayment(long price) throws UnsupportedEncodingException {
+    public String createPayment(
+        long price,
+        String receivedBy,
+        String phone,
+        String email,
+        String address,
+        long shipPrice,
+        long idOwner,
+        String arrSanPham,
+        String arrQuantity
+    ) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -110,7 +121,26 @@ public class PaymentServiceImpl implements PaymentService {
 
         vnp_Params.put("vnp_BankCode", bankCode);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put(
+            "vnp_OrderInfo",
+            vnp_TxnRef +
+            "|" +
+            receivedBy +
+            "|" +
+            phone +
+            "|" +
+            email +
+            "|" +
+            address +
+            "|" +
+            shipPrice +
+            "|" +
+            idOwner +
+            "|" +
+            arrSanPham +
+            "|" +
+            arrQuantity
+        );
         vnp_Params.put("vnp_OrderType", orderType);
 
         vnp_Params.put("vnp_Locale", "vn");

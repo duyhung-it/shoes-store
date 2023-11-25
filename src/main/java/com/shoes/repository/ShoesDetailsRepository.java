@@ -1,6 +1,7 @@
 package com.shoes.repository;
 
 import com.shoes.domain.ShoesDetails;
+import com.shoes.service.dto.ShoesDetailDTOCustom;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import com.shoes.service.dto.ShopShoesDTO;
 import java.util.List;
@@ -130,37 +131,35 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         @Param("clid") Integer clid
     );
 
-    @Query(
-        value = "SELECT b.*,p.path\n" +
-        "FROM file_upload p\n" +
-        "join (\n" +
-        "    WITH shoes_file_upload_mapping AS (\n" +
-        "    SELECT \n" +
-        "        *,\n" +
-        "        ROW_NUMBER() OVER(PARTITION BY shoes_details_id  ORDER BY id desc) AS rn\n" +
-        "    FROM \n" +
-        "        shoes_file_upload_mapping\n" +
-        "        )\n" +
-        "        SELECT * \n" +
-        "FROM shoes_file_upload_mapping\n" +
-        "WHERE rn = 1\n" +
-        ") s on p.id = s.file_upload_id\n" +
-        "JOIN (\n" +
+    @Query(value = "select fu.path,sd.price,s.name,s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb\n" +
+        "from (\n" +
         "    WITH shoes_details AS (\n" +
-        "    SELECT \n" +
-        "        *,\n" +
-        "        ROW_NUMBER() OVER(PARTITION BY shoes_id, brand_id ORDER BY id desc) AS rn\n" +
-        "    FROM \n" +
-        "        shoes_details\n" +
-        ")\n" +
-        "SELECT * \n" +
-        "FROM shoes_details\n" +
-        "WHERE rn = 1\n" +
-        ") b ON s.shoes_details_id = b.id\n" +
-        "order by created_date desc limit 10",
-        nativeQuery = true
-    )
-    List<ShoesDetails> getNewShoesDetail();
+        "        SELECT\n" +
+        "            *,\n" +
+        "            ROW_NUMBER() OVER(PARTITION BY shoes_id, brand_id ORDER BY id DESC) AS rn\n" +
+        "        FROM\n" +
+        "            shoes_details\n" +
+        "    )\n" +
+        "    SELECT *\n" +
+        "    FROM shoes_details\n" +
+        "    WHERE rn = 1\n" +
+        ") sd\n" +
+        "join shoes s on  sd.shoes_id = s.id\n" +
+        "join size sz on sd.size_id = sz.id\n" +
+        "join color c on sd.color_id = c.id\n" +
+        "join brand b on sd.brand_id = b.id\n" +
+        "join (\n" +
+        "\twith shoes_file_upload_mapping as(\n" +
+        "\t\tselect * ,row_number() over(partition by shoes_details_id order by id) as rn\n" +
+        "        from shoes_file_upload_mapping\n" +
+        "    )\n" +
+        "    select * from shoes_file_upload_mapping\n" +
+        "    where rn = 1\n" +
+        ") sfum on sd.id = sfum.shoes_details_id\n" +
+        "join file_upload fu on sfum.file_upload_id = fu.id \n" +
+        "ORDER BY sd.created_date DESC\n" +
+        "LIMIT 10;", nativeQuery = true)
+    List<ShoesDetailDTOCustom> getNewShoesDetail();
 
     @Query(
         value = "select sd.*  from order_details od \n" +
