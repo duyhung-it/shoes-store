@@ -2,6 +2,7 @@ package com.shoes.service;
 
 import com.shoes.service.dto.ShoesDetailDTOCustom;
 import com.shoes.service.dto.ShoesDetailsDTO;
+import com.shoes.service.dto.ShopShoesDTO;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -61,4 +62,5 @@ public interface ShoesDetailsService {
     void deleteSoft(Long id);
 
     List<ShoesDetailDTOCustom> getNewShoesDetail();
+    List<ShopShoesDTO> getDiscountShoes();
 }
