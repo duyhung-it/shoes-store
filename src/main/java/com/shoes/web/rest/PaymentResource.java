@@ -140,7 +140,7 @@ public class PaymentResource {
                 order.setShipPrice(BigDecimal.valueOf(shipPrice));
                 order.setTotalPrice(BigDecimal.valueOf(price));
                 order.setReceivedBy(receivedBy);
-                order.setStatus(2);
+                order.setStatus(Constants.ORDER_STATUS.PENDING);
                 order.setCreatedBy("system");
                 order.setCreatedDate(Instant.now());
                 order.setOwner(owner);
@@ -160,7 +160,6 @@ public class PaymentResource {
                     Integer quantity = Integer.valueOf(quantityParts[i]);
                     cartDetails = cartDetailsRepository.findByIdAndStatus(id, 1);
                     shoesDetails = shoesDetailsRepository.findByIdAndStatus(cartDetails.getShoesDetails().getId(), 1);
-
                     orderDetails.setQuantity(quantity);
                     orderDetails.setPrice(shoesDetails.getPrice());
                     orderDetails.setStatus(1);
@@ -169,7 +168,6 @@ public class PaymentResource {
                     orderDetails.setOrder(order);
                     orderDetails.setShoesDetails(shoesDetails);
                     orderDetailsList.add(orderDetails);
-
                     cartDetailsRepository.delete(cartDetails);
                 }
                 orderDetailsRepository.saveAll(orderDetailsList);
