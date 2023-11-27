@@ -9,7 +9,6 @@ public interface ShopShoesDTO {
     String getCode();
     String getBrandName();
     String getShoesCode();
-
     Integer getQuantity();
     BigDecimal getPrice();
     Integer getRating();
@@ -27,4 +26,5 @@ public interface ShopShoesDTO {
     String getColor_names();
     String getDiscount_amount();
     String getDiscount_method();
+    String getDiscount_name();
 }

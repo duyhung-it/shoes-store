@@ -40,7 +40,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct sz.id) as sizes,\n" +
         "GROUP_CONCAT(distinct cl.id) as colors,\n " +
         "GROUP_CONCAT(distinct cl.name) as color_names ," +
-        "GROUP_CONCAT(distinct iu.path) as paths " +
+        "GROUP_CONCAT(distinct iu.path) as paths ," +
+        " d.name as discount_name " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
         "JOIN (\n" +
@@ -62,10 +63,14 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "LEFT JOIN\n" +
         "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n " +
         "AND iu.status = 1 " +
-        "JOIN\n" +
-        "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
         "JOIN\n " +
         "    `shoes-store`.brand br ON sd.brand_id = br.id\n " +
+        "JOIN\n" +
+        "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
+        "left join `shoes-store`.discount_shoes_details dsd\n" +
+        "on dsd.shoes_details_id = sd.shoes_id and dsd.status = 1 and dsd.brand_id = br.id\n" +
+        "left join `shoes-store`.discount d \n" +
+        "on dsd.discount_id = d.id and d.start_date <= now() and d.end_date >= now() and d.status = 1\n" +
         "JOIN\n" +
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
@@ -179,7 +184,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         value = "SELECT\n" +
         "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName , \n" +
         "sd.*,\n" +
-        "iu.path,\n" +
+        "iu.path," +
+        "d.name as discount_name ,\n" +
         "case \n" +
         "\twhen d.discount_method = 1 or d.discount_method = 2 then d.discount_amount\n" +
         "\twhen d.discount_method = 3 or d.discount_method = 4 then dsd.discount_amount\n" +
