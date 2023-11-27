@@ -214,7 +214,7 @@ public class OrderResource {
     }
 
     @GetMapping("/orders/cancel/{id}")
-    public ResponseEntity<Void> cancelOrder(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> cancelOrder(@PathVariable("id") List<Long> id) {
         this.orderService.cancelOrder(id);
         return ResponseEntity.ok().build();
     }

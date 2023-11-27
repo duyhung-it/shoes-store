@@ -1101,6 +1101,7 @@
             </column>
         </addColumn>
     </changeSet>
+
     <changeSet  author="liquibase-docs"  id="20231121090531-11">
         <dropForeignKeyConstraint
             baseTableName="discount_shoes_details"
@@ -1110,5 +1111,24 @@
                                  constraintName="fk_discount_shoes_details__shoes_details_id"
                                  referencedColumnNames="id"
                                  referencedTableName="shoes"/>
+    </changeSet>
+    <changeSet id="20231121090531-12" author="jhipster">
+        <addColumn tableName="jhi_order">
+            <column name="emailAddress" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="20231121090531-13" author="jhipster">
+        <dropColumn tableName="jhi_order">
+            <column name="emailAddress" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </dropColumn>
+        <addColumn tableName="jhi_order">
+            <column name="email_address" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

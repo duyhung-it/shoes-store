@@ -121,30 +121,30 @@ public class PaymentServiceImpl implements PaymentService {
 
         vnp_Params.put("vnp_BankCode", bankCode);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put(
-            "vnp_OrderInfo",
-            vnp_TxnRef +
-            "|" +
-            receivedBy +
-            "|" +
-            phone +
-            "|" +
-            email +
-            "|" +
-            address +
-            "|" +
-            shipPrice +
-            "|" +
-            idOwner +
-            "|" +
-            arrSanPham +
-            "|" +
-            arrQuantity
-        );
+        vnp_Params.put("vnp_OrderInfo", vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
 
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", PaypalConfig.vnp_ReturnUrl);
+        vnp_Params.put(
+            "vnp_ReturnUrl",
+            PaypalConfig.vnp_ReturnUrl +
+            "?order=" +
+            receivedBy +
+            "_" +
+            phone +
+            "_" +
+            email +
+            "_" +
+            address +
+            "_" +
+            shipPrice +
+            "_" +
+            idOwner +
+            "_" +
+            arrSanPham +
+            "_" +
+            arrQuantity
+        );
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -203,7 +203,7 @@ public class PaymentServiceImpl implements PaymentService {
                 fields.put(fieldName, fieldValue);
             }
         }
-
+        System.out.println(fields);
         String vnp_SecureHash = request.getParameter("vnp_SecureHash");
         if (fields.containsKey("vnp_SecureHashType")) {
             fields.remove("vnp_SecureHashType");
@@ -211,7 +211,10 @@ public class PaymentServiceImpl implements PaymentService {
         if (fields.containsKey("vnp_SecureHash")) {
             fields.remove("vnp_SecureHash");
         }
+        System.out.println(fields);
         String signValue = PaypalConfig.hashAllFields(fields);
+        System.out.println(signValue);
+        System.out.println(vnp_SecureHash);
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
                 return 1;
