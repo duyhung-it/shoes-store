@@ -26,6 +26,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
 
     Optional<Order> findByIdAndStatus(Long id, Integer status);
     List<Order> findAllByIdInAndStatus(List<Long> orderIds, Integer status);
+    List<Order> findAllByIdIn(List<Long> orderIds);
 
     @Query(value = "SELECT * FROM jhi_order jo WHERE jo.created_date LIKE :date", nativeQuery = true)
     List<Order> findByCreatedDate(@Param("date") String date);

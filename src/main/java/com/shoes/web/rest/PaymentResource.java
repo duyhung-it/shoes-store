@@ -3,6 +3,7 @@ package com.shoes.web.rest;
 import com.shoes.config.Constants;
 import com.shoes.domain.*;
 import com.shoes.repository.*;
+import com.shoes.service.MailService;
 import com.shoes.service.OrderService;
 import com.shoes.service.PaymentService;
 import com.shoes.service.dto.PaymentDTO;
@@ -54,6 +55,7 @@ public class PaymentResource {
     private final ShoesDetailsRepository shoesDetailsRepository;
     private final OrderDetailsRepository orderDetailsRepository;
     private final CartDetailsRepository cartDetailsRepository;
+    private final MailService mailService;
 
     public PaymentResource(
         PaymentService paymentService,
@@ -64,7 +66,8 @@ public class PaymentResource {
         OrderRepository orderRepository,
         ShoesDetailsRepository shoesDetailsRepository,
         OrderDetailsRepository orderDetailsRepository,
-        CartDetailsRepository cartDetailsRepository
+        CartDetailsRepository cartDetailsRepository,
+        MailService mailService
     ) {
         this.paymentService = paymentService;
         this.userRepository = userRepository;
@@ -75,6 +78,7 @@ public class PaymentResource {
         this.shoesDetailsRepository = shoesDetailsRepository;
         this.orderDetailsRepository = orderDetailsRepository;
         this.cartDetailsRepository = cartDetailsRepository;
+        this.mailService = mailService;
     }
 
     @GetMapping("/create-payment")
@@ -105,78 +109,79 @@ public class PaymentResource {
 
     @GetMapping("/payment-callback")
     public void GetMapping(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int paymentStatus = paymentService.orderReturn(request);
-        String orderInfo = request.getParameter("vnp_OrderInfo");
+        //        int paymentStatus = paymentService.orderReturn(request);
+        String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
+        String orderCode = request.getParameter("vnp_TxnRef");
+        String orderInfo = request.getParameter("order");
         System.out.println(orderInfo);
         long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
-        String[] orderInfoParts = orderInfo.split("\\|");
+        String[] orderInfoParts = orderInfo.split("_");
+        if ("00".equals(vnp_ResponseCode)) {
+            String receivedBy = orderInfoParts[0];
+            String phone = orderInfoParts[1];
+            String email = orderInfoParts[2];
+            String address = orderInfoParts[3];
+            long shipPrice = Long.parseLong(orderInfoParts[4]);
+            long idOwner = Long.parseLong(orderInfoParts[5]);
+            String arrSanPham = orderInfoParts[6];
+            String arrQuantity = orderInfoParts[7];
+            User owner = userRepository.findOneById(idOwner);
 
-        if (paymentStatus == 1) {
-            if (orderInfoParts.length >= 9) {
-                String orderCode = orderInfoParts[0];
-                String receivedBy = orderInfoParts[1];
-                String phone = orderInfoParts[2];
-                String email = orderInfoParts[3];
-                String address = orderInfoParts[4];
-                long shipPrice = Long.parseLong(orderInfoParts[5]);
-                long idOwner = Long.parseLong(orderInfoParts[6]);
-                String arrSanPham = orderInfoParts[7];
-                String arrQuantity = orderInfoParts[8];
-                User owner = userRepository.findOneById(idOwner);
+            Payment payment = new Payment();
+            payment.setCode(orderCode);
+            payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
+            payment.setPaymentStatus(Constants.PAID_METHOD.ON);
+            payment.setCreatedBy("system");
+            payment.setCreatedDate(Instant.now());
+            paymentRepository.save(payment);
+          
+            Order order = new Order();
+            order.setCode(orderCode);
+            order.setAddress(address);
+            order.setPhone(phone);
+            order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
+            order.setShipPrice(BigDecimal.valueOf(shipPrice));
+            order.setTotalPrice(BigDecimal.valueOf(price));
+            order.setReceivedBy(receivedBy);
+            order.setStatus(2);
+            order.setCreatedBy("system");
+            order.setCreatedDate(Instant.now());
+            order.setOwner(owner);
+            order.setPayment(payment);
+            orderRepository.save(order);
+            String[] sanPhamParts = arrSanPham.split("a");
+            String[] quantityParts = arrQuantity.split("b");
+            List<OrderDetails> orderDetailsList = new ArrayList<>();
+            ShoesDetails shoesDetails;
+            OrderDetails orderDetails;
+            CartDetails cartDetails;
+            for (int i = 0; i < sanPhamParts.length; i++) {
+                orderDetails = new OrderDetails();
+                long id = Long.parseLong(sanPhamParts[i]);
+                System.out.println(id);
+                Integer quantity = Integer.valueOf(quantityParts[i]);
+                cartDetails = cartDetailsRepository.findByIdAndStatus(id, 1);
+                shoesDetails = shoesDetailsRepository.findByIdAndStatus(cartDetails.getShoesDetails().getId(), 1);
 
-                Payment payment = new Payment();
-                payment.setCode(orderCode);
-                payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
-                payment.setPaymentStatus(Constants.PAID_METHOD.ON);
-                payment.setCreatedBy("system");
-                payment.setCreatedDate(Instant.now());
-                paymentRepository.save(payment);
+                orderDetails.setQuantity(quantity);
+                orderDetails.setPrice(shoesDetails.getPrice());
+                orderDetails.setStatus(1);
+                orderDetails.setCreatedBy("system");
+                orderDetails.setCreatedDate(Instant.now());
+                orderDetails.setOrder(order);
+                orderDetails.setShoesDetails(shoesDetails);
+                orderDetailsList.add(orderDetails);
 
-                Order order = new Order();
-                order.setCode(orderCode);
-                order.setAddress(address);
-                order.setPhone(phone);
-                order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
-                order.setShipPrice(BigDecimal.valueOf(shipPrice));
-                order.setTotalPrice(BigDecimal.valueOf(price));
-                order.setReceivedBy(receivedBy);
-                order.setStatus(Constants.ORDER_STATUS.PENDING);
-                order.setCreatedBy("system");
-                order.setCreatedDate(Instant.now());
-                order.setOwner(owner);
-                order.setPayment(payment);
-                orderRepository.save(order);
+                cartDetailsRepository.delete(cartDetails);
 
-                String[] sanPhamParts = arrSanPham.split("a");
-                String[] quantityParts = arrQuantity.split("b");
-                List<OrderDetails> orderDetailsList = new ArrayList<>();
-                ShoesDetails shoesDetails;
-                OrderDetails orderDetails;
-                CartDetails cartDetails;
-                for (int i = 0; i < sanPhamParts.length; i++) {
-                    orderDetails = new OrderDetails();
-                    long id = Long.parseLong(sanPhamParts[i]);
-                    System.out.println(id);
-                    Integer quantity = Integer.valueOf(quantityParts[i]);
-                    cartDetails = cartDetailsRepository.findByIdAndStatus(id, 1);
-                    shoesDetails = shoesDetailsRepository.findByIdAndStatus(cartDetails.getShoesDetails().getId(), 1);
-                    orderDetails.setQuantity(quantity);
-                    orderDetails.setPrice(shoesDetails.getPrice());
-                    orderDetails.setStatus(1);
-                    orderDetails.setCreatedBy("system");
-                    orderDetails.setCreatedDate(Instant.now());
-                    orderDetails.setOrder(order);
-                    orderDetails.setShoesDetails(shoesDetails);
-                    orderDetailsList.add(orderDetails);
-                    cartDetailsRepository.delete(cartDetails);
-                }
-                orderDetailsRepository.saveAll(orderDetailsList);
-            } else {
-                System.out.println("Invalid vnp_OrderInfo format");
             }
+            orderDetailsRepository.saveAll(orderDetailsList);
+            //            byte[] byteArrayResource = this.orderService.getMailVerify(order.getId());
+            //            mailService.sendEmail1("duongle5279@gmail.com", "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
+
             response.sendRedirect("http://localhost:4200/client/pay-success");
         } else {
-            response.sendRedirect("http://localhost:4200/client/pay-faile");
+            //            response.sendRedirect("http://localhost:4200/client/pay-faile");
         }
     }
 
