@@ -1,0 +1,22 @@
+entity ReturnShoesDetails {
+    quantity Integer,
+    price Integer,
+    discount Integer,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+entity ShoesDetails
+entity ReturnOrderDetails
+relationship ManyToOne {
+    ReturnShoesDetails{shoesDetails} to ShoesDetails
+}
+relationship ManyToOne {
+    ReturnShoesDetails{returnOrderDetails} to ReturnOrderDetails
+}
+service *  with serviceImpl
+dto * with mapstruct
+
