@@ -1220,7 +1220,7 @@
             <column name="order_details_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="return_order_id" type="bigint">
+            <column name="order_return_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -1231,20 +1231,20 @@
     <!--
         Added the constraints for entity OrderReturnDetails.
     -->
-<!--    <changeSet id="20231128144127-2" author="jhipster">-->
+    <changeSet id="20231128144127-2" author="jhipster">
 
-<!--        <addForeignKeyConstraint baseColumnNames="order_details_id"-->
-<!--                                 baseTableName="order_return_details"-->
-<!--                                 constraintName="fk_order_return_details__order_details_id"-->
-<!--                                 referencedColumnNames="id"-->
-<!--                                 referencedTableName="order_details"/>-->
+        <addForeignKeyConstraint baseColumnNames="order_details_id"
+                                 baseTableName="order_return_details"
+                                 constraintName="fk_order_return_details__order_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="order_details"/>
 
-<!--        <addForeignKeyConstraint baseColumnNames="return_order_id"-->
-<!--                                 baseTableName="order_return_details"-->
-<!--                                 constraintName="fk_order_return_details__return_order_id"-->
-<!--                                 referencedColumnNames="id"-->
-<!--                                 referencedTableName="return_order"/>-->
-<!--    </changeSet>-->
+        <addForeignKeyConstraint baseColumnNames="order_return_id"
+                                 baseTableName="order_return_details"
+                                 constraintName="fk_order_return_details__return_order_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="order_return"/>
+    </changeSet>
     <!--
         Added the entity ReturnShoesDetails.
     -->
@@ -1280,7 +1280,7 @@
             <column name="shoes_details_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="return_order_details_id" type="bigint">
+            <column name="order_return_details_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -1291,18 +1291,18 @@
     <!--
         Added the constraints for entity ReturnShoesDetails.
     -->
-<!--    <changeSet id="20231128150834-2" author="jhipster">-->
+    <changeSet id="20231128150834-2" author="jhipster">
 
-<!--        <addForeignKeyConstraint baseColumnNames="shoes_details_id"-->
-<!--                                 baseTableName="return_shoes_details"-->
-<!--                                 constraintName="fk_return_shoes_details__shoes_details_id"-->
-<!--                                 referencedColumnNames="id"-->
-<!--                                 referencedTableName="shoes_details"/>-->
+        <addForeignKeyConstraint baseColumnNames="shoes_details_id"
+                                 baseTableName="return_shoes_details"
+                                 constraintName="fk_return_shoes_details__shoes_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="shoes_details"/>
 
-<!--        <addForeignKeyConstraint baseColumnNames="return_order_details_id"-->
-<!--                                 baseTableName="return_shoes_details"-->
-<!--                                 constraintName="fk_return_shoes_details__return_order_details_id"-->
-<!--                                 referencedColumnNames="id"-->
-<!--                                 referencedTableName="return_order_details"/>-->
-<!--    </changeSet>-->
+        <addForeignKeyConstraint baseColumnNames="order_return_details_id"
+                                 baseTableName="return_shoes_details"
+                                 constraintName="fk_return_shoes_details__return_order_details_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="order_return_details"/>
+    </changeSet>
 </databaseChangeLog>
