@@ -134,7 +134,7 @@ public class PaymentResource {
             payment.setCreatedBy("system");
             payment.setCreatedDate(Instant.now());
             paymentRepository.save(payment);
-
+          
             Order order = new Order();
             order.setCode(orderCode);
             order.setAddress(address);
@@ -149,7 +149,6 @@ public class PaymentResource {
             order.setOwner(owner);
             order.setPayment(payment);
             orderRepository.save(order);
-
             String[] sanPhamParts = arrSanPham.split("a");
             String[] quantityParts = arrQuantity.split("b");
             List<OrderDetails> orderDetailsList = new ArrayList<>();
@@ -174,6 +173,7 @@ public class PaymentResource {
                 orderDetailsList.add(orderDetails);
 
                 cartDetailsRepository.delete(cartDetails);
+
             }
             orderDetailsRepository.saveAll(orderDetailsList);
             //            byte[] byteArrayResource = this.orderService.getMailVerify(order.getId());

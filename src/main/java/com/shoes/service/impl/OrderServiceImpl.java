@@ -27,6 +27,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,13 +232,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void cancelOrder(Long orderId) {
-        Order order =
-            this.orderRepository.findById(orderId)
-                .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal("error.order.not.exist"), "Order", "not_exist"));
-        if (Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) || Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())) {
-            order.setStatus(Constants.ORDER_STATUS.CANCELED);
-            orderRepository.save(order);
+    public void cancelOrder(List<Long> orderId) {
+        List<Order> orders = this.orderRepository.findAllByIdIn(orderId);
+        for (Order order : orders) {
+            if (
+                Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) ||
+                Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())
+            ) {
+                order.setStatus(Constants.ORDER_STATUS.CANCELED);
+                order.setLastModifiedDate(DataUtils.getCurrentDateTime());
+            }
+        }
+        if (CollectionUtils.isNotEmpty(orders)) {
+            orderRepository.saveAll(orders);
         }
     }
 

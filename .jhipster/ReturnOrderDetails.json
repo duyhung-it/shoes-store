@@ -1,0 +1,15 @@
+{
+  "applications": "*",
+  "changelogDate": "20231128150836",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "return_order_details",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "ReturnOrderDetails",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceImpl"
+}

@@ -1,0 +1,19 @@
+entity OrderReturn {
+    code String,
+    title String,
+    description String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+entity Order
+relationship ManyToOne {
+    OrderReturn{order} to Order
+}
+
+service *  with serviceImpl
+dto * with mapstruct
+
