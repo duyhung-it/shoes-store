@@ -1,0 +1,23 @@
+entity OrderReturnDetails {
+    returnQuantity Integer,
+    errorQuantity Integer,
+    type Integer,
+    reason String,
+    status Integer,
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    lastModifiedDate Instant
+}
+
+entity ReturnOrder
+entity OrderDetails
+relationship ManyToOne {
+    OrderReturnDetails{orderDetails} to OrderDetails
+}
+relationship ManyToOne{
+    OrderReturnDetails{returnOrder} to ReturnOrder
+}
+service *  with serviceImpl
+dto * with mapstruct
+
