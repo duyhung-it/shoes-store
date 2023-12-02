@@ -1,6 +1,7 @@
 package com.shoes.service;
 
 import com.shoes.service.dto.FeedBackDTO;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,10 +37,9 @@ public interface FeedBackService {
     /**
      * Get all the feedBacks.
      *
-     * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<FeedBackDTO> findAll(Pageable pageable);
+    List<FeedBackDTO> findAll();
 
     /**
      * Get the "id" feedBack.
@@ -55,4 +55,6 @@ public interface FeedBackService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    FeedBackDTO updateFeedbackStatus(Long id, Integer status);
 }

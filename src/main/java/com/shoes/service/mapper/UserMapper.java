@@ -98,6 +98,32 @@ public class UserMapper {
         return userDto;
     }
 
+    @Named("firstName")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "firstName", source = "firstName")
+    public UserDTO toDtoFirstName(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserDTO userDto = new UserDTO();
+        userDto.setId(user.getId());
+        return userDto;
+    }
+
+    @Named("firstNameSet")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "firstName", source = "firstName")
+    public Set<UserDTO> DtoFirstNameSet(Set<User> users) {
+        if (users == null) {
+            return Collections.emptySet();
+        }
+        Set<UserDTO> userSet = new HashSet<>();
+        for (User userEntity : users) {
+            userSet.add(this.toDtoFirstName(userEntity));
+        }
+        return userSet;
+    }
+
     @Named("idSet")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
@@ -105,43 +131,10 @@ public class UserMapper {
         if (users == null) {
             return Collections.emptySet();
         }
-
         Set<UserDTO> userSet = new HashSet<>();
         for (User userEntity : users) {
             userSet.add(this.toDtoId(userEntity));
         }
-
-        return userSet;
-    }
-
-    @Named("login")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "login", source = "login")
-    public UserDTO toDtoLogin(User user) {
-        if (user == null) {
-            return null;
-        }
-        UserDTO userDto = new UserDTO();
-        userDto.setId(user.getId());
-        userDto.setLogin(user.getLogin());
-        return userDto;
-    }
-
-    @Named("loginSet")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "login", source = "login")
-    public Set<UserDTO> toDtoLoginSet(Set<User> users) {
-        if (users == null) {
-            return Collections.emptySet();
-        }
-
-        Set<UserDTO> userSet = new HashSet<>();
-        for (User userEntity : users) {
-            userSet.add(this.toDtoLogin(userEntity));
-        }
-
         return userSet;
     }
 }
