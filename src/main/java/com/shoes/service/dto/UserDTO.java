@@ -2,10 +2,12 @@ package com.shoes.service.dto;
 
 import com.shoes.domain.User;
 import java.io.Serializable;
+import lombok.Data;
 
 /**
  * A DTO representing a user, with only the public attributes.
  */
+@Data
 public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -13,6 +15,8 @@ public class UserDTO implements Serializable {
     private Long id;
 
     private String login;
+
+    private String firstName;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.

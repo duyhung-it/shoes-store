@@ -19,6 +19,8 @@ public interface FeedBackMapper extends EntityMapper<FeedBackDTO, FeedBack> {
     @Named("userId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "login", source = "login")
+    @Mapping(target = "firstName", source = "firstName")
     UserDTO toDtoUserId(User user);
 
     @Named("shoesId")
