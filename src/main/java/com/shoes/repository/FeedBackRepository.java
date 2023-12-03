@@ -3,6 +3,7 @@ package com.shoes.repository;
 import com.shoes.domain.FeedBack;
 import com.shoes.service.dto.ShoesFeedBackDTO;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -25,4 +26,30 @@ public interface FeedBackRepository extends JpaRepository<FeedBack, Long> {
         nativeQuery = true
     )
     List<ShoesFeedBackDTO> findAllFeedBackByShoesAndBrandDTO(@Param("shid") Integer shid, @Param("brid") Integer brid);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE FeedBack f SET f.status = :status WHERE f.id = :id")
+    int updateStatus(@Param("id") Long id, @Param("status") Integer status);
+
+    @Query(
+        value = "SELECT EXISTS (\n" +
+        "    SELECT 1 \n" +
+        "    FROM feed_back\n" +
+        "    WHERE user_id = :uid AND shoes_id = :shid\n" +
+        ");\n",
+        nativeQuery = true
+    )
+    Integer checkComment(@Param("uid") Long id, @Param("shid") Long shid);
+
+    @Query(
+        value = "SELECT EXISTS (\n" +
+        "    SELECT 1 \n" +
+        "    FROM jhi_order\n" +
+        "    JOIN order_details od ON jhi_order.id = od.order_id \n" +
+        "    WHERE jhi_order.owner_id = :uid AND od.shoes_details_id = :shid \n" +
+        ");",
+        nativeQuery = true
+    )
+    Integer checkBuy(@Param("uid") Long id, @Param("shid") Long shid);
 }
