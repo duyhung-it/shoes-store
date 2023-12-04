@@ -1,6 +1,11 @@
 package com.shoes.domain;
 
+import com.shoes.service.dto.OrderReturnSearchResDTO;
+import com.shoes.service.dto.OrderSearchResDTO;
+import com.shoes.service.dto.OrderStatusDTO;
+import com.shoes.service.dto.RevenueDTO;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 import javax.persistence.*;
 import lombok.Getter;
@@ -11,6 +16,27 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "order_return")
+@SqlResultSetMappings(
+    value = {
+        @SqlResultSetMapping(
+            name = "orderReturnResult",
+            classes = {
+                @ConstructorResult(
+                    targetClass = OrderReturnSearchResDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "code", type = String.class),
+                        @ColumnResult(name = "login", type = String.class),
+                        @ColumnResult(name = "phone", type = String.class),
+                        @ColumnResult(name = "status", type = Integer.class),
+                        @ColumnResult(name = "last_modified_by", type = String.class),
+                        @ColumnResult(name = "created_date", type = Instant.class),
+                    }
+                ),
+            }
+        ),
+    }
+)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class OrderReturn extends AbstractAuditingEntity<Long> implements Serializable {
 

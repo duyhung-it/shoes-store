@@ -1,6 +1,7 @@
 package com.shoes.repository;
 
 import com.shoes.domain.OrderReturnDetails;
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface OrderReturnDetailsRepository extends JpaRepository<OrderReturnDetails, Long> {}
+public interface OrderReturnDetailsRepository extends JpaRepository<OrderReturnDetails, Long> {
+    List<OrderReturnDetails> findAllByOrderReturn_IdAndStatus(Long id, Integer status);
+}

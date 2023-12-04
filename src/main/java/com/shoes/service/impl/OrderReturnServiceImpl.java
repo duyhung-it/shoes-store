@@ -1,5 +1,6 @@
 package com.shoes.service.impl;
 
+import com.shoes.config.Constants;
 import com.shoes.domain.Order;
 import com.shoes.domain.OrderReturn;
 import com.shoes.domain.OrderReturnDetails;
@@ -13,6 +14,7 @@ import com.shoes.service.mapper.OrderReturnDetailsMapper;
 import com.shoes.service.mapper.OrderReturnMapper;
 import com.shoes.service.mapper.ReturnShoesDetailsMapper;
 import com.shoes.util.DataUtils;
+import com.shoes.util.SecurityUtils;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -50,9 +52,13 @@ public class OrderReturnServiceImpl implements OrderReturnService {
     @Override
     public OrderReturnDTO save(OrderReturnReqDTO orderReturnDTO) {
         log.debug("Request to save OrderReturn : {}", orderReturnDTO);
+        String loggedUser = SecurityUtils.getCurrentUserLogin().get();
         OrderReturn orderReturn = new OrderReturn();
         orderReturn.setOrder(new Order(orderReturnDTO.getOrderId()));
         orderReturn.setCode(generateCode());
+        orderReturn.setStatus(Constants.ORDER_RETURN.PENDING);
+        orderReturn.setCreatedBy(loggedUser);
+        orderReturn.setCreatedDate(DataUtils.getCurrentDateTime());
         orderReturn = orderReturnRepository.save(orderReturn);
         List<OrderReturnDetailsDTO> orderReturnDTOList = orderReturnDTO.getReturnOrderDetails();
         OrderReturn finalOrderReturn = orderReturn;
@@ -60,12 +66,18 @@ public class OrderReturnServiceImpl implements OrderReturnService {
             orderReturnDetailsDTO.setOrderDetails(new OrderDetailsDTO(orderReturnDetailsDTO.getOrderDetailsId()));
             orderReturnDetailsDTO.setOrderReturn(orderReturnMapper.toDto(finalOrderReturn));
             OrderReturnDetails orderReturnDetails = orderReturnDetailsMapper.toEntity(orderReturnDetailsDTO);
+            orderReturnDetails.setStatus(Constants.STATUS.ACTIVE);
+            orderReturnDetails.setCreatedBy(loggedUser);
+            orderReturnDetails.setCreatedDate(DataUtils.getCurrentDateTime());
             orderReturnDetailsRepository.save(orderReturnDetails);
             if (Objects.equals(orderReturnDetails.getType(), 1)) {
                 List<ReturnShoesDetailsDTO> returnShoesDetailsDTOList = orderReturnDetailsDTO.getReturnShoesDetails();
                 for (ReturnShoesDetailsDTO returnShoesDetailsDTO : returnShoesDetailsDTOList) {
-                    returnShoesDetailsDTO.setOrderReturnDetailsDTO(new OrderReturnDetailsDTO(orderReturnDTO.getId()));
+                    returnShoesDetailsDTO.setOrderReturnDetailsDTO(new OrderReturnDetailsDTO(orderReturnDetails.getId()));
                     returnShoesDetailsDTO.setShoesDetails(new ShoesDetailsDTO(returnShoesDetailsDTO.getShoesDetailsId()));
+                    returnShoesDetailsDTO.setStatus(Constants.STATUS.ACTIVE);
+                    returnShoesDetailsDTO.setCreatedBy(loggedUser);
+                    returnShoesDetailsDTO.setCreatedDate(DataUtils.getCurrentDateTime());
                 }
                 List<ReturnShoesDetails> returnShoesDetails = returnShoesDetailsMapper.toEntity(returnShoesDetailsDTOList);
                 if (CollectionUtils.isNotEmpty(returnShoesDetails)) {
@@ -97,6 +109,11 @@ public class OrderReturnServiceImpl implements OrderReturnService {
     }
 
     @Override
+    public List<OrderReturnSearchResDTO> search(OrderSearchReqDTO searchReqDTO) {
+        return orderReturnRepository.search(searchReqDTO);
+    }
+
+    @Override
     public Optional<OrderReturnDTO> partialUpdate(OrderReturnDTO orderReturnDTO) {
         log.debug("Request to partially update OrderReturn : {}", orderReturnDTO);
 
@@ -120,9 +137,20 @@ public class OrderReturnServiceImpl implements OrderReturnService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<OrderReturnDTO> findOne(Long id) {
+    public OrderReturnDTO findOne(Long id) {
         log.debug("Request to get OrderReturn : {}", id);
-        return orderReturnRepository.findById(id).map(orderReturnMapper::toDto);
+        OrderReturnDTO orderReturn = orderReturnRepository.findById(id).map(orderReturnMapper::toDto).get();
+        List<OrderReturnDetailsDTO> orderReturns = orderReturnDetailsMapper.toDto(
+            orderReturnDetailsRepository.findAllByOrderReturn_IdAndStatus(id, Constants.STATUS.ACTIVE)
+        );
+        for (OrderReturnDetailsDTO orderReturnDetailsDTO : orderReturns) {
+            List<ReturnShoesDetailsDTO> returnShoesDetailsDTOS = returnShoesDetailsMapper.toDto(
+                returnShoesDetailsRepository.findAllByOrderReturnDetails_IdAndStatus(orderReturnDetailsDTO.getId(), Constants.STATUS.ACTIVE)
+            );
+            orderReturnDetailsDTO.setReturnShoesDetails(returnShoesDetailsDTOS);
+        }
+        orderReturn.setOrderReturnDetailsDTOS(orderReturns);
+        return orderReturn;
     }
 
     @Override
