@@ -41,7 +41,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct cl.id) as colors,\n " +
         "GROUP_CONCAT(distinct cl.name) as color_names ," +
         "GROUP_CONCAT(distinct iu.path) as paths ," +
-        " d.name as discount_name " +
+        "GROUP_CONCAT(distinct d.name) as discount_name ," +
+        "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
+        "GROUP_CONCAT(distinct d.discount_amount) as discount_amount  " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
         "JOIN (\n" +
@@ -91,7 +93,10 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    sd.*,\n" +
         "    CONCAT(sh.name, ' ', br.name) as name,\n" +
         "    iu.path,\n" +
-        "    GROUP_CONCAT(iu.path) as paths ,\n" +
+        "    GROUP_CONCAT(iu.path) as paths ,\n " +
+        "GROUP_CONCAT(distinct d.name) as discount_name ," +
+        "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
+        "GROUP_CONCAT(distinct d.discount_amount) as discount_amount ,  " +
         "    (SELECT CAST(COALESCE(avg(fb.rate), 5) AS SIGNED)\n" +
         "FROM feed_back fb\n" +
         "JOIN shoes_details ad ON fb.shoes_id = ad.id\n" +
@@ -126,7 +131,11 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "JOIN `shoes-store`.brand br ON sd.brand_id = br.id \n" +
         "JOIN `shoes-store`.size sz ON sd.size_id = sz.id and (:siid IS NULL OR sz.id = :siid) \n" +
         "JOIN `shoes-store`.color cl ON sd.color_id = cl.id and cl.id = :clid \n" +
-        "WHERE\n" +
+        "LEFT JOIN `shoes-store`.discount_shoes_details dsd\n" +
+        "ON dsd.shoes_details_id = sd.shoes_id and dsd.status = 1 and dsd.brand_id = br.id\n" +
+        "LEFT JOIN `shoes-store`.discount d \n" +
+        "ON dsd.discount_id = d.id and d.start_date <= now() and d.end_date >= now() and d.status = 1 " +
+        "WHERE " +
         "sd.brand_id = :brid and sd.shoes_id = :shid and sd.status = 1;\n"
     )
     ShopShoesDTO findDistinctByShoesAndBrandOrderBySellPriceDescOne(
