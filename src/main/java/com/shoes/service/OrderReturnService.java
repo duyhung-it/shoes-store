@@ -2,6 +2,8 @@ package com.shoes.service;
 
 import com.shoes.service.dto.OrderReturnDTO;
 import com.shoes.service.dto.OrderReturnReqDTO;
+import com.shoes.service.dto.OrderReturnSearchResDTO;
+import com.shoes.service.dto.OrderSearchReqDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,7 @@ public interface OrderReturnService {
      * @return the persisted entity.
      */
     OrderReturnDTO update(OrderReturnDTO orderReturnDTO);
+    List<OrderReturnSearchResDTO> search(OrderSearchReqDTO searchReqDTO);
 
     /**
      * Partially updates a orderReturn.
@@ -46,7 +49,7 @@ public interface OrderReturnService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<OrderReturnDTO> findOne(Long id);
+    OrderReturnDTO findOne(Long id);
 
     /**
      * Delete the "id" orderReturn.

@@ -57,4 +57,8 @@ public class OrderReturnDetails extends AbstractAuditingEntity<Long> implements 
 
     @ManyToOne
     private OrderReturn orderReturn;
+
+    public OrderReturnDetails(Long id) {
+        this.id = id;
+    }
 }

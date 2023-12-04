@@ -11,11 +11,11 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface OrderReturnMapper extends EntityMapper<OrderReturnDTO, OrderReturn> {
-    @Mapping(target = "order", source = "order", qualifiedByName = "orderId")
+    //    @Mapping(target = "order", source = "order", qualifiedByName = "orderId")
     OrderReturnDTO toDto(OrderReturn s);
 
     @Named("orderId")
     @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
+    //    @Mapping(target = "id", source = "id")
     OrderDTO toDtoOrderId(Order order);
 }

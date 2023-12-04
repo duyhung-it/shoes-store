@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class ReturnShoesDetails implements Serializable {
+public class ReturnShoesDetails extends AbstractAuditingEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

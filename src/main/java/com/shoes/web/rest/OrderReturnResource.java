@@ -4,6 +4,8 @@ import com.shoes.repository.OrderReturnRepository;
 import com.shoes.service.OrderReturnService;
 import com.shoes.service.dto.OrderReturnDTO;
 import com.shoes.service.dto.OrderReturnReqDTO;
+import com.shoes.service.dto.OrderReturnSearchResDTO;
+import com.shoes.service.dto.OrderSearchReqDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -142,6 +144,12 @@ public class OrderReturnResource {
         return orderReturnService.findAll();
     }
 
+    @PostMapping("/order-returns/search")
+    public List<OrderReturnSearchResDTO> getAllOrderReturns(@RequestBody OrderSearchReqDTO searchReqDTO) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.search(searchReqDTO);
+    }
+
     /**
      * {@code GET  /order-returns/:id} : get the "id" orderReturn.
      *
@@ -151,8 +159,8 @@ public class OrderReturnResource {
     @GetMapping("/order-returns/{id}")
     public ResponseEntity<OrderReturnDTO> getOrderReturn(@PathVariable Long id) {
         log.debug("REST request to get OrderReturn : {}", id);
-        Optional<OrderReturnDTO> orderReturnDTO = orderReturnService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(orderReturnDTO);
+        OrderReturnDTO orderReturnDTO = orderReturnService.findOne(id);
+        return ResponseEntity.ok(orderReturnDTO);
     }
 
     /**

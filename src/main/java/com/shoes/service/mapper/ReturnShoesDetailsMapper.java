@@ -15,17 +15,17 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface ReturnShoesDetailsMapper extends EntityMapper<ReturnShoesDetailsDTO, ReturnShoesDetails> {
-    @Mapping(target = "shoesDetails", source = "shoesDetails", qualifiedByName = "shoesDetailsId")
-    @Mapping(target = "orderReturnDetailsDTO", source = "orderReturnDetails", qualifiedByName = "returnOrderDetailsId")
+    //    @Mapping(target = "shoesDetails", source = "shoesDetails", qualifiedByName = "shoesDetailsId")
+    //    @Mapping(target = "orderReturnDetailsDTO", source = "orderReturnDetails", qualifiedByName = "returnOrderDetailsId")
     ReturnShoesDetailsDTO toDto(ReturnShoesDetails s);
 
     @Named("shoesDetailsId")
     @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
+    //    @Mapping(target = "id", source = "id")
     ShoesDetailsDTO toDtoShoesDetailsId(ShoesDetails shoesDetails);
 
     @Named("returnOrderDetailsId")
     @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
+    //    @Mapping(target = "id", source = "id")
     OrderReturnDetailsDTO toDtoReturnOrderDetailsId(OrderReturnDetails orderReturnDetails);
 }
