@@ -52,7 +52,7 @@ public class FeedBackResource {
      *
      * @param feedBackDTO the feedBackDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new feedBackDTO, or with status {@code 400 (Bad Request)} if the feedBack has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/feed-backs")
     public ResponseEntity<FeedBackDTO> createFeedBack(@RequestBody FeedBackDTO feedBackDTO) throws URISyntaxException {
