@@ -43,4 +43,8 @@ public class OrderDetailsDTO implements Serializable {
 
     @NotNull
     private ShoesDetailsDTO shoesDetails;
+
+    public OrderDetailsDTO(Long id) {
+        this.id = id;
+    }
 }

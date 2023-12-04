@@ -2,6 +2,7 @@ package com.shoes.service.dto;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,7 +37,14 @@ public class OrderReturnDetailsDTO implements Serializable {
 
     private Instant lastModifiedDate;
 
+    private List<ReturnShoesDetailsDTO> returnShoesDetails;
+
     private OrderDetailsDTO orderDetails;
+    private Long orderDetailsId;
 
     private OrderReturnDTO orderReturn;
+
+    public OrderReturnDetailsDTO(Long id) {
+        this.id = id;
+    }
 }

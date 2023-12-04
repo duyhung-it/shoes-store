@@ -1,6 +1,7 @@
 package com.shoes.service;
 
 import com.shoes.service.dto.OrderReturnDTO;
+import com.shoes.service.dto.OrderReturnReqDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public interface OrderReturnService {
      * @param orderReturnDTO the entity to save.
      * @return the persisted entity.
      */
-    OrderReturnDTO save(OrderReturnDTO orderReturnDTO);
+    OrderReturnDTO save(OrderReturnReqDTO orderReturnDTO);
 
     /**
      * Updates a orderReturn.

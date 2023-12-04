@@ -118,4 +118,8 @@ public class Order extends AbstractAuditingEntity<Long> implements Serializable 
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address userAddress;
+
+    public Order(Long id) {
+        this.id = id;
+    }
 }

@@ -1,12 +1,11 @@
 package com.shoes.service.dto;
 
+import com.shoes.domain.ShoesDetails;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-
-import com.shoes.domain.ShoesDetails;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,8 +52,8 @@ public class ShoesDetailsDTO implements Serializable {
     private ColorDTO color;
 
     private List<String> imgPath;
-    public ShoesDetailsDTO() {
-    }
+
+    public ShoesDetailsDTO() {}
 
     public ShoesDetailsDTO(ShoesDetails shoesDetails) {
         this.id = shoesDetails.getId();
@@ -69,6 +68,10 @@ public class ShoesDetailsDTO implements Serializable {
         this.brand = new BrandDTO(shoesDetails.getBrand());
         this.size = new SizeDTO(shoesDetails.getSize());
         this.color = new ColorDTO(shoesDetails.getColor());
+    }
+
+    public ShoesDetailsDTO(Long shoesDetailsId) {
+        this.id = shoesDetailsId;
     }
 
     public Long getId() {
