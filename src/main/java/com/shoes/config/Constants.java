@@ -39,6 +39,7 @@ public final class Constants {
         public static final Integer PENDING = 1;
         public static final Integer PROCESSING = 2;
         public static final Integer FINISH = 3;
+        public static final Integer CANCEL = 4;
     }
 
     public static class PAYMENT_STATUS {

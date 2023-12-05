@@ -43,4 +43,8 @@ public class OrderDetails extends AbstractAuditingEntity<Long> implements Serial
 
     @ManyToOne
     private ShoesDetails shoesDetails;
+
+    public OrderDetails(Long orderDetailsId) {
+        this.id = orderDetailsId;
+    }
 }

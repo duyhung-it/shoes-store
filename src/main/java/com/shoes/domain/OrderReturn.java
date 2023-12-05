@@ -25,7 +25,8 @@ import lombok.Getter;
                     targetClass = OrderReturnSearchResDTO.class,
                     columns = {
                         @ColumnResult(name = "id", type = Long.class),
-                        @ColumnResult(name = "code", type = String.class),
+                        @ColumnResult(name = "order_return_code", type = String.class),
+                        @ColumnResult(name = "order_code", type = String.class),
                         @ColumnResult(name = "login", type = String.class),
                         @ColumnResult(name = "phone", type = String.class),
                         @ColumnResult(name = "status", type = Integer.class),

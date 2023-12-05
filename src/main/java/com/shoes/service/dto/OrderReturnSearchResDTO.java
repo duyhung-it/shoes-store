@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 public class OrderReturnSearchResDTO {
 
     private Long id;
-    private String code;
+    private String orderReturnCode;
+    private String orderCode;
     private String login;
     private String phone;
     private Integer status;
