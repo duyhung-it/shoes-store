@@ -1,9 +1,6 @@
 package com.shoes.service;
 
-import com.shoes.service.dto.OrderReturnDTO;
-import com.shoes.service.dto.OrderReturnReqDTO;
-import com.shoes.service.dto.OrderReturnSearchResDTO;
-import com.shoes.service.dto.OrderSearchReqDTO;
+import com.shoes.service.dto.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +15,9 @@ public interface OrderReturnService {
      * @return the persisted entity.
      */
     OrderReturnDTO save(OrderReturnReqDTO orderReturnDTO);
+    OrderReturnDTO verify(VerifyOrderReturnDTO verifyOrderReturnDTO);
+    OrderReturnDTO cancel(Long id);
+    OrderReturnDTO finish(Long id);
 
     /**
      * Updates a orderReturn.

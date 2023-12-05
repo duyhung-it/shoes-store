@@ -1,13 +1,11 @@
 package com.shoes.service.impl;
 
 import com.shoes.config.Constants;
-import com.shoes.domain.Order;
-import com.shoes.domain.OrderReturn;
-import com.shoes.domain.OrderReturnDetails;
-import com.shoes.domain.ReturnShoesDetails;
+import com.shoes.domain.*;
 import com.shoes.repository.OrderReturnDetailsRepository;
 import com.shoes.repository.OrderReturnRepository;
 import com.shoes.repository.ReturnShoesDetailsRepository;
+import com.shoes.repository.ShoesDetailsRepository;
 import com.shoes.service.OrderReturnService;
 import com.shoes.service.dto.*;
 import com.shoes.service.mapper.OrderReturnDetailsMapper;
@@ -15,17 +13,17 @@ import com.shoes.service.mapper.OrderReturnMapper;
 import com.shoes.service.mapper.ReturnShoesDetailsMapper;
 import com.shoes.util.DataUtils;
 import com.shoes.util.SecurityUtils;
+import com.shoes.util.Translator;
+import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,6 +46,7 @@ public class OrderReturnServiceImpl implements OrderReturnService {
     private final OrderReturnMapper orderReturnMapper;
     private final ReturnShoesDetailsMapper returnShoesDetailsMapper;
     private final ReturnShoesDetailsRepository returnShoesDetailsRepository;
+    private final ShoesDetailsRepository shoesDetailsRepository;
 
     @Override
     public OrderReturnDTO save(OrderReturnReqDTO orderReturnDTO) {
@@ -80,12 +79,115 @@ public class OrderReturnServiceImpl implements OrderReturnService {
                     returnShoesDetailsDTO.setCreatedDate(DataUtils.getCurrentDateTime());
                 }
                 List<ReturnShoesDetails> returnShoesDetails = returnShoesDetailsMapper.toEntity(returnShoesDetailsDTOList);
+                returnShoesDetails.forEach(returnShoesDetails1 -> {
+                    returnShoesDetails1.setOrderReturnDetails(orderReturnDetails);
+                });
                 if (CollectionUtils.isNotEmpty(returnShoesDetails)) {
                     returnShoesDetailsRepository.saveAll(returnShoesDetails);
                 }
             }
         });
         return orderReturnMapper.toDto(orderReturn);
+    }
+
+    @Override
+    public OrderReturnDTO verify(VerifyOrderReturnDTO verifyOrderReturnDTO) {
+        String loggedUser = SecurityUtils.getCurrentUserLogin().get();
+        OrderReturn orderReturn = orderReturnRepository.findById(verifyOrderReturnDTO.getId()).orElse(null);
+        if (!DataUtils.isNull(orderReturn) && Constants.ORDER_RETURN.PENDING.equals(orderReturn.getStatus())) {
+            List<OrderReturnDetails> orderReturnDetails = orderReturnDetailsRepository.findAllByOrderReturn_IdAndStatus(
+                verifyOrderReturnDTO.getId(),
+                Constants.STATUS.ACTIVE
+            );
+            List<ShoesDetails> shoesDetailsList = new ArrayList<>();
+            for (OrderReturnDetails orderReturnDetails1 : orderReturnDetails) {
+                OrderReturnDetailsDTO orderReturnDetailsDTO = verifyOrderReturnDTO
+                    .getList()
+                    .stream()
+                    .filter(orderReturnDetailsDTO1 -> Objects.equals(orderReturnDetailsDTO1.getId(), orderReturnDetails1.getId()))
+                    .findAny()
+                    .get();
+                orderReturnDetails1.setErrorQuantity(orderReturnDetailsDTO.getErrorQuantity());
+                ShoesDetails shoesDetails = shoesDetailsRepository.findByIdAndStatus(
+                    orderReturnDetails1.getOrderDetails().getShoesDetails().getId(),
+                    Constants.STATUS.ACTIVE
+                );
+                if (!DataUtils.isNull(orderReturnDetails1.getErrorQuantity())) {
+                    shoesDetails.setQuantity(
+                        shoesDetails.getQuantity() + orderReturnDetails1.getReturnQuantity() - orderReturnDetails1.getErrorQuantity()
+                    );
+                } else {
+                    shoesDetails.setQuantity(shoesDetails.getQuantity() + orderReturnDetails1.getReturnQuantity());
+                }
+                shoesDetails.setLastModifiedBy(loggedUser);
+                shoesDetails.setLastModifiedDate(DataUtils.getCurrentDateTime());
+                shoesDetailsList.add(shoesDetails);
+                if (orderReturnDetails1.getType().equals(1)) {
+                    List<ReturnShoesDetails> returnShoesDetails = returnShoesDetailsRepository.findAllByOrderReturnDetails_IdAndStatus(
+                        orderReturnDetails1.getId(),
+                        Constants.STATUS.ACTIVE
+                    );
+                    List<ShoesDetails> shoesDetailsList1 = returnShoesDetails
+                        .stream()
+                        .map(orderDetails -> {
+                            ShoesDetails shoesDetails1 = orderDetails.getShoesDetails();
+                            if (ObjectUtils.compare(shoesDetails1.getQuantity(), (long) orderDetails.getQuantity()) < 0) {
+                                throw new BadRequestAlertException(
+                                    Translator.toLocal(
+                                        "Số lượng không đủ:" +
+                                        shoesDetails1.getShoes().getName() +
+                                        "-" +
+                                        shoesDetails1.getColor().getName() +
+                                        "-" +
+                                        shoesDetails1.getBrand().getName()
+                                    ),
+                                    "ENTITY_NAME",
+                                    "not_exist"
+                                );
+                            }
+                            shoesDetails1.setQuantity(shoesDetails1.getQuantity() - orderDetails.getQuantity());
+                            return shoesDetails1;
+                        })
+                        .collect(Collectors.toList());
+                    shoesDetailsList.addAll(shoesDetailsList1);
+                }
+            }
+            shoesDetailsRepository.saveAll(shoesDetailsList);
+            orderReturn.setStatus(Constants.ORDER_RETURN.PROCESSING);
+            orderReturn.setLastModifiedBy(loggedUser);
+            orderReturn.setLastModifiedDate(DataUtils.getCurrentDateTime());
+            orderReturnRepository.save(orderReturn);
+            return orderReturnMapper.toDto(orderReturn);
+        }
+        return null;
+    }
+
+    @Override
+    public OrderReturnDTO cancel(Long id) {
+        String loggedUser = SecurityUtils.getCurrentUserLogin().get();
+        OrderReturn orderReturn = orderReturnRepository.findById(id).orElse(null);
+        if (!DataUtils.isNull(orderReturn) && Constants.ORDER_RETURN.PENDING.equals(orderReturn.getStatus())) {
+            orderReturn.setStatus(Constants.ORDER_RETURN.CANCEL);
+            orderReturn.setLastModifiedBy(loggedUser);
+            orderReturn.setLastModifiedDate(DataUtils.getCurrentDateTime());
+            orderReturnRepository.save(orderReturn);
+            return orderReturnMapper.toDto(orderReturn);
+        }
+        return null;
+    }
+
+    @Override
+    public OrderReturnDTO finish(Long id) {
+        String loggedUser = SecurityUtils.getCurrentUserLogin().get();
+        OrderReturn orderReturn = orderReturnRepository.findById(id).orElse(null);
+        if (!DataUtils.isNull(orderReturn) && Constants.ORDER_RETURN.PROCESSING.equals(orderReturn.getStatus())) {
+            orderReturn.setStatus(Constants.ORDER_RETURN.FINISH);
+            orderReturn.setLastModifiedBy(loggedUser);
+            orderReturn.setLastModifiedDate(DataUtils.getCurrentDateTime());
+            orderReturnRepository.save(orderReturn);
+            return orderReturnMapper.toDto(orderReturn);
+        }
+        return null;
     }
 
     public String generateCode() {

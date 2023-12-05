@@ -2,10 +2,7 @@ package com.shoes.web.rest;
 
 import com.shoes.repository.OrderReturnRepository;
 import com.shoes.service.OrderReturnService;
-import com.shoes.service.dto.OrderReturnDTO;
-import com.shoes.service.dto.OrderReturnReqDTO;
-import com.shoes.service.dto.OrderReturnSearchResDTO;
-import com.shoes.service.dto.OrderSearchReqDTO;
+import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -142,6 +139,24 @@ public class OrderReturnResource {
     public List<OrderReturnDTO> getAllOrderReturns() {
         log.debug("REST request to get all OrderReturns");
         return orderReturnService.findAll();
+    }
+
+    @PostMapping("/order-returns/verify")
+    public OrderReturnDTO verify(@RequestBody VerifyOrderReturnDTO verifyOrderReturnDTO) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.verify(verifyOrderReturnDTO);
+    }
+
+    @GetMapping("/order-returns/cancel/{id}")
+    public OrderReturnDTO cancel(@PathVariable Long id) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.cancel(id);
+    }
+
+    @GetMapping("/order-returns/finish/{id}")
+    public OrderReturnDTO finish(@PathVariable Long id) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.finish(id);
     }
 
     @PostMapping("/order-returns/search")
