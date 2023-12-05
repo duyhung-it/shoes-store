@@ -40,6 +40,7 @@ public interface SizeService {
      * @return the list of entities.
      */
     Page<SizeDTO> findAll(Pageable pageable);
+    Page<SizeDTO> findDelete(Pageable pageable);
 
     /**
      * Get the "id" size.

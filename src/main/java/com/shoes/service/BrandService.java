@@ -40,6 +40,8 @@ public interface BrandService {
      * @return the list of entities.
      */
     Page<BrandDTO> findAll(Pageable pageable);
+    Page<BrandDTO> findDelete(Pageable pageable);
+
 
     /**
      * Get the "id" brand.
