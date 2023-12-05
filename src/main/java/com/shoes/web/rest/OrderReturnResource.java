@@ -7,6 +7,7 @@ import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -163,6 +164,11 @@ public class OrderReturnResource {
     public List<OrderReturnSearchResDTO> getAllOrderReturns(@RequestBody OrderSearchReqDTO searchReqDTO) {
         log.debug("REST request to get all OrderReturns");
         return orderReturnService.search(searchReqDTO);
+    }
+
+    @GetMapping("/order-returns/quantity")
+    public ResponseEntity<Map<Integer, Integer>> getQuantity() {
+        return ResponseEntity.ok(orderReturnService.getQuantityPerOrderStatus());
     }
 
     /**
