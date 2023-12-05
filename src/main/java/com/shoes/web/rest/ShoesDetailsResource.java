@@ -260,10 +260,22 @@ public class ShoesDetailsResource {
             .build();
     }
 
-    @GetMapping("/shoes-details/shop")
-    public ResponseEntity<List<ShopShoesDTO>> testing() {
-        List<Long> ids = sizeRepository.findAll().stream().map(Size::getId).collect(Collectors.toList());
-        return ResponseEntity.ok().body(shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDesc(ids));
+    @PostMapping("/shoes-details/shop")
+    public ResponseEntity<List<ShopShoesDTO>> testing(@RequestBody SearchSDsResponse response) {
+        List<Long> ids = response.getSizeIds();
+        if (response.getSizeIds().isEmpty()) {
+            ids = sizeRepository.findAll().stream().map(Size::getId).collect(Collectors.toList());
+        }
+        return ResponseEntity
+            .ok()
+            .body(
+                shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDesc(
+                    ids,
+                    response.getBrandId(),
+                    response.getStartPrice(),
+                    response.getEndPrice()
+                )
+            );
     }
 
     @PostMapping("/shoes-details/shop/detail")
