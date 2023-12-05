@@ -2,7 +2,9 @@ package com.shoes.service;
 
 import com.shoes.service.dto.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Interface for managing {@link com.shoes.domain.OrderReturn}.
@@ -28,6 +30,7 @@ public interface OrderReturnService {
     OrderReturnDTO update(OrderReturnDTO orderReturnDTO);
     List<OrderReturnSearchResDTO> search(OrderSearchReqDTO searchReqDTO);
 
+    Map<Integer, Integer> getQuantityPerOrderStatus();
     /**
      * Partially updates a orderReturn.
      *

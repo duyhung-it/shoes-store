@@ -71,7 +71,11 @@ public class OrderReturnServiceImpl implements OrderReturnService {
             orderReturnDetailsRepository.save(orderReturnDetails);
             if (Objects.equals(orderReturnDetails.getType(), 1)) {
                 List<ReturnShoesDetailsDTO> returnShoesDetailsDTOList = orderReturnDetailsDTO.getReturnShoesDetails();
+                Set<Long> idShoesDetails = new HashSet<>();
                 for (ReturnShoesDetailsDTO returnShoesDetailsDTO : returnShoesDetailsDTOList) {
+                    if (!idShoesDetails.add(returnShoesDetailsDTO.getShoesDetailsId())) {
+                        throw new BadRequestAlertException("Sản phẩm đổi hàng đang trùng nhau!", "", "");
+                    }
                     returnShoesDetailsDTO.setOrderReturnDetailsDTO(new OrderReturnDetailsDTO(orderReturnDetails.getId()));
                     returnShoesDetailsDTO.setShoesDetails(new ShoesDetailsDTO(returnShoesDetailsDTO.getShoesDetailsId()));
                     returnShoesDetailsDTO.setStatus(Constants.STATUS.ACTIVE);
@@ -88,6 +92,15 @@ public class OrderReturnServiceImpl implements OrderReturnService {
             }
         });
         return orderReturnMapper.toDto(orderReturn);
+    }
+
+    @Override
+    public Map<Integer, Integer> getQuantityPerOrderStatus() {
+        Map<Integer, Integer> mapQuantity =
+            this.orderReturnRepository.getQuantityOrders()
+                .stream()
+                .collect(Collectors.toMap(OrderStatusDTO::getStatus, OrderStatusDTO::getQuantity));
+        return mapQuantity;
     }
 
     @Override
@@ -117,7 +130,10 @@ public class OrderReturnServiceImpl implements OrderReturnService {
                         shoesDetails.getQuantity() + orderReturnDetails1.getReturnQuantity() - orderReturnDetails1.getErrorQuantity()
                     );
                 } else {
-                    shoesDetails.setQuantity(shoesDetails.getQuantity() + orderReturnDetails1.getReturnQuantity());
+                    shoesDetails.setQuantity(
+                        shoesDetails.getQuantity() +
+                        (orderReturnDetails1.getReturnQuantity() == null ? 0 : orderReturnDetails1.getReturnQuantity())
+                    );
                 }
                 shoesDetails.setLastModifiedBy(loggedUser);
                 shoesDetails.setLastModifiedDate(DataUtils.getCurrentDateTime());
