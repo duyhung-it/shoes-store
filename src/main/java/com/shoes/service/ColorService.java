@@ -41,6 +41,8 @@ public interface ColorService {
      */
     Page<ColorDTO> findAll(Pageable pageable);
 
+    Page<ColorDTO> findDelete(Pageable pageable);
+
     /**
      * Get the "id" color.
      *

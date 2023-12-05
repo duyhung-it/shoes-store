@@ -114,6 +114,15 @@ public class BrandServiceImpl implements BrandService {
         return brandRepository.findAll(pageable).map(brandMapper::toDto);
     }
 
+    @Override
+    public Page<BrandDTO> findDelete(Pageable pageable) {
+        log.debug("Request to get all Brands with status = 0");
+
+        // Retrieve all brands with status = 0 from the repository and map them to BrandDTO
+        Page<Brand> brandsWithStatus1 = brandRepository.findByStatus(0, pageable);
+        return brandsWithStatus1.map(brandMapper::toDto);
+    }
+
     /**
      * Retrieve a single brand by its ID.
      *
