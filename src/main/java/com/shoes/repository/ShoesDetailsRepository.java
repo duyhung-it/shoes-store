@@ -4,6 +4,7 @@ import com.shoes.domain.ShoesDetails;
 import com.shoes.service.dto.ShoesDetailDTOCustom;
 import com.shoes.service.dto.ShoesDetailsDTO;
 import com.shoes.service.dto.ShopShoesDTO;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -37,9 +38,9 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "CONCAT(br.name, ' ', sh.name) as name, br.name as brandName ,sh.code as shoesCode, " +
         "sd.* ,\n" +
         "iu.path, \n" +
-        "GROUP_CONCAT(distinct sz.id) as sizes,\n" +
-        "GROUP_CONCAT(distinct cl.id) as colors,\n " +
-        "GROUP_CONCAT(distinct cl.name) as color_names ," +
+        "GROUP_CONCAT(distinct sz.id order by sz.id) as sizes,\n" +
+        "GROUP_CONCAT(distinct cl.id order by cl.id) as colors,\n " +
+        "GROUP_CONCAT(distinct cl.name order by cl.id) as color_names ," +
         "GROUP_CONCAT(distinct iu.path) as paths ," +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
@@ -77,27 +78,34 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
         "`shoes-store`.color cl ON sd.color_id = cl.id\n " +
-        "WHERE sd.status = 1 " +
+        "WHERE sd.status = 1 AND (sd.brand_id = :idBrands OR :idBrands IS NULL) and sd.price between :startPrice and :endPrice " +
         "GROUP BY shoes_id, brand_id\n"
     )
-    List<ShopShoesDTO> findDistinctByShoesAndBrandOrderBySellPriceDesc(@Param("idSizes") List<Long> idSizes);
+    List<ShopShoesDTO> findDistinctByShoesAndBrandOrderBySellPriceDesc(
+        @Param("idSizes") List<Long> idSizes,
+        @Param("idBrands") Long brandId,
+        @Param("startPrice") BigDecimal startPrice,
+        @Param("endPrice") BigDecimal endPrice
+    );
 
     @Query(
         nativeQuery = true,
         value = "    \n" +
         "SELECT\n" +
-        "    size_ids,\n" +
-        "    size_names,\n" +
-        "    color_ids,\n" +
-        "    color_names,\n" +
-        "    sd.*,\n" +
-        "    CONCAT(sh.name, ' ', br.name) as name,\n" +
-        "    iu.path,\n" +
-        "    GROUP_CONCAT(iu.path) as paths ,\n " +
+        "  size_ids,\n" +
+        "  size_names,\n" +
+        "  color_ids,\n" +
+        "  color_names,\n " +
+        "  sz.name as size_name,\n" +
+        "  cl.name as color_name ," +
+        "  sd.*,\n" +
+        "  CONCAT(sh.name, ' ', br.name) as name,\n" +
+        "  iu.path,\n" +
+        "  GROUP_CONCAT(iu.path) as paths ,\n " +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
         "GROUP_CONCAT(distinct d.discount_amount) as discount_amount ,  " +
-        "    (SELECT CAST(COALESCE(avg(fb.rate), 5) AS SIGNED)\n" +
+        " (SELECT CAST(COALESCE(avg(fb.rate), 5) AS SIGNED)\n" +
         "FROM feed_back fb\n" +
         "JOIN shoes_details ad ON fb.shoes_id = ad.id\n" +
         "JOIN jhi_user u ON fb.user_id = u.id\n" +
@@ -105,8 +113,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "FROM\n" +
         "    (\n" +
         "        SELECT\n" +
-        "            GROUP_CONCAT(DISTINCT sz.id) as size_ids,\n" +
-        "            GROUP_CONCAT(DISTINCT sz.name) as size_names\n" +
+        "            GROUP_CONCAT(DISTINCT sz.id order by sz.id) as size_ids,\n" +
+        "            GROUP_CONCAT(DISTINCT sz.name order by sz.id) as size_names\n" +
         "        FROM\n" +
         "            `shoes-store`.shoes_details sd\n" +
         "            JOIN `shoes-store`.size sz ON sd.size_id = sz.id\n" +
@@ -116,8 +124,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    ) size_subquery,\n" +
         "    (\n" +
         "        SELECT\n" +
-        "            GROUP_CONCAT(DISTINCT cl.id) as color_ids,\n" +
-        "            GROUP_CONCAT(DISTINCT cl.name) as color_names\n" +
+        "            GROUP_CONCAT(DISTINCT cl.id order by cl.id) as color_ids,\n" +
+        "            GROUP_CONCAT(DISTINCT cl.name order by cl.id) as color_names\n" +
         "        FROM\n" +
         "            `shoes-store`.shoes_details sd\n" +
         "            JOIN `shoes-store`.color cl ON sd.color_id = cl.id\n" +
@@ -135,7 +143,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "ON dsd.shoes_details_id = sd.shoes_id and dsd.status = 1 and dsd.brand_id = br.id\n" +
         "LEFT JOIN `shoes-store`.discount d \n" +
         "ON dsd.discount_id = d.id and d.start_date <= now() and d.end_date >= now() and d.status = 1 " +
-        "WHERE " +
+        "WHERE  " +
         "sd.brand_id = :brid and sd.shoes_id = :shid and sd.status = 1;\n"
     )
     ShopShoesDTO findDistinctByShoesAndBrandOrderBySellPriceDescOne(
