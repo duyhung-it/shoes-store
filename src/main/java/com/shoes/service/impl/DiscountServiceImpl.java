@@ -1,14 +1,8 @@
 package com.shoes.service.impl;
 
 import com.shoes.config.Constants;
-import com.shoes.domain.Brand;
-import com.shoes.domain.Discount;
-import com.shoes.domain.DiscountShoesDetails;
-import com.shoes.domain.Shoes;
-import com.shoes.repository.BrandRepository;
-import com.shoes.repository.DiscountRepository;
-import com.shoes.repository.DiscountShoesDetailsRepository;
-import com.shoes.repository.ShoesRepository;
+import com.shoes.domain.*;
+import com.shoes.repository.*;
 import com.shoes.service.DiscountService;
 import com.shoes.service.dto.*;
 import com.shoes.service.mapper.DiscountMapper;
@@ -52,6 +46,7 @@ public class DiscountServiceImpl implements DiscountService {
     private final String baseCode = "KM";
     private final BrandRepository brandRepository;
     private final ShoesRepository shoesRepository;
+    private final ShoesDetailsRepository shoesDetailsRepository;
 
     @Override
     public DiscountDTO save(DiscountCreateDTO discountDTO) {
@@ -71,6 +66,30 @@ public class DiscountServiceImpl implements DiscountService {
                     discountShoesDetails.getDiscountAmount().doubleValue() <= 0
                 ) {
                     throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
+                }
+            }
+        } else if (Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discountDTO.getDiscountMethod())) {
+            for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
+                ShoesDetails shoesDetail = shoesDetailsRepository.getMinPrice(discountShoesDetails.getShoesDetails().getId());
+
+                if (shoesDetail.getPrice().compareTo(discountDTO.getDiscountAmount()) < 0) {
+                    throw new BadRequestAlertException(
+                        "Số tiền giảm không được nhỏ hơn số tiền của giày" + discountShoesDetails.getShoesDetails().getName(),
+                        ENTITY_NAME,
+                        "date"
+                    );
+                }
+            }
+        } else {
+            for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
+                ShoesDetails shoesDetail = shoesDetailsRepository.getMinPrice(discountShoesDetails.getShoesDetails().getId());
+
+                if (shoesDetail.getPrice().compareTo(discountShoesDetails.getDiscountAmount()) < 0) {
+                    throw new BadRequestAlertException(
+                        "Số tiền giảm không được nhỏ hơn số tiền của giày" + discountShoesDetails.getShoesDetails().getName(),
+                        ENTITY_NAME,
+                        "date"
+                    );
                 }
             }
         }
