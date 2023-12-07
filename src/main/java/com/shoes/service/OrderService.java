@@ -66,7 +66,7 @@ public interface OrderService {
     OrderDTO updateStatus(Long idOrder);
     Map<Integer, Integer> getQuantityPerOrderStatus();
     void verifyOrder(List<Long> orderId);
-    void cancelOrder(Long orderId);
+    void cancelOrder(List<Long> orderId);
     byte[] getMailVerify(Long orderId);
     List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login);
     Order getOrderByCode(String code);

@@ -52,13 +52,22 @@ public class FeedBackResource {
      *
      * @param feedBackDTO the feedBackDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new feedBackDTO, or with status {@code 400 (Bad Request)} if the feedBack has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/feed-backs")
     public ResponseEntity<FeedBackDTO> createFeedBack(@RequestBody FeedBackDTO feedBackDTO) throws URISyntaxException {
         log.debug("REST request to save FeedBack : {}", feedBackDTO);
         if (feedBackDTO.getId() != null) {
             throw new BadRequestAlertException("A new feedBack cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        // Kiểm tra xem người dùng đã mua giày chưa
+        Integer hasFeedBack = feedBackRepository.checkComment(feedBackDTO.getUser().getId(), feedBackDTO.getShoes().getId());
+        if (hasFeedBack == 1) {
+            throw new BadRequestAlertException("Bạn đã feedback đôi giày", ENTITY_NAME, "hascomment");
+        }
+        Integer hasBuy = feedBackRepository.checkBuy(feedBackDTO.getUser().getId(), feedBackDTO.getShoes().getId());
+        if (hasBuy != 1) {
+            throw new BadRequestAlertException("Bạn phải mua đôi giày để bình luận", ENTITY_NAME, "shoenotpurchased");
         }
         FeedBackDTO result = feedBackService.save(feedBackDTO);
         return ResponseEntity
@@ -146,9 +155,8 @@ public class FeedBackResource {
     @GetMapping("/feed-backs")
     public ResponseEntity<List<FeedBackDTO>> getAllFeedBacks(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of FeedBacks");
-        Page<FeedBackDTO> page = feedBackService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<FeedBackDTO> page = feedBackService.findAll();
+        return ResponseEntity.ok().body(page);
     }
 
     /**
@@ -184,5 +192,24 @@ public class FeedBackResource {
     public ResponseEntity<List<ShoesFeedBackDTO>> getAllFeedBacks(@RequestParam Integer shid, @RequestParam Integer brid) {
         log.debug("REST request to get a page of FeedBacks");
         return ResponseEntity.ok().body(feedBackRepository.findAllFeedBackByShoesAndBrandDTO(shid, brid));
+    }
+
+    @GetMapping("/feed-backs/status-update")
+    public ResponseEntity<FeedBackDTO> updateStatusFeedBack(@RequestParam Integer id, @RequestParam Integer status)
+        throws URISyntaxException {
+        log.debug("REST request to update FeedBack : {}, {}", id, status);
+        if (id == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        Long idd = Long.valueOf(id.longValue());
+        if (!feedBackRepository.existsById(idd)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        FeedBackDTO result = feedBackService.updateFeedbackStatus(idd, status);
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .body(result);
     }
 }

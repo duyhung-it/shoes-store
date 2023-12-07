@@ -68,6 +68,10 @@ public class ShoesDetailsDTO implements Serializable {
         this.color = new ColorDTO(shoesDetails.getColor());
     }
 
+    public ShoesDetailsDTO(Long shoesDetailsId) {
+        this.id = shoesDetailsId;
+    }
+
     public Long getId() {
         return id;
     }

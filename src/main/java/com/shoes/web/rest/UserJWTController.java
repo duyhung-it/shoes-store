@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shoes.domain.User;
 import com.shoes.security.jwt.JWTFilter;
 import com.shoes.security.jwt.TokenProvider;
+import com.shoes.service.CartService;
 import com.shoes.service.UserService;
+import com.shoes.service.dto.CartDTO;
+import com.shoes.service.dto.UserDTO;
 import com.shoes.web.rest.vm.LoginVM;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,8 @@ public class UserJWTController {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final CartService cartService;
+
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@RequestBody LoginVM loginVM) {
         System.out.println(loginVM);
@@ -58,18 +63,24 @@ public class UserJWTController {
         String login = RandomUtil.generateResetKey();
         User user = new User();
         LoginVM loginVM = new LoginVM();
-        if(userService.findOneByEmailIgnoreCase(email).isPresent()){
+        if (userService.findOneByEmailIgnoreCase(email).isPresent()) {
             user = userService.findOneByEmailIgnoreCase(email).get();
             loginVM.setLogin(user.getLogin());
             loginVM.setPasswordHash(user.getPassword());
             loginVM.setRememberMe(false);
-        }else{
+        } else {
             user.setEmail(token.getPrincipal().getAttribute("email"));
             user.setLogin(login);
             user.setFirstName(token.getPrincipal().getAttribute("name"));
             user.setActivated(true);
             user.setPassword(passwordEncoder.encode(login));
             user = userService.save(user);
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(user.getId());
+            CartDTO cartDTO = new CartDTO();
+            cartDTO.setOwner(userDTO);
+            cartDTO.setStatus(1);
+            cartService.save(cartDTO);
             loginVM.setLogin(user.getLogin());
             loginVM.setPasswordHash(user.getPassword());
             loginVM.setRememberMe(false);

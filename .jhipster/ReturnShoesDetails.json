@@ -1,17 +1,21 @@
 {
   "applications": "*",
-  "changelogDate": "20231121090531",
+  "changelogDate": "20231128150834",
   "dto": "mapstruct",
   "embedded": false,
-  "entityTableName": "feed_back",
+  "entityTableName": "return_shoes_details",
   "fields": [
     {
-      "fieldName": "rate",
+      "fieldName": "quantity",
       "fieldType": "Integer"
     },
     {
-      "fieldName": "comment",
-      "fieldType": "String"
+      "fieldName": "price",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "discount",
+      "fieldType": "Integer"
     },
     {
       "fieldName": "status",
@@ -36,18 +40,18 @@
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
-  "name": "FeedBack",
-  "pagination": "pagination",
+  "name": "ReturnShoesDetails",
+  "pagination": "no",
   "readOnly": false,
   "relationships": [
     {
-      "otherEntityName": "user",
-      "relationshipName": "user",
+      "otherEntityName": "shoesDetails",
+      "relationshipName": "shoesDetails",
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "shoes",
-      "relationshipName": "shoes",
+      "otherEntityName": "returnOrderDetails",
+      "relationshipName": "returnOrderDetails",
       "relationshipType": "many-to-one"
     }
   ],

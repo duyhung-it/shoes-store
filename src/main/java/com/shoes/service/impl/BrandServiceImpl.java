@@ -52,7 +52,6 @@ public class BrandServiceImpl implements BrandService {
         return brandMapper.toDto(brand);
     }
 
-
     /**
      * Update an existing brand.
      *
@@ -74,7 +73,6 @@ public class BrandServiceImpl implements BrandService {
         // Convert the updated Brand entity back to BrandDTO
         return brandMapper.toDto(brand);
     }
-
 
     /**
      * Partially update an existing brand.
@@ -114,6 +112,15 @@ public class BrandServiceImpl implements BrandService {
         return brandRepository.findAll(pageable).map(brandMapper::toDto);
     }
 
+    @Override
+    public Page<BrandDTO> findDelete(Pageable pageable) {
+        log.debug("Request to get all Brands with status = 0");
+
+        // Retrieve all brands with status = 0 from the repository and map them to BrandDTO
+        Page<Brand> brandsWithStatus1 = brandRepository.findByStatus(0, pageable);
+        return brandsWithStatus1.map(brandMapper::toDto);
+    }
+
     /**
      * Retrieve a single brand by its ID.
      *
@@ -145,7 +152,6 @@ public class BrandServiceImpl implements BrandService {
             brandRepository.save(brand);
         }
     }
-
 
     /**
      * Search for brands by their code and/or name with optional pagination.
@@ -179,6 +185,7 @@ public class BrandServiceImpl implements BrandService {
         // Map the results to a Page<BrandDTO>
         return resultPage.map(brandMapper::toDto);
     }
+
     /**
      * Retrieve all brands with status = 1 and optional pagination.
      *
@@ -194,5 +201,4 @@ public class BrandServiceImpl implements BrandService {
         Page<Brand> brandsWithStatus1 = brandRepository.findByStatus(1, pageable);
         return brandsWithStatus1.map(brandMapper::toDto);
     }
-
 }
