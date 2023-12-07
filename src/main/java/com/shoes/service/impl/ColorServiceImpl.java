@@ -48,7 +48,6 @@ public class ColorServiceImpl implements ColorService {
         return colorMapper.toDto(color);
     }
 
-
     @Override
     public ColorDTO update(ColorDTO colorDTO) {
         log.debug("Request to update Color : {}", colorDTO);
@@ -65,7 +64,6 @@ public class ColorServiceImpl implements ColorService {
         // Convert the updated Color entity back to ColorDTO
         return colorMapper.toDto(color);
     }
-
 
     @Override
     public Optional<ColorDTO> partialUpdate(ColorDTO colorDTO) {
@@ -100,7 +98,6 @@ public class ColorServiceImpl implements ColorService {
         return colorsWithStatus1.map(colorMapper::toDto);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public Optional<ColorDTO> findOne(Long id) {
@@ -123,5 +120,4 @@ public class ColorServiceImpl implements ColorService {
             colorRepository.save(color);
         }
     }
-
 }

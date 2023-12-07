@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * A DTO for the {@link com.shoes.domain.ShoesDetails} entity.

@@ -4,9 +4,11 @@ import com.shoes.config.Constants;
 import com.shoes.domain.User;
 import com.shoes.repository.UserRepository;
 import com.shoes.security.AuthoritiesConstants;
+import com.shoes.service.CartService;
 import com.shoes.service.MailService;
 import com.shoes.service.UserService;
 import com.shoes.service.dto.AdminUserDTO;
+import com.shoes.service.dto.CartDTO;
 import com.shoes.service.dto.OrderDTO;
 import com.shoes.service.dto.UserDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
@@ -14,6 +16,7 @@ import com.shoes.web.rest.errors.EmailAlreadyUsedException;
 import com.shoes.web.rest.errors.LoginAlreadyUsedException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.*;
 import java.util.Collections;
 import javax.validation.Valid;
@@ -91,6 +94,8 @@ public class UserResource {
 
     private final MailService mailService;
 
+    private final CartService cartService;
+
     /**
      * {@code POST  /admin/users}  : Creates a new user.
      * <p>
@@ -105,18 +110,28 @@ public class UserResource {
      */
     @PostMapping("/users")
     //    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<User> createUser(@Valid @RequestBody AdminUserDTO userDTO) throws URISyntaxException {
-        log.debug("REST request to save User : {}", userDTO);
+    public ResponseEntity<User> createUser(@Valid @RequestBody AdminUserDTO adminUsserDTO) throws URISyntaxException {
+        log.debug("REST request to save User : {}", adminUsserDTO);
 
-        if (userDTO.getId() != null) {
+        if (adminUsserDTO.getId() != null) {
             throw new BadRequestAlertException("A new user cannot already have an ID", "userManagement", "idexists");
             // Lowercase the user login before comparing with database
-        } else if (userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).isPresent()) {
+        } else if (userRepository.findOneByLogin(adminUsserDTO.getLogin().toLowerCase()).isPresent()) {
             throw new LoginAlreadyUsedException();
-        } else if (userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).isPresent()) {
+        } else if (userRepository.findOneByEmailIgnoreCase(adminUsserDTO.getEmail()).isPresent()) {
             throw new EmailAlreadyUsedException();
         } else {
-            User newUser = userService.createUser(userDTO);
+            User newUser = userService.createUser(adminUsserDTO);
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(adminUsserDTO.getId());
+            userDTO.setLogin(adminUsserDTO.getLogin());
+
+            CartDTO cartDTO = new CartDTO();
+            cartDTO.setCreatedDate(Instant.now());
+            cartDTO.setOwner(userDTO);
+            cartService.save(cartDTO);
+
             return ResponseEntity
                 .created(new URI("/api/admin/users/" + newUser.getLogin()))
                 .headers(

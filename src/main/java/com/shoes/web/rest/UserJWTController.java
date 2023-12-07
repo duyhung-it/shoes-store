@@ -63,12 +63,12 @@ public class UserJWTController {
         String login = RandomUtil.generateResetKey();
         User user = new User();
         LoginVM loginVM = new LoginVM();
-        if(userService.findOneByEmailIgnoreCase(email).isPresent()){
+        if (userService.findOneByEmailIgnoreCase(email).isPresent()) {
             user = userService.findOneByEmailIgnoreCase(email).get();
             loginVM.setLogin(user.getLogin());
             loginVM.setPasswordHash(user.getPassword());
             loginVM.setRememberMe(false);
-        }else{
+        } else {
             user.setEmail(token.getPrincipal().getAttribute("email"));
             user.setLogin(login);
             user.setFirstName(token.getPrincipal().getAttribute("name"));

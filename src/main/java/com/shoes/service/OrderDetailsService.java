@@ -1,5 +1,6 @@
 package com.shoes.service;
 
+import com.shoes.service.dto.OrderDetailDTOInterface;
 import com.shoes.service.dto.OrderDetailsDTO;
 import java.util.List;
 import java.util.Optional;
@@ -53,4 +54,5 @@ public interface OrderDetailsService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+    List<OrderDetailDTOInterface> findAllByOrder_Id(Long id);
 }
