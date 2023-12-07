@@ -28,5 +28,8 @@ public interface CartDetailDTO {
     String getNameshoes();
     String getNamesize();
     String getNamecolor();
+    Integer getDiscountmethod();
+    BigDecimal getDiscountamount_1_2();
+    BigDecimal getDiscountamount_3_4();
 
 }
