@@ -3,6 +3,8 @@ package com.shoes.service.impl;
 import com.shoes.domain.OrderDetails;
 import com.shoes.repository.OrderDetailsRepository;
 import com.shoes.service.OrderDetailsService;
+import com.shoes.service.dto.CartDetailsDTO;
+import com.shoes.service.dto.OrderDetailDTOInterface;
 import com.shoes.service.dto.OrderDetailsDTO;
 import com.shoes.service.mapper.OrderDetailsMapper;
 import java.util.LinkedList;
@@ -81,5 +83,10 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     public void delete(Long id) {
         log.debug("Request to delete OrderDetails : {}", id);
         orderDetailsRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OrderDetailDTOInterface> findAllByOrder_Id(Long id) {
+        return orderDetailsRepository.findAllByOrder_Id(id);
     }
 }
