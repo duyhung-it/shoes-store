@@ -66,7 +66,7 @@ public interface PaymentService {
         String email,
         String address,
         long shipPrice,
-        long idOwner,
+        String idOwner,
         String arrSanPham,
         String arrQuantity
     ) throws UnsupportedEncodingException;

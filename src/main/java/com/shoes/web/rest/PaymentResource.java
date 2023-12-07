@@ -89,7 +89,7 @@ public class PaymentResource {
         @RequestParam("email") String email,
         @RequestParam("address") String address,
         @RequestParam("shipPrice") long shipPrice,
-        @RequestParam("idOwner") long idOwner,
+        @RequestParam("idOwner") String idOwner,
         @RequestParam("arrSanPham") String arrSanPham,
         @RequestParam("arrQuantity") String arrQuantity
     ) throws UnsupportedEncodingException {
@@ -122,10 +122,18 @@ public class PaymentResource {
             String email = orderInfoParts[2];
             String address = orderInfoParts[3];
             long shipPrice = Long.parseLong(orderInfoParts[4]);
-            long idOwner = Long.parseLong(orderInfoParts[5]);
             String arrSanPham = orderInfoParts[6];
             String arrQuantity = orderInfoParts[7];
-            User owner = userRepository.findOneById(idOwner);
+            String idOwnerStr = orderInfoParts[5];
+            User owner = new User();
+            System.out.println(idOwnerStr);
+            if (idOwnerStr == "null") {
+                System.out.println("vao day an lon o day a");
+                long idOwner = Long.parseLong(idOwnerStr);
+                owner = userRepository.findOneById(idOwner);
+            } else {
+                owner = null;
+            }
 
             Payment payment = new Payment();
             payment.setCode(orderCode);
@@ -155,14 +163,12 @@ public class PaymentResource {
             List<OrderDetails> orderDetailsList = new ArrayList<>();
             ShoesDetails shoesDetails;
             OrderDetails orderDetails;
-            CartDetails cartDetails;
             for (int i = 0; i < sanPhamParts.length; i++) {
                 orderDetails = new OrderDetails();
                 long id = Long.parseLong(sanPhamParts[i]);
                 System.out.println(id);
                 Integer quantity = Integer.valueOf(quantityParts[i]);
-                cartDetails = cartDetailsRepository.findByIdAndStatus(id, 1);
-                shoesDetails = shoesDetailsRepository.findByIdAndStatus(cartDetails.getShoesDetails().getId(), 1);
+                shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
 
                 orderDetails.setQuantity(quantity);
                 orderDetails.setPrice(shoesDetails.getPrice());
@@ -173,15 +179,14 @@ public class PaymentResource {
                 orderDetails.setShoesDetails(shoesDetails);
                 orderDetailsList.add(orderDetails);
 
-                cartDetailsRepository.delete(cartDetails);
+                shoesDetails.setQuantity(shoesDetails.getQuantity() - quantity);
+                shoesDetailsRepository.save(shoesDetails);
             }
             orderDetailsRepository.saveAll(orderDetailsList);
-            //            byte[] byteArrayResource = this.orderService.getMailVerify(order.getId());
-            //            mailService.sendEmail1("duongle5279@gmail.com", "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
 
             response.sendRedirect("http://localhost:4200/client/pay-success");
         } else {
-            //            response.sendRedirect("http://localhost:4200/client/pay-faile");
+            response.sendRedirect("http://localhost:4200/client/pay-faile");
         }
     }
 

@@ -1,7 +1,11 @@
 package com.shoes.web.rest;
 
+import com.shoes.domain.Order;
+import com.shoes.domain.OrderDetails;
 import com.shoes.repository.OrderDetailsRepository;
 import com.shoes.service.OrderDetailsService;
+import com.shoes.service.OrderService;
+import com.shoes.service.dto.OrderDetailDTOInterface;
 import com.shoes.service.dto.OrderDetailsDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -12,7 +16,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -32,11 +38,16 @@ public class OrderDetailsResource {
     private String applicationName;
 
     private final OrderDetailsService orderDetailsService;
-
+    private final OrderService orderService;
     private final OrderDetailsRepository orderDetailsRepository;
 
-    public OrderDetailsResource(OrderDetailsService orderDetailsService, OrderDetailsRepository orderDetailsRepository) {
+    public OrderDetailsResource(
+        OrderDetailsService orderDetailsService,
+        OrderService orderService,
+        OrderDetailsRepository orderDetailsRepository
+    ) {
         this.orderDetailsService = orderDetailsService;
+        this.orderService = orderService;
         this.orderDetailsRepository = orderDetailsRepository;
     }
 
@@ -168,5 +179,18 @@ public class OrderDetailsResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @Transactional
+    @GetMapping("/orders/{code}/details")
+    public ResponseEntity<?> getOrderDetailsByOrderCode(@PathVariable String code) {
+        Order order = orderService.getOrderByCode(code);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+        }
+
+        List<OrderDetailDTOInterface> list = orderDetailsService.findAllByOrder_Id(order.getId());
+        list.forEach(System.out::println);
+        return ResponseEntity.ok(list);
     }
 }

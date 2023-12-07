@@ -97,7 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
         String email,
         String address,
         long shipPrice,
-        long idOwner,
+        String idOwner,
         String arrSanPham,
         String arrQuantity
     ) throws UnsupportedEncodingException {
@@ -121,7 +121,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         vnp_Params.put("vnp_BankCode", bankCode);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang: " + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
 
         vnp_Params.put("vnp_Locale", "vn");

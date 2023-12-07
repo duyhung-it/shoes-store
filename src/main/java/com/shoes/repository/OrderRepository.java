@@ -63,4 +63,5 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     BigDecimal getRevenueOnline();
 
     List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login);
+    Order getOrderByCode(String code);
 }
