@@ -106,6 +106,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
         "GROUP_CONCAT(distinct d.discount_amount) as discount_amount ,  " +
+        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount_3_4 ,  " +
         " (SELECT CAST(COALESCE(avg(fb.rate), 5) AS SIGNED)\n" +
         "FROM feed_back fb\n" +
         "JOIN shoes_details ad ON fb.shoes_id = ad.id\n" +

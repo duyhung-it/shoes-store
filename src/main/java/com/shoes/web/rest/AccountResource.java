@@ -2,14 +2,18 @@ package com.shoes.web.rest;
 
 import com.shoes.domain.User;
 import com.shoes.repository.UserRepository;
+import com.shoes.service.CartService;
 import com.shoes.service.MailService;
 import com.shoes.service.UserService;
 import com.shoes.service.dto.AdminUserDTO;
+import com.shoes.service.dto.CartDTO;
 import com.shoes.service.dto.PasswordChangeDTO;
+import com.shoes.service.dto.UserDTO;
 import com.shoes.util.SecurityUtils;
 import com.shoes.web.rest.errors.*;
 import com.shoes.web.rest.vm.KeyAndPasswordVM;
 import com.shoes.web.rest.vm.ManagedUserVM;
+import java.time.Instant;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -44,6 +48,8 @@ public class AccountResource {
 
     private final MailService mailService;
 
+    private final CartService cartService;
+
     /**
      * {@code POST  /register} : register the user.
      *
@@ -59,6 +65,14 @@ public class AccountResource {
             throw new InvalidPasswordException();
         }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPasswordHash());
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(managedUserVM.getId());
+        userDTO.setLogin(managedUserVM.getLogin());
+
+        CartDTO cartDTO = new CartDTO();
+        cartDTO.setCreatedDate(Instant.now());
+        cartDTO.setOwner(userDTO);
+        cartService.save(cartDTO);
         mailService.sendActivationEmail(user);
     }
 

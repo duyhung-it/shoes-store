@@ -2,11 +2,12 @@ package com.shoes.web.rest;
 
 import com.shoes.repository.OrderReturnRepository;
 import com.shoes.service.OrderReturnService;
-import com.shoes.service.dto.OrderReturnDTO;
+import com.shoes.service.dto.*;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class OrderReturnResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/order-returns")
-    public ResponseEntity<OrderReturnDTO> createOrderReturn(@RequestBody OrderReturnDTO orderReturnDTO) throws URISyntaxException {
+    public ResponseEntity<OrderReturnDTO> createOrderReturn(@RequestBody OrderReturnReqDTO orderReturnDTO) throws URISyntaxException {
         log.debug("REST request to save OrderReturn : {}", orderReturnDTO);
         if (orderReturnDTO.getId() != null) {
             throw new BadRequestAlertException("A new orderReturn cannot already have an ID", ENTITY_NAME, "idexists");
@@ -141,6 +142,35 @@ public class OrderReturnResource {
         return orderReturnService.findAll();
     }
 
+    @PostMapping("/order-returns/verify")
+    public OrderReturnDTO verify(@RequestBody VerifyOrderReturnDTO verifyOrderReturnDTO) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.verify(verifyOrderReturnDTO);
+    }
+
+    @GetMapping("/order-returns/cancel/{id}")
+    public OrderReturnDTO cancel(@PathVariable Long id) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.cancel(id);
+    }
+
+    @GetMapping("/order-returns/finish/{id}")
+    public OrderReturnDTO finish(@PathVariable Long id) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.finish(id);
+    }
+
+    @PostMapping("/order-returns/search")
+    public List<OrderReturnSearchResDTO> getAllOrderReturns(@RequestBody OrderSearchReqDTO searchReqDTO) {
+        log.debug("REST request to get all OrderReturns");
+        return orderReturnService.search(searchReqDTO);
+    }
+
+    @GetMapping("/order-returns/quantity")
+    public ResponseEntity<Map<Integer, Integer>> getQuantity() {
+        return ResponseEntity.ok(orderReturnService.getQuantityPerOrderStatus());
+    }
+
     /**
      * {@code GET  /order-returns/:id} : get the "id" orderReturn.
      *
@@ -150,8 +180,8 @@ public class OrderReturnResource {
     @GetMapping("/order-returns/{id}")
     public ResponseEntity<OrderReturnDTO> getOrderReturn(@PathVariable Long id) {
         log.debug("REST request to get OrderReturn : {}", id);
-        Optional<OrderReturnDTO> orderReturnDTO = orderReturnService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(orderReturnDTO);
+        OrderReturnDTO orderReturnDTO = orderReturnService.findOne(id);
+        return ResponseEntity.ok(orderReturnDTO);
     }
 
     /**

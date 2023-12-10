@@ -1,16 +1,45 @@
 package com.shoes.domain;
 
+import com.shoes.service.dto.OrderReturnSearchResDTO;
+import com.shoes.service.dto.OrderSearchResDTO;
+import com.shoes.service.dto.OrderStatusDTO;
+import com.shoes.service.dto.RevenueDTO;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 import javax.persistence.*;
+import lombok.Getter;
 
 /**
  * A OrderReturn.
  */
+@Getter
 @Entity
 @Table(name = "order_return")
+@SqlResultSetMappings(
+    value = {
+        @SqlResultSetMapping(
+            name = "orderReturnResult",
+            classes = {
+                @ConstructorResult(
+                    targetClass = OrderReturnSearchResDTO.class,
+                    columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "order_return_code", type = String.class),
+                        @ColumnResult(name = "order_code", type = String.class),
+                        @ColumnResult(name = "login", type = String.class),
+                        @ColumnResult(name = "phone", type = String.class),
+                        @ColumnResult(name = "status", type = Integer.class),
+                        @ColumnResult(name = "last_modified_by", type = String.class),
+                        @ColumnResult(name = "created_date", type = Instant.class),
+                    }
+                ),
+            }
+        ),
+    }
+)
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class OrderReturn implements Serializable {
+public class OrderReturn extends AbstractAuditingEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,10 +77,6 @@ public class OrderReturn implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public Long getId() {
-        return this.id;
-    }
-
     public OrderReturn id(Long id) {
         this.setId(id);
         return this;
@@ -59,10 +84,6 @@ public class OrderReturn implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getCode() {
-        return this.code;
     }
 
     public OrderReturn code(String code) {
@@ -74,10 +95,6 @@ public class OrderReturn implements Serializable {
         this.code = code;
     }
 
-    public String getTitle() {
-        return this.title;
-    }
-
     public OrderReturn title(String title) {
         this.setTitle(title);
         return this;
@@ -85,10 +102,6 @@ public class OrderReturn implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return this.description;
     }
 
     public OrderReturn description(String description) {
@@ -100,10 +113,6 @@ public class OrderReturn implements Serializable {
         this.description = description;
     }
 
-    public Integer getStatus() {
-        return this.status;
-    }
-
     public OrderReturn status(Integer status) {
         this.setStatus(status);
         return this;
@@ -111,10 +120,6 @@ public class OrderReturn implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public String getCreatedBy() {
-        return this.createdBy;
     }
 
     public OrderReturn createdBy(String createdBy) {
@@ -126,10 +131,6 @@ public class OrderReturn implements Serializable {
         this.createdBy = createdBy;
     }
 
-    public Instant getCreatedDate() {
-        return this.createdDate;
-    }
-
     public OrderReturn createdDate(Instant createdDate) {
         this.setCreatedDate(createdDate);
         return this;
@@ -137,10 +138,6 @@ public class OrderReturn implements Serializable {
 
     public void setCreatedDate(Instant createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public String getLastModifiedBy() {
-        return this.lastModifiedBy;
     }
 
     public OrderReturn lastModifiedBy(String lastModifiedBy) {
@@ -152,10 +149,6 @@ public class OrderReturn implements Serializable {
         this.lastModifiedBy = lastModifiedBy;
     }
 
-    public Instant getLastModifiedDate() {
-        return this.lastModifiedDate;
-    }
-
     public OrderReturn lastModifiedDate(Instant lastModifiedDate) {
         this.setLastModifiedDate(lastModifiedDate);
         return this;
@@ -163,10 +156,6 @@ public class OrderReturn implements Serializable {
 
     public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Order getOrder() {
-        return this.order;
     }
 
     public void setOrder(Order order) {

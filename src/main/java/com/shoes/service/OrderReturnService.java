@@ -1,8 +1,10 @@
 package com.shoes.service;
 
-import com.shoes.service.dto.OrderReturnDTO;
+import com.shoes.service.dto.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Interface for managing {@link com.shoes.domain.OrderReturn}.
@@ -14,7 +16,10 @@ public interface OrderReturnService {
      * @param orderReturnDTO the entity to save.
      * @return the persisted entity.
      */
-    OrderReturnDTO save(OrderReturnDTO orderReturnDTO);
+    OrderReturnDTO save(OrderReturnReqDTO orderReturnDTO);
+    OrderReturnDTO verify(VerifyOrderReturnDTO verifyOrderReturnDTO);
+    OrderReturnDTO cancel(Long id);
+    OrderReturnDTO finish(Long id);
 
     /**
      * Updates a orderReturn.
@@ -23,7 +28,9 @@ public interface OrderReturnService {
      * @return the persisted entity.
      */
     OrderReturnDTO update(OrderReturnDTO orderReturnDTO);
+    List<OrderReturnSearchResDTO> search(OrderSearchReqDTO searchReqDTO);
 
+    Map<Integer, Integer> getQuantityPerOrderStatus();
     /**
      * Partially updates a orderReturn.
      *
@@ -45,7 +52,7 @@ public interface OrderReturnService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<OrderReturnDTO> findOne(Long id);
+    OrderReturnDTO findOne(Long id);
 
     /**
      * Delete the "id" orderReturn.

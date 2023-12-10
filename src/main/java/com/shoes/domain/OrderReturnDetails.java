@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class OrderReturnDetails implements Serializable {
+public class OrderReturnDetails extends AbstractAuditingEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,4 +57,8 @@ public class OrderReturnDetails implements Serializable {
 
     @ManyToOne
     private OrderReturn orderReturn;
+
+    public OrderReturnDetails(Long id) {
+        this.id = id;
+    }
 }

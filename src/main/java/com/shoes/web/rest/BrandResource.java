@@ -148,6 +148,14 @@ public class BrandResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("/brands/removed")
+    public ResponseEntity<List<BrandDTO>> getAllDelete(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of Brands");
+        Page<BrandDTO> page = brandService.findDelete(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
     /**
      * {@code GET  /brands/:id} : get the "id" brand.
      *

@@ -48,7 +48,6 @@ public class ColorServiceImpl implements ColorService {
         return colorMapper.toDto(color);
     }
 
-
     @Override
     public ColorDTO update(ColorDTO colorDTO) {
         log.debug("Request to update Color : {}", colorDTO);
@@ -65,7 +64,6 @@ public class ColorServiceImpl implements ColorService {
         // Convert the updated Color entity back to ColorDTO
         return colorMapper.toDto(color);
     }
-
 
     @Override
     public Optional<ColorDTO> partialUpdate(ColorDTO colorDTO) {
@@ -86,12 +84,19 @@ public class ColorServiceImpl implements ColorService {
     @Transactional(readOnly = true)
     public Page<ColorDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Colors with status = 1");
-
         // Retrieve all colors with status = 1 from the repository and map them to ColorDTO
         Page<Color> colorsWithStatus1 = colorRepository.findByStatus(1, pageable);
         return colorsWithStatus1.map(colorMapper::toDto);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ColorDTO> findDelete(Pageable pageable) {
+        log.debug("Request to get all Colors with status = 1");
+        // Retrieve all colors with status = 1 from the repository and map them to ColorDTO
+        Page<Color> colorsWithStatus1 = colorRepository.findByStatus(0, pageable);
+        return colorsWithStatus1.map(colorMapper::toDto);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -115,5 +120,4 @@ public class ColorServiceImpl implements ColorService {
             colorRepository.save(color);
         }
     }
-
 }

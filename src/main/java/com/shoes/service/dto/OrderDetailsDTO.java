@@ -1,5 +1,6 @@
 package com.shoes.service.dto;
 
+import com.shoes.domain.OrderDetails;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,8 +15,8 @@ import lombok.NoArgsConstructor;
  * A DTO for the {@link com.shoes.domain.OrderDetails} entity.
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class OrderDetailsDTO implements Serializable {
 
@@ -43,4 +44,8 @@ public class OrderDetailsDTO implements Serializable {
 
     @NotNull
     private ShoesDetailsDTO shoesDetails;
+
+    public OrderDetailsDTO(Long id) {
+        this.id = id;
+    }
 }

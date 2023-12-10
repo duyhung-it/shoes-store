@@ -1,11 +1,8 @@
 package com.shoes.service.dto;
 
-import com.shoes.domain.ShoesDetails;
-
 import java.math.BigDecimal;
 
-public interface CartDetailDTO {
-
+public interface OrderDetailDTOInterface {
     Integer getId();
 
     Integer getIdsh();
@@ -23,13 +20,10 @@ public interface CartDetailDTO {
 
     String getPath();
 
-    BigDecimal getPrice();
+    BigDecimal getPriceShoes();
 
-    String getNameshoes();
-    String getNamesize();
-    String getNamecolor();
-    Integer getDiscountmethod();
-    BigDecimal getDiscountamount_1_2();
-    BigDecimal getDiscountamount_3_4();
-
+    String getNameShoes();
+    String getNameSize();
+    String getNameColor();
+    String getNameBrand();
 }
