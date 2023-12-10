@@ -1,18 +1,26 @@
 package com.shoes.service.impl;
 
+import com.shoes.config.Constants;
 import com.shoes.config.PaypalConfig;
-import com.shoes.domain.Order;
-import com.shoes.domain.Payment;
-import com.shoes.repository.PaymentRepository;
+import com.shoes.domain.*;
+import com.shoes.repository.*;
+import com.shoes.service.MailService;
+import com.shoes.service.OrderService;
 import com.shoes.service.PaymentService;
 import com.shoes.service.dto.PaymentDTO;
+import com.shoes.service.mapper.OrderMapper;
 import com.shoes.service.mapper.PaymentMapper;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
     private final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
@@ -32,11 +41,15 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
 
     private final PaymentMapper paymentMapper;
-
-    public PaymentServiceImpl(PaymentRepository paymentRepository, PaymentMapper paymentMapper) {
-        this.paymentRepository = paymentRepository;
-        this.paymentMapper = paymentMapper;
-    }
+    private final UserRepository userRepository;
+    private final OrderService orderService;
+    private final OrderMapper orderMapper;
+    private final OrderRepository orderRepository;
+    private final ShoesDetailsRepository shoesDetailsRepository;
+    private final OrderDetailsRepository orderDetailsRepository;
+    private final CartDetailsRepository cartDetailsRepository;
+    private final MailService mailService;
+    private final CartRepository cartRepository;
 
     @Override
     public PaymentDTO save(PaymentDTO paymentDTO) {
@@ -220,5 +233,96 @@ public class PaymentServiceImpl implements PaymentService {
         } else {
             return -1;
         }
+    }
+
+    @Override
+    public Order payCallBack(HttpServletRequest request, HttpServletResponse response) {
+        String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
+        String orderCode = request.getParameter("vnp_TxnRef");
+        String orderInfo = request.getParameter("order");
+        System.out.println(orderInfo);
+        long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
+        String[] orderInfoParts = orderInfo.split("_");
+
+        if ("00".equals(vnp_ResponseCode)) {
+            String receivedBy = orderInfoParts[0];
+            String phone = orderInfoParts[1];
+            String email = orderInfoParts[2];
+            String address = orderInfoParts[3];
+            long shipPrice = Long.parseLong(orderInfoParts[4]);
+            String arrSanPham = orderInfoParts[6];
+            String arrQuantity = orderInfoParts[7];
+            String idOwnerStr = orderInfoParts[5];
+            String[] sanPhamParts = arrSanPham.split("a");
+            String[] quantityParts = arrQuantity.split("b");
+            User owner;
+            System.out.println(idOwnerStr);
+            if (!idOwnerStr.equalsIgnoreCase("null")) {
+                long idOwner = Long.parseLong(idOwnerStr);
+                owner = userRepository.findOneById(idOwner);
+                Cart cart = cartRepository.findByOwnerId(owner.getId());
+                List<CartDetails> cartDetailsList = cartDetailsRepository.findCartDetailsByCart(cart);
+                for (CartDetails c : cartDetailsList) {
+                    for (String idSP : sanPhamParts) {
+                        Long shoesDetailId = Long.parseLong(idSP);
+                        if (c.getShoesDetails().getId() == shoesDetailId) {
+                            cartDetailsRepository.delete(c);
+                        }
+                    }
+                }
+            } else {
+                owner = null;
+            }
+
+            Payment payment = new Payment();
+            payment.setCode(orderCode);
+            payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
+            payment.setPaymentStatus(Constants.PAID_METHOD.ON);
+            payment.setCreatedBy("system");
+            payment.setCreatedDate(Instant.now());
+            paymentRepository.save(payment);
+
+            Order order = new Order();
+            order.setCode(orderCode);
+            order.setAddress(address);
+            order.setPhone(phone);
+            order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
+            order.setShipPrice(BigDecimal.valueOf(shipPrice));
+            order.setTotalPrice(BigDecimal.valueOf(price));
+            order.setReceivedBy(receivedBy);
+            order.setStatus(Constants.ORDER_STATUS.PENDING);
+            order.setCreatedBy("system");
+            order.setCreatedDate(Instant.now());
+            order.setOwner(owner);
+            order.setMailAddress(email);
+            order.setPayment(payment);
+            orderRepository.save(order);
+
+            List<OrderDetails> orderDetailsList = new ArrayList<>();
+            ShoesDetails shoesDetails;
+            OrderDetails orderDetails;
+            for (int i = 0; i < sanPhamParts.length; i++) {
+                orderDetails = new OrderDetails();
+                long id = Long.parseLong(sanPhamParts[i]);
+                System.out.println(id);
+                Integer quantity = Integer.valueOf(quantityParts[i]);
+                shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
+
+                orderDetails.setQuantity(quantity);
+                orderDetails.setPrice(shoesDetails.getPrice());
+                orderDetails.setStatus(1);
+                orderDetails.setCreatedBy("system");
+                orderDetails.setCreatedDate(Instant.now());
+                orderDetails.setOrder(order);
+                orderDetails.setShoesDetails(shoesDetails);
+                orderDetailsList.add(orderDetails);
+
+                shoesDetails.setQuantity(shoesDetails.getQuantity() - quantity);
+                shoesDetailsRepository.save(shoesDetails);
+            }
+            orderDetailsRepository.saveAll(orderDetailsList);
+            return order;
+        }
+        return null;
     }
 }

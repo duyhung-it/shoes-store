@@ -5,6 +5,7 @@ import com.shoes.service.dto.PaymentDTO;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -72,4 +73,6 @@ public interface PaymentService {
     ) throws UnsupportedEncodingException;
 
     int orderReturn(HttpServletRequest request);
+
+    Order payCallBack(HttpServletRequest request, HttpServletResponse response);
 }
