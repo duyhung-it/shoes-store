@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tech.jhipster.web.util.HeaderUtil;
@@ -69,7 +70,6 @@ public class ShoesDetailsResource {
      */
     @PostMapping("/shoes-details")
     public ResponseEntity<ShoesDetailsDTO> createShoesDetails(@RequestBody ShoesDetailsDTO shoesDetailsDTO) throws URISyntaxException {
-        log.debug("REST request to save ShoesDetails : {}", shoesDetailsDTO);
         if (shoesDetailsDTO.getId() != null) {
             throw new BadRequestAlertException("A new shoesDetails cannot already have an ID", ENTITY_NAME, "idexists");
         }
@@ -80,62 +80,95 @@ public class ShoesDetailsResource {
             .body(result);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/shoes-details-image")
     public ResponseEntity<ShoesDetailsDTO> createShoesDetailsImages(
         @RequestPart ShoesDetailsDTO shoesDetailsDTO,
         @RequestPart MultipartFile[] images
     ) throws URISyntaxException {
-        log.debug("REST request to save ShoesDetails : {}", shoesDetailsDTO);
+        // Kiểm tra nếu shoesDetailsDTO đã có ID
         if (shoesDetailsDTO.getId() != null) {
             throw new BadRequestAlertException("A new shoesDetails cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        // Lưu thông tin giày vào cơ sở dữ liệu
         ShoesDetailsDTO result = shoesDetailsService.save(shoesDetailsDTO);
+        // Kiểm tra nếu mảng images là null
         if (images == null) {
             throw new BadRequestAlertException("Null image", ENTITY_NAME, "idexists");
         } else {
+            // Lặp qua từng ảnh và thực hiện các bước lưu và tải lên S3
             for (MultipartFile image : images) {
-                FileUploadDTO ss = uploadNewToS3(image);
-                System.out.println(ss);
-                ShoesFileUploadMappingDTO ShoesFileUploadMappingDTO = fileUploadMapping(
-                    new ShoesFileUploadMappingDTO(Constants.STATUS.ACTIVE, ss, result)
+                FileUploadDTO fileUploadDTO = uploadNewToS3(image);
+                // Tạo ShoesFileUploadMappingDTO và lưu vào cơ sở dữ liệu
+                ShoesFileUploadMappingDTO shoesFileUploadMappingDTO = new ShoesFileUploadMappingDTO(
+                    Constants.STATUS.ACTIVE,
+                    fileUploadDTO,
+                    result
                 );
-                System.out.println(ShoesFileUploadMappingDTO);
+                ShoesFileUploadMappingDTO savedMapping = fileUploadMapping(shoesFileUploadMappingDTO);
             }
         }
 
+        // Trả về thông báo tạo thành công và thông tin giày đã lưu
         return ResponseEntity
             .created(new URI("/api/shoes-details/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ShoesFileUploadMappingDTO fileUploadMapping(ShoesFileUploadMappingDTO shoesFileUploadMappingDTO) {
-        log.debug("REST request to save ShoesFileUploadMapping : {}", shoesFileUploadMappingDTO);
+        try {
+            validateNewMapping(shoesFileUploadMappingDTO);
+            ShoesFileUploadMappingDTO result = shoesFileUploadMappingService.save(shoesFileUploadMappingDTO);
+            return result;
+        } catch (BadRequestAlertException e) {
+            // Handle the exception appropriately, log it, and rethrow or return null as needed
+            log.error("Error while processing file upload mapping", e);
+            throw e;
+        } catch (Exception e) {
+            // Handle unexpected exceptions, log them, and rethrow or return null as needed
+            log.error("Unexpected error while processing file upload mapping", e);
+            throw new RuntimeException("Unexpected error while processing file upload mapping", e);
+        }
+    }
+
+    private void validateNewMapping(ShoesFileUploadMappingDTO shoesFileUploadMappingDTO) {
         if (shoesFileUploadMappingDTO.getId() != null) {
             throw new BadRequestAlertException("A new shoesFileUploadMapping cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        ShoesFileUploadMappingDTO result = shoesFileUploadMappingService.save(shoesFileUploadMappingDTO);
-        return result;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public FileUploadDTO uploadNewToS3(MultipartFile file) {
-        File fileOut = null;
         try {
-            fileOut = DataUtils.multipartFileToFile(file);
+            // Convert MultipartFile to File
+            File fileOut = DataUtils.multipartFileToFile(file);
+            // Build S3 path
+            String s3Path = "images/" + Constants.KEY_UPLOAD + file.getOriginalFilename();
+            String s3Url = "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/" + s3Path;
+            // Check if the file with the same path exists in S3
+            if (s3Url == null) {
+                throw new IllegalArgumentException("s3Url is null");
+            }
+            Optional<FileUploadDTO> existingFileUpload = fileUploadService.findOneByPath(s3Url);
+            if (existingFileUpload.isPresent()) {
+                // File already exists in S3, return the existing FileUploadDTO
+                return existingFileUpload.get();
+            } else {
+                // File doesn't exist in S3, upload it and save FileUploadDTO
+                FileUpload fileUpload = new FileUpload(null, s3Url, s3Path, Constants.STATUS.ACTIVE);
+                FileUploadDTO fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
+                // Upload to S3
+
+                new AWSS3Util().uploadPhoto(s3Path, fileOut);
+                return fileUploadDTO;
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            // Handle the exception appropriately, log it, and rethrow or return null as needed
+            log.error("Error while processing file for S3 upload", e);
+            throw new RuntimeException("Error while processing file for S3 upload", e);
         }
-        FileUploadDTO fileUploadDTO;
-        String path = "https://duyhung-bucket.s3.ap-southeast-1.amazonaws.com/images/" + Constants.KEY_UPLOAD + file.getOriginalFilename();
-        Optional<FileUploadDTO> oneByPath = fileUploadService.findOneByPath(path);
-        if (oneByPath.isPresent()) {
-            fileUploadDTO = oneByPath.get();
-        } else {
-            FileUpload fileUpload = new FileUpload(null, path, Constants.KEY_UPLOAD + file.getOriginalFilename(), Constants.STATUS.ACTIVE);
-            fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
-            new AWSS3Util().uploadPhoto("images/" + Constants.KEY_UPLOAD + file.getOriginalFilename(), fileOut);
-        }
-        return fileUploadDTO;
     }
 
     /**
@@ -201,7 +234,6 @@ public class ShoesDetailsResource {
         }
 
         Optional<ShoesDetailsDTO> result = shoesDetailsService.partialUpdate(shoesDetailsDTO);
-
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, shoesDetailsDTO.getId().toString())
@@ -216,12 +248,17 @@ public class ShoesDetailsResource {
      */
     @GetMapping("/shoes-details")
     public ResponseEntity<List<ShoesDetailsDTO>> getAllShoesDetails(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
-        log.debug("REST request to get a page of ShoesDetails");
         List<ShoesDetailsDTO> page = shoesDetailsService.findAll(pageable);
         for (ShoesDetailsDTO x : page) {
             ShoesDetails shoesDetails = ShoesDetailsMapper.INSTANCE.toEntity(x);
             x.setImgPath(getAllFilePathsForShoesDetails(shoesDetails));
         }
+        return ResponseEntity.ok().body(page);
+    }
+
+    @GetMapping("/shoes-details-variants")
+    public ResponseEntity<List<ShoesVariant>> getAllShoesVariants() {
+        List<ShoesVariant> page = shoesDetailsRepository.getAllVariant();
         return ResponseEntity.ok().body(page);
     }
 
@@ -239,7 +276,6 @@ public class ShoesDetailsResource {
      */
     @GetMapping("/shoes-details/{id}")
     public ResponseEntity<ShoesDetailsDTO> getShoesDetails(@PathVariable Long id) {
-        log.debug("REST request to get ShoesDetails : {}", id);
         Optional<ShoesDetailsDTO> shoesDetailsDTO = shoesDetailsService.findOne(id);
         return ResponseUtil.wrapOrNotFound(shoesDetailsDTO);
     }
@@ -252,7 +288,6 @@ public class ShoesDetailsResource {
      */
     @DeleteMapping("/shoes-details/{id}")
     public ResponseEntity<Void> deleteShoesDetails(@PathVariable Long id) {
-        log.debug("REST request to delete ShoesDetails : {}", id);
         shoesDetailsService.deleteSoft(id);
         return ResponseEntity
             .noContent()
@@ -280,7 +315,6 @@ public class ShoesDetailsResource {
 
     @PostMapping("/shoes-details/shop/detail")
     public ResponseEntity<ShopShoesDTO> getShopShoesById(@RequestBody FindingOneDtos x) {
-        System.out.println(x);
         ShopShoesDTO shopShoesDTO = shoesDetailsRepository.findDistinctByShoesAndBrandOrderBySellPriceDescOne(
             x.getShid(),
             x.getBrid(),
