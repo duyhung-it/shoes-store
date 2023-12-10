@@ -177,6 +177,26 @@ public class AccountResource {
         }
     }
 
+    @PostMapping(path = "/account/check")
+    public boolean checkEmail(@RequestBody String mail) {
+        Optional<User> user = userService.requestPasswordReset(mail);
+        System.out.println(user);
+        if (user.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    @PostMapping(path = "/account/checkActivationKey")
+    public boolean checkActivationKey(@RequestBody String key) {
+        Optional<User> user = userService.checkActivationKey(key);
+        System.out.println(user);
+        if (user.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * {@code POST   /account/reset-password/finish} : Finish to reset the password of the user.
      *
