@@ -1154,13 +1154,13 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="order_id" type="bigint">
@@ -1168,8 +1168,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="order_return" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="order_return" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="order_return" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="order_return" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <!--
         Added the constraints for entity OrderReturn.
@@ -1208,13 +1208,13 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="order_details_id" type="bigint">
@@ -1225,8 +1225,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="order_return_details" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="order_return_details" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="order_return_details" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="order_return_details" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <!--
         Added the constraints for entity OrderReturnDetails.
@@ -1268,13 +1268,13 @@
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="created_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="last_modified_by" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_modified_date" type="${datetimeType}">
+            <column name="last_modified_date" type="datetime(6)">
                 <constraints nullable="true" />
             </column>
             <column name="shoes_details_id" type="bigint">
@@ -1285,8 +1285,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="return_shoes_details" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="return_shoes_details" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="return_shoes_details" columnName="created_date" columnDataType="datetime(6)"/>
+        <dropDefaultValue tableName="return_shoes_details" columnName="last_modified_date" columnDataType="datetime(6)"/>
     </changeSet>
     <!--
         Added the constraints for entity ReturnShoesDetails.
