@@ -56,6 +56,7 @@ public class PaymentResource {
     private final OrderDetailsRepository orderDetailsRepository;
     private final CartDetailsRepository cartDetailsRepository;
     private final MailService mailService;
+    private final CartRepository cartRepository;
 
     public PaymentResource(
         PaymentService paymentService,
@@ -67,7 +68,8 @@ public class PaymentResource {
         ShoesDetailsRepository shoesDetailsRepository,
         OrderDetailsRepository orderDetailsRepository,
         CartDetailsRepository cartDetailsRepository,
-        MailService mailService
+        MailService mailService,
+        CartRepository cartRepository
     ) {
         this.paymentService = paymentService;
         this.userRepository = userRepository;
@@ -79,6 +81,7 @@ public class PaymentResource {
         this.orderDetailsRepository = orderDetailsRepository;
         this.cartDetailsRepository = cartDetailsRepository;
         this.mailService = mailService;
+        this.cartRepository = cartRepository;
     }
 
     @GetMapping("/create-payment")
@@ -125,12 +128,23 @@ public class PaymentResource {
             String arrSanPham = orderInfoParts[6];
             String arrQuantity = orderInfoParts[7];
             String idOwnerStr = orderInfoParts[5];
-            User owner = new User();
+            String[] sanPhamParts = arrSanPham.split("a");
+            String[] quantityParts = arrQuantity.split("b");
+            User owner;
             System.out.println(idOwnerStr);
-            if (idOwnerStr == "null") {
-                System.out.println("vao day an lon o day a");
+            if (!idOwnerStr.equalsIgnoreCase("null")) {
                 long idOwner = Long.parseLong(idOwnerStr);
                 owner = userRepository.findOneById(idOwner);
+                Cart cart = cartRepository.findByOwnerId(owner.getId());
+                List<CartDetails> cartDetailsList = cartDetailsRepository.findCartDetailsByCart(cart);
+                for (CartDetails c : cartDetailsList) {
+                    for (String idSP : sanPhamParts) {
+                        Long shoesDetailId = Long.parseLong(idSP);
+                        if (c.getShoesDetails().getId() == shoesDetailId) {
+                            cartDetailsRepository.delete(c);
+                        }
+                    }
+                }
             } else {
                 owner = null;
             }
@@ -158,8 +172,6 @@ public class PaymentResource {
             order.setPayment(payment);
             orderRepository.save(order);
 
-            String[] sanPhamParts = arrSanPham.split("a");
-            String[] quantityParts = arrQuantity.split("b");
             List<OrderDetails> orderDetailsList = new ArrayList<>();
             ShoesDetails shoesDetails;
             OrderDetails orderDetails;

@@ -66,8 +66,8 @@ public class AccountResource {
         }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPasswordHash());
         UserDTO userDTO = new UserDTO();
-        userDTO.setId(managedUserVM.getId());
-        userDTO.setLogin(managedUserVM.getLogin());
+        userDTO.setId(user.getId());
+        userDTO.setLogin(user.getLogin());
 
         CartDTO cartDTO = new CartDTO();
         cartDTO.setCreatedDate(Instant.now());
