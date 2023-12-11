@@ -66,8 +66,8 @@ public class AccountResource {
         }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPasswordHash());
         UserDTO userDTO = new UserDTO();
-        userDTO.setId(managedUserVM.getId());
-        userDTO.setLogin(managedUserVM.getLogin());
+        userDTO.setId(user.getId());
+        userDTO.setLogin(user.getLogin());
 
         CartDTO cartDTO = new CartDTO();
         cartDTO.setCreatedDate(Instant.now());
@@ -175,6 +175,26 @@ public class AccountResource {
             // but log that an invalid attempt has been made
             log.warn("Password reset requested for non existing mail");
         }
+    }
+
+    @PostMapping(path = "/account/check")
+    public boolean checkEmail(@RequestBody String mail) {
+        Optional<User> user = userService.requestPasswordReset(mail);
+        System.out.println(user);
+        if (user.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    @PostMapping(path = "/account/checkActivationKey")
+    public boolean checkActivationKey(@RequestBody String key) {
+        Optional<User> user = userService.checkActivationKey(key);
+        System.out.println(user);
+        if (user.isPresent()) {
+            return true;
+        }
+        return false;
     }
 
     /**

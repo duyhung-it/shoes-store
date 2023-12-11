@@ -84,7 +84,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     @Transactional(readOnly = true)
     public Optional<FileUploadDTO> findOneByPath(String path) {
         log.debug("Request to get FileUpload : {}", path);
-        return fileUploadRepository.findByPath(path).map(fileUploadMapper::toDto);
+        return fileUploadRepository.findFirstByPath(path).map(fileUploadMapper::toDto);
     }
 
     @Override

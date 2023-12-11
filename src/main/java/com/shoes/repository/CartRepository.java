@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("select cart from Cart cart where cart.owner.login = ?#{principal.username}")
     List<Cart> findByOwnerIsCurrentUser();
+
+    Cart findByOwnerId(Long id);
 }
