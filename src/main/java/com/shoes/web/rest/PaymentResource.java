@@ -56,6 +56,7 @@ public class PaymentResource {
     private final OrderDetailsRepository orderDetailsRepository;
     private final CartDetailsRepository cartDetailsRepository;
     private final MailService mailService;
+    private final CartRepository cartRepository;
 
     public PaymentResource(
         PaymentService paymentService,
@@ -67,7 +68,8 @@ public class PaymentResource {
         ShoesDetailsRepository shoesDetailsRepository,
         OrderDetailsRepository orderDetailsRepository,
         CartDetailsRepository cartDetailsRepository,
-        MailService mailService
+        MailService mailService,
+        CartRepository cartRepository
     ) {
         this.paymentService = paymentService;
         this.userRepository = userRepository;
@@ -79,6 +81,7 @@ public class PaymentResource {
         this.orderDetailsRepository = orderDetailsRepository;
         this.cartDetailsRepository = cartDetailsRepository;
         this.mailService = mailService;
+        this.cartRepository = cartRepository;
     }
 
     @GetMapping("/create-payment")
@@ -89,7 +92,7 @@ public class PaymentResource {
         @RequestParam("email") String email,
         @RequestParam("address") String address,
         @RequestParam("shipPrice") long shipPrice,
-        @RequestParam("idOwner") long idOwner,
+        @RequestParam("idOwner") String idOwner,
         @RequestParam("arrSanPham") String arrSanPham,
         @RequestParam("arrQuantity") String arrQuantity
     ) throws UnsupportedEncodingException {
@@ -109,79 +112,15 @@ public class PaymentResource {
 
     @GetMapping("/payment-callback")
     public void GetMapping(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //        int paymentStatus = paymentService.orderReturn(request);
-        String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
-        String orderCode = request.getParameter("vnp_TxnRef");
-        String orderInfo = request.getParameter("order");
-        System.out.println(orderInfo);
-        long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
-        String[] orderInfoParts = orderInfo.split("_");
-        if ("00".equals(vnp_ResponseCode)) {
-            String receivedBy = orderInfoParts[0];
-            String phone = orderInfoParts[1];
-            String email = orderInfoParts[2];
-            String address = orderInfoParts[3];
-            long shipPrice = Long.parseLong(orderInfoParts[4]);
-            long idOwner = Long.parseLong(orderInfoParts[5]);
-            String arrSanPham = orderInfoParts[6];
-            String arrQuantity = orderInfoParts[7];
-            User owner = userRepository.findOneById(idOwner);
-
-            Payment payment = new Payment();
-            payment.setCode(orderCode);
-            payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
-            payment.setPaymentStatus(Constants.PAID_METHOD.ON);
-            payment.setCreatedBy("system");
-            payment.setCreatedDate(Instant.now());
-            paymentRepository.save(payment);
-          
-            Order order = new Order();
-            order.setCode(orderCode);
-            order.setAddress(address);
-            order.setPhone(phone);
-            order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
-            order.setShipPrice(BigDecimal.valueOf(shipPrice));
-            order.setTotalPrice(BigDecimal.valueOf(price));
-            order.setReceivedBy(receivedBy);
-            order.setStatus(2);
-            order.setCreatedBy("system");
-            order.setCreatedDate(Instant.now());
-            order.setOwner(owner);
-            order.setPayment(payment);
-            orderRepository.save(order);
-            String[] sanPhamParts = arrSanPham.split("a");
-            String[] quantityParts = arrQuantity.split("b");
-            List<OrderDetails> orderDetailsList = new ArrayList<>();
-            ShoesDetails shoesDetails;
-            OrderDetails orderDetails;
-            CartDetails cartDetails;
-            for (int i = 0; i < sanPhamParts.length; i++) {
-                orderDetails = new OrderDetails();
-                long id = Long.parseLong(sanPhamParts[i]);
-                System.out.println(id);
-                Integer quantity = Integer.valueOf(quantityParts[i]);
-                cartDetails = cartDetailsRepository.findByIdAndStatus(id, 1);
-                shoesDetails = shoesDetailsRepository.findByIdAndStatus(cartDetails.getShoesDetails().getId(), 1);
-
-                orderDetails.setQuantity(quantity);
-                orderDetails.setPrice(shoesDetails.getPrice());
-                orderDetails.setStatus(1);
-                orderDetails.setCreatedBy("system");
-                orderDetails.setCreatedDate(Instant.now());
-                orderDetails.setOrder(order);
-                orderDetails.setShoesDetails(shoesDetails);
-                orderDetailsList.add(orderDetails);
-
-                cartDetailsRepository.delete(cartDetails);
-
-            }
-            orderDetailsRepository.saveAll(orderDetailsList);
-            //            byte[] byteArrayResource = this.orderService.getMailVerify(order.getId());
-            //            mailService.sendEmail1("duongle5279@gmail.com", "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
-
+        Order order = paymentService.payCallBack(request, response);
+        if (Objects.nonNull(order)) {
+            System.out.println(order.getId());
+            byte[] byteArrayResource = this.orderService.getMailVerify(order.getId());
+            //            System.out.println(byteArrayResource);
+            mailService.sendEmail1(order.getMailAddress(), "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
             response.sendRedirect("http://localhost:4200/client/pay-success");
         } else {
-            //            response.sendRedirect("http://localhost:4200/client/pay-faile");
+            response.sendRedirect("http://localhost:4200/client/pay-faile");
         }
     }
 

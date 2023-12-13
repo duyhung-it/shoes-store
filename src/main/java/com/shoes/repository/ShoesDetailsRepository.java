@@ -3,6 +3,7 @@ package com.shoes.repository;
 import com.shoes.domain.ShoesDetails;
 import com.shoes.service.dto.ShoesDetailDTOCustom;
 import com.shoes.service.dto.ShoesDetailsDTO;
+import com.shoes.service.dto.ShoesVariant;
 import com.shoes.service.dto.ShopShoesDTO;
 import java.math.BigDecimal;
 import java.util.List;
@@ -105,6 +106,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
         "GROUP_CONCAT(distinct d.discount_amount) as discount_amount ,  " +
+        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount_3_4 ,  " +
         " (SELECT CAST(COALESCE(avg(fb.rate), 5) AS SIGNED)\n" +
         "FROM feed_back fb\n" +
         "JOIN shoes_details ad ON fb.shoes_id = ad.id\n" +
@@ -185,6 +187,33 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         nativeQuery = true
     )
     List<ShoesDetailDTOCustom> getNewShoesDetail();
+
+    @Query(
+        value = "SELECT  \n" +
+        "    CONCAT(br.name, ' ', sh.name) as name, \n" +
+        "    sd.*, \n" +
+        "    iu.path as path,\n" +
+        "    cl.name as color_name,\n" +
+        "    sz.name as size_name\n" +
+        "FROM \n" +
+        "    `shoes-store`.shoes_details sd\n" +
+        "LEFT JOIN\n" +
+        "    `shoes-store`.shoes_file_upload_mapping sfum ON sd.id = sfum.shoes_details_id\n" +
+        "LEFT JOIN\n" +
+        "    `shoes-store`.file_upload iu ON sfum.file_upload_id = iu.id\n" +
+        "    AND iu.status = 1 \n" +
+        "JOIN\n" +
+        "    `shoes-store`.brand br ON sd.brand_id = br.id \n" +
+        "JOIN\n" +
+        "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
+        "JOIN\n" +
+        "    `shoes-store`.size sz ON sd.size_id = sz.id\n" +
+        "JOIN\n" +
+        "    `shoes-store`.color cl ON sd.color_id = cl.id \n" +
+        "group by sd.id;",
+        nativeQuery = true
+    )
+    List<ShoesVariant> getAllVariant();
 
     @Query(
         value = "select sd.*  from order_details od \n" +

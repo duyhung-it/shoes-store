@@ -106,7 +106,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         mailSender.setHost("smtp.gmail.com"); // Set your SMTP server host
         mailSender.setPort(587); // Set the SMTP port
         mailSender.setUsername("duonglcph27090@fpt.edu.vn"); // Set your SMTP username
-        mailSender.setPassword("adqm zpyy junv kxxn"); // Set your SMTP password
+        mailSender.setPassword("rzqh fyhh lwym mjvf"); // Set your SMTP password
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");

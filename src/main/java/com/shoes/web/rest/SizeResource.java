@@ -147,6 +147,7 @@ public class SizeResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+
     @GetMapping("/sizes/removed")
     public ResponseEntity<List<SizeDTO>> getAllDelete(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Sizes");

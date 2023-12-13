@@ -1,9 +1,8 @@
 package com.shoes.service.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-public interface ShopShoesDTO {
+public interface ShoesVariant {
     Integer getId();
     String getName();
     String getCode();
@@ -11,6 +10,9 @@ public interface ShopShoesDTO {
     String getShoesCode();
     Integer getQuantity();
     BigDecimal getPrice();
+    BigDecimal getTax();
+    BigDecimal getImport_price();
+    Integer getStatus();
     Integer getRating();
     Integer getShoes_id();
     Integer getBrand_id();
@@ -26,8 +28,7 @@ public interface ShopShoesDTO {
     String getSize_ids();
     String getSize_names();
     String getColor_names();
-    BigDecimal getDiscount_amount();
-    Integer getDiscount_method();
+    String getDiscount_amount();
+    String getDiscount_method();
     String getDiscount_name();
-    BigDecimal getDiscount_amount_3_4();
 }

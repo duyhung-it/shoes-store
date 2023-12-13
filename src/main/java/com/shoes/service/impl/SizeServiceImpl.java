@@ -48,8 +48,6 @@ public class SizeServiceImpl implements SizeService {
         return sizeMapper.toDto(size);
     }
 
-
-
     @Override
     public SizeDTO update(SizeDTO sizeDTO) {
         log.debug("Request to update Size : {}", sizeDTO);
@@ -61,7 +59,6 @@ public class SizeServiceImpl implements SizeService {
         size = sizeRepository.save(size);
         return sizeMapper.toDto(size);
     }
-
 
     @Override
     public Optional<SizeDTO> partialUpdate(SizeDTO sizeDTO) {
@@ -97,7 +94,6 @@ public class SizeServiceImpl implements SizeService {
         return sizesWithStatus1.map(sizeMapper::toDto);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public Optional<SizeDTO> findOne(Long id) {
@@ -110,11 +106,12 @@ public class SizeServiceImpl implements SizeService {
         log.debug("Request to delete Size : {}", id);
 
         // Attempt to find the existing Size entity by ID
-        sizeRepository.findById(id).ifPresent(existingSize -> {
-            // Set the status to 0 (inactive) instead of deleting the record
-            existingSize.setStatus(0);
-            sizeRepository.save(existingSize);
-        });
+        sizeRepository
+            .findById(id)
+            .ifPresent(existingSize -> {
+                // Set the status to 0 (inactive) instead of deleting the record
+                existingSize.setStatus(0);
+                sizeRepository.save(existingSize);
+            });
     }
-
 }

@@ -42,7 +42,6 @@ public interface BrandService {
     Page<BrandDTO> findAll(Pageable pageable);
     Page<BrandDTO> findDelete(Pageable pageable);
 
-
     /**
      * Get the "id" brand.
      *
@@ -67,5 +66,6 @@ public interface BrandService {
      * @return A page of {@link BrandDTO} objects matching the search criteria, wrapped in a {@link Page}.
      */
     Page<BrandDTO> findByCodeAndName(String code, String name, Pageable pageable);
+
     public Page<BrandDTO> findAllWithStatus1(Pageable pageable);
 }

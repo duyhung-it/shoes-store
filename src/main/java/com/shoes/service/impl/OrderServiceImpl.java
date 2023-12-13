@@ -326,4 +326,10 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login) {
         return orderRepository.getOrderByStatusAndOwnerLogin(status, login);
     }
+
+    @Transactional
+    @Override
+    public Order getOrderByCode(String code) {
+        return orderRepository.getOrderByCode(code);
+    }
 }
