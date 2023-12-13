@@ -365,7 +365,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> checkActivationKey(String key) {
-        return userRepository.findByActivationKey(key);
+    public Optional<User> checkResetKey(String key) {
+        return userRepository.findByResetKey(key);
     }
 }
