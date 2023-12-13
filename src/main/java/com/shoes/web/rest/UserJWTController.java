@@ -60,7 +60,7 @@ public class UserJWTController {
     @GetMapping("/registerOauth2")
     public ResponseEntity<JWTToken> registerOauth2(OAuth2AuthenticationToken token) {
         String email = token.getPrincipal().getAttribute("email");
-        String login = RandomUtil.generateResetKey();
+        String login = email.substring(0,email.indexOf("@"));
         User user = new User();
         LoginVM loginVM = new LoginVM();
         if (userService.findOneByEmailIgnoreCase(email).isPresent()) {
@@ -73,6 +73,7 @@ public class UserJWTController {
             user.setLogin(login);
             user.setFirstName(token.getPrincipal().getAttribute("name"));
             user.setActivated(true);
+            user.setLangKey("en");
             user.setPassword(passwordEncoder.encode(login));
             user = userService.save(user);
             UserDTO userDTO = new UserDTO();
