@@ -3,6 +3,7 @@ package com.shoes.service;
 import com.shoes.domain.Order;
 import com.shoes.service.dto.PaymentDTO;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,12 +62,12 @@ public interface PaymentService {
     void delete(Long id);
 
     String createPayment(
-        long price,
+        BigDecimal price,
         String receivedBy,
         String phone,
         String email,
         String address,
-        long shipPrice,
+        BigDecimal shipPrice,
         String idOwner,
         String arrSanPham,
         String arrQuantity
