@@ -86,12 +86,12 @@ public class PaymentResource {
 
     @GetMapping("/create-payment")
     public String newPayments(
-        @RequestParam("price") long price,
+        @RequestParam("price") BigDecimal price,
         @RequestParam("receivedBy") String receivedBy,
         @RequestParam("phone") String phone,
         @RequestParam("email") String email,
         @RequestParam("address") String address,
-        @RequestParam("shipPrice") long shipPrice,
+        @RequestParam("shipPrice") BigDecimal shipPrice,
         @RequestParam("idOwner") String idOwner,
         @RequestParam("arrSanPham") String arrSanPham,
         @RequestParam("arrQuantity") String arrQuantity
