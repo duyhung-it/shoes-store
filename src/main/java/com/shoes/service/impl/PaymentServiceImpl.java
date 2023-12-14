@@ -122,7 +122,8 @@ public class PaymentServiceImpl implements PaymentService {
         System.out.println(price);
         String vnp_TxnRef = PaypalConfig.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
-
+        System.out.println("vlion");
+        System.out.println(amount);
         String vnp_TmnCode = PaypalConfig.vnp_TmnCode;
 
         Map<String, String> vnp_Params = new HashMap<>();
@@ -242,7 +243,7 @@ public class PaymentServiceImpl implements PaymentService {
         String orderInfo = request.getParameter("order");
         System.out.println(orderInfo);
         long vnpAmountLong = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
-        BigDecimal price = BigDecimal.valueOf(vnpAmountLong).divide(new BigDecimal("100"));
+        BigDecimal price = BigDecimal.valueOf(vnpAmountLong);
         String[] orderInfoParts = orderInfo.split("_");
 
         if ("00".equals(vnp_ResponseCode)) {
@@ -337,6 +338,7 @@ public class PaymentServiceImpl implements PaymentService {
         order.setOwner(owner);
         order.setMailAddress(email);
         order.setPayment(payment);
+        System.out.println("vailon " + price);
         return order;
     }
 }
