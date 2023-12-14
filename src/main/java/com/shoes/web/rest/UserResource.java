@@ -124,8 +124,8 @@ public class UserResource {
             User newUser = userService.createUser(adminUsserDTO);
 
             UserDTO userDTO = new UserDTO();
-            userDTO.setId(adminUsserDTO.getId());
-            userDTO.setLogin(adminUsserDTO.getLogin());
+            userDTO.setId(newUser.getId());
+            userDTO.setLogin(newUser.getLogin());
 
             CartDTO cartDTO = new CartDTO();
             cartDTO.setCreatedDate(Instant.now());

@@ -65,6 +65,7 @@ public class AccountResource {
             throw new InvalidPasswordException();
         }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPasswordHash());
+
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setLogin(user.getLogin());
