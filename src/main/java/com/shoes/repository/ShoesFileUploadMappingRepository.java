@@ -14,4 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShoesFileUploadMappingRepository extends JpaRepository<ShoesFileUploadMapping, Long> {
     List<ShoesFileUploadMapping> findByShoesDetails(ShoesDetails shoesDetails);
+
+    Integer deleteAllByShoesDetailsId(Long id);
 }
