@@ -42,7 +42,8 @@ public interface CartDetailsRepository extends JpaRepository<CartDetails, Long> 
         "    select * from shoes_file_upload_mapping\n" +
         ") sfum on sd.id = sfum.shoes_details_id\n" +
         "join file_upload fu on sfum.file_upload_id = fu.id \n" +
-        "where cd.cart_id = :idCart && rn =1",
+        "where cd.cart_id = :idCart && rn =1 " +
+        "group by sd.id ",
         nativeQuery = true
     )
     List<CartDetailDTO> findCartDetailsByCart_Id(@Param("idCart") Long idCart);
