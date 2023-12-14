@@ -45,7 +45,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct iu.path) as paths ," +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
-        "GROUP_CONCAT(distinct d.discount_amount) as discount_amount  " +
+        "GROUP_CONCAT(distinct d.discount_amount) as discount_amount ," +
+        "CAST(COALESCE(avg(fb.rate), 5) AS SIGNED ) as rating  " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
         "JOIN (\n" +
@@ -79,6 +80,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
         "`shoes-store`.color cl ON sd.color_id = cl.id\n " +
+        "LEFT JOIN `shoes-store`.feed_back fb ON sd.id = fb.shoes_id and fb.status = 1 " +
         "WHERE sd.status = 1 AND (sd.brand_id = :idBrands OR :idBrands IS NULL) and sd.price between :startPrice and :endPrice " +
         "GROUP BY shoes_id, brand_id\n"
     )

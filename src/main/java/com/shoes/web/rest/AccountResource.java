@@ -65,6 +65,7 @@ public class AccountResource {
             throw new InvalidPasswordException();
         }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPasswordHash());
+
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setLogin(user.getLogin());
@@ -187,10 +188,10 @@ public class AccountResource {
         return false;
     }
 
-    @PostMapping(path = "/account/checkActivationKey")
+    @PostMapping(path = "/account/checkResetKey")
     public boolean checkActivationKey(@RequestBody String key) {
-        Optional<User> user = userService.checkActivationKey(key);
-        System.out.println(user);
+        Optional<User> user = userService.checkResetKey(key);
+        System.out.println(user.get());
         if (user.isPresent()) {
             return true;
         }

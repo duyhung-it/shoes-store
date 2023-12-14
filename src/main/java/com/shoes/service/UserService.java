@@ -119,6 +119,7 @@ public class UserService {
         newUser.setPassword(encryptedPassword);
         newUser.setFirstName(userDTO.getFirstName());
         newUser.setLastName(userDTO.getLastName());
+        newUser.setPhone(userDTO.getPhone());
         if (userDTO.getEmail() != null) {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
@@ -171,6 +172,7 @@ public class UserService {
         user.setLogin(userDTO.getLogin().toLowerCase());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
+        user.setPhone(userDTO.getPhone());
         if (userDTO.getEmail() != null) {
             user.setEmail(userDTO.getEmail().toLowerCase());
         }
@@ -221,6 +223,7 @@ public class UserService {
                 user.setLogin(userDTO.getLogin().toLowerCase());
                 user.setFirstName(userDTO.getFirstName());
                 user.setLastName(userDTO.getLastName());
+                user.setPhone(userDTO.getPhone());
                 if (userDTO.getEmail() != null) {
                     user.setEmail(userDTO.getEmail().toLowerCase());
                 }
@@ -365,7 +368,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> checkActivationKey(String key) {
-        return userRepository.findByActivationKey(key);
+    public Optional<User> checkResetKey(String key) {
+        return userRepository.findByResetKey(key);
     }
 }

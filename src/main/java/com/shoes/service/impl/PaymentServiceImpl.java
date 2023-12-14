@@ -104,12 +104,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public String createPayment(
-        long price,
+        BigDecimal price,
         String receivedBy,
         String phone,
         String email,
         String address,
-        long shipPrice,
+        BigDecimal shipPrice,
         String idOwner,
         String arrSanPham,
         String arrQuantity
@@ -117,9 +117,9 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        long amount = price * 100;
+        BigDecimal amount = price.multiply(new BigDecimal("100")).setScale(0);
         String bankCode = "NCB";
-
+        System.out.println(price);
         String vnp_TxnRef = PaypalConfig.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
 
@@ -241,7 +241,8 @@ public class PaymentServiceImpl implements PaymentService {
         String orderCode = request.getParameter("vnp_TxnRef");
         String orderInfo = request.getParameter("order");
         System.out.println(orderInfo);
-        long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
+        long vnpAmountLong = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
+        BigDecimal price = BigDecimal.valueOf(vnpAmountLong).divide(new BigDecimal("100"));
         String[] orderInfoParts = orderInfo.split("_");
 
         if ("00".equals(vnp_ResponseCode)) {
@@ -249,7 +250,7 @@ public class PaymentServiceImpl implements PaymentService {
             String phone = orderInfoParts[1];
             String email = orderInfoParts[2];
             String address = orderInfoParts[3];
-            long shipPrice = Long.parseLong(orderInfoParts[4]);
+            BigDecimal shipPrice = new BigDecimal(orderInfoParts[4]);
             String arrSanPham = orderInfoParts[6];
             String arrQuantity = orderInfoParts[7];
             String idOwnerStr = orderInfoParts[5];
@@ -287,8 +288,8 @@ public class PaymentServiceImpl implements PaymentService {
             order.setAddress(address);
             order.setPhone(phone);
             order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
-            order.setShipPrice(BigDecimal.valueOf(shipPrice));
-            order.setTotalPrice(BigDecimal.valueOf(price));
+            order.setShipPrice(shipPrice);
+            order.setTotalPrice(price);
             order.setReceivedBy(receivedBy);
             order.setStatus(Constants.ORDER_STATUS.PENDING);
             order.setCreatedBy("system");

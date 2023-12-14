@@ -31,4 +31,8 @@ public interface ShoesVariant {
     String getDiscount_amount();
     String getDiscount_method();
     String getDiscount_name();
+    String getCreated_by();
+    String getCreated_date();
+    String getLast_modified_date();
+    String getLast_modified_by();
 }
