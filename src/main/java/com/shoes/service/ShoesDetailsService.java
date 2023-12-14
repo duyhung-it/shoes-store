@@ -62,5 +62,6 @@ public interface ShoesDetailsService {
     void deleteSoft(Long id);
 
     List<ShoesDetailDTOCustom> getNewShoesDetail();
+    List<ShoesDetailDTOCustom> getNewDiscountShoesDetail();
     List<ShopShoesDTO> getDiscountShoes();
 }

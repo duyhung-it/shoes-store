@@ -334,6 +334,12 @@ public class ShoesDetailsResource {
         return ResponseEntity.ok().body(shoesDetailsDTOs);
     }
 
+    @GetMapping("/shoes-details/newDiscount")
+    public ResponseEntity<List<ShoesDetailDTOCustom>> getNewDiscountShoesDetail() {
+        List<ShoesDetailDTOCustom> shoesDetailsDTOs = shoesDetailsService.getNewDiscountShoesDetail();
+        return ResponseEntity.ok().body(shoesDetailsDTOs);
+    }
+
     @GetMapping("/shoes-details/discount")
     public ResponseEntity<List<ShopShoesDTO>> getShoesDiscount() {
         List<ShopShoesDTO> shoesDetailsDTOs = shoesDetailsService.getDiscountShoes();

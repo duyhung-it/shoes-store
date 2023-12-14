@@ -199,7 +199,7 @@ public class CartDetailsResource {
         return ResponseEntity.ok().body(cartDetailsDTOS);
     }
 
-    @GetMapping("/cart-details/allpath")
+    @GetMapping("/cart-details/allCartDetail")
     public ResponseEntity<List<CartDetailDTO>> getAllPathCartDetail() {
         List<Cart> cart = cartService.findByOwnerIsCurrentUser();
         Cart cart1 = cart.get(0);
