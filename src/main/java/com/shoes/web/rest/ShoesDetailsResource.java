@@ -108,7 +108,40 @@ public class ShoesDetailsResource {
                 ShoesFileUploadMappingDTO savedMapping = fileUploadMapping(shoesFileUploadMappingDTO);
             }
         }
+        // Trả về thông báo tạo thành công và thông tin giày đã lưu
+        return ResponseEntity
+            .created(new URI("/api/shoes-details/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PutMapping("/shoes-details-image")
+    public ResponseEntity<ShoesDetailsDTO> updateShoesDetailsImages(
+        @RequestPart ShoesDetailsDTO shoesDetailsDTO,
+        @RequestPart MultipartFile[] images
+    ) throws URISyntaxException {
+        // Kiểm tra nếu shoesDetailsDTO đã có ID
+        if (shoesDetailsDTO.getId() == null) {
+            throw new BadRequestAlertException("A new shoesDetails cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        // Lưu thông tin giày vào cơ sở dữ liệu
+        ShoesDetailsDTO result = shoesDetailsService.update(shoesDetailsDTO);
+        // Kiểm tra nếu mảng images là null
+        if (images != null && images.length > 0) {
+            shoesFileUploadMappingRepository.deleteAllByShoesDetailsId(result.getId());
+            // Lặp qua từng ảnh và thực hiện các bước lưu và tải lên S3
+            for (MultipartFile image : images) {
+                FileUploadDTO fileUploadDTO = uploadNewToS3(image);
+                // Tạo ShoesFileUploadMappingDTO và lưu vào cơ sở dữ liệu
+                ShoesFileUploadMappingDTO shoesFileUploadMappingDTO = new ShoesFileUploadMappingDTO(
+                    Constants.STATUS.ACTIVE,
+                    fileUploadDTO,
+                    result
+                );
+                ShoesFileUploadMappingDTO savedMapping = fileUploadMapping(shoesFileUploadMappingDTO);
+            }
+        }
         // Trả về thông báo tạo thành công và thông tin giày đã lưu
         return ResponseEntity
             .created(new URI("/api/shoes-details/" + result.getId()))
@@ -160,7 +193,6 @@ public class ShoesDetailsResource {
                 FileUpload fileUpload = new FileUpload(null, s3Url, s3Path, Constants.STATUS.ACTIVE);
                 FileUploadDTO fileUploadDTO = fileUploadService.save(fileUploadMapper.toDto(fileUpload));
                 // Upload to S3
-
                 new AWSS3Util().uploadPhoto(s3Path, fileOut);
                 return fileUploadDTO;
             }
