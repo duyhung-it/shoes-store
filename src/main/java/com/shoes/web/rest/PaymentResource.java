@@ -86,12 +86,12 @@ public class PaymentResource {
 
     @GetMapping("/create-payment")
     public String newPayments(
-        @RequestParam("price") long price,
+        @RequestParam("price") BigDecimal price,
         @RequestParam("receivedBy") String receivedBy,
         @RequestParam("phone") String phone,
         @RequestParam("email") String email,
         @RequestParam("address") String address,
-        @RequestParam("shipPrice") long shipPrice,
+        @RequestParam("shipPrice") BigDecimal shipPrice,
         @RequestParam("idOwner") String idOwner,
         @RequestParam("arrSanPham") String arrSanPham,
         @RequestParam("arrQuantity") String arrQuantity
@@ -112,90 +112,12 @@ public class PaymentResource {
 
     @GetMapping("/payment-callback")
     public void GetMapping(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //        int paymentStatus = paymentService.orderReturn(request);
-        String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
-        String orderCode = request.getParameter("vnp_TxnRef");
-        String orderInfo = request.getParameter("order");
-        System.out.println(orderInfo);
-        long price = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
-        String[] orderInfoParts = orderInfo.split("_");
-        if ("00".equals(vnp_ResponseCode)) {
-            String receivedBy = orderInfoParts[0];
-            String phone = orderInfoParts[1];
-            String email = orderInfoParts[2];
-            String address = orderInfoParts[3];
-            long shipPrice = Long.parseLong(orderInfoParts[4]);
-            String arrSanPham = orderInfoParts[6];
-            String arrQuantity = orderInfoParts[7];
-            String idOwnerStr = orderInfoParts[5];
-            String[] sanPhamParts = arrSanPham.split("a");
-            String[] quantityParts = arrQuantity.split("b");
-            User owner;
-            System.out.println(idOwnerStr);
-            if (!idOwnerStr.equalsIgnoreCase("null")) {
-                long idOwner = Long.parseLong(idOwnerStr);
-                owner = userRepository.findOneById(idOwner);
-                Cart cart = cartRepository.findByOwnerId(owner.getId());
-                List<CartDetails> cartDetailsList = cartDetailsRepository.findCartDetailsByCart(cart);
-                for (CartDetails c : cartDetailsList) {
-                    for (String idSP : sanPhamParts) {
-                        Long shoesDetailId = Long.parseLong(idSP);
-                        if (c.getShoesDetails().getId() == shoesDetailId) {
-                            cartDetailsRepository.delete(c);
-                        }
-                    }
-                }
-            } else {
-                owner = null;
-            }
-
-            Payment payment = new Payment();
-            payment.setCode(orderCode);
-            payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
-            payment.setPaymentStatus(Constants.PAID_METHOD.ON);
-            payment.setCreatedBy("system");
-            payment.setCreatedDate(Instant.now());
-            paymentRepository.save(payment);
-
-            Order order = new Order();
-            order.setCode(orderCode);
-            order.setAddress(address);
-            order.setPhone(phone);
-            order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
-            order.setShipPrice(BigDecimal.valueOf(shipPrice));
-            order.setTotalPrice(BigDecimal.valueOf(price));
-            order.setReceivedBy(receivedBy);
-            order.setStatus(2);
-            order.setCreatedBy("system");
-            order.setCreatedDate(Instant.now());
-            order.setOwner(owner);
-            order.setPayment(payment);
-            orderRepository.save(order);
-
-            List<OrderDetails> orderDetailsList = new ArrayList<>();
-            ShoesDetails shoesDetails;
-            OrderDetails orderDetails;
-            for (int i = 0; i < sanPhamParts.length; i++) {
-                orderDetails = new OrderDetails();
-                long id = Long.parseLong(sanPhamParts[i]);
-                System.out.println(id);
-                Integer quantity = Integer.valueOf(quantityParts[i]);
-                shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
-
-                orderDetails.setQuantity(quantity);
-                orderDetails.setPrice(shoesDetails.getPrice());
-                orderDetails.setStatus(1);
-                orderDetails.setCreatedBy("system");
-                orderDetails.setCreatedDate(Instant.now());
-                orderDetails.setOrder(order);
-                orderDetails.setShoesDetails(shoesDetails);
-                orderDetailsList.add(orderDetails);
-
-                shoesDetails.setQuantity(shoesDetails.getQuantity() - quantity);
-                shoesDetailsRepository.save(shoesDetails);
-            }
-            orderDetailsRepository.saveAll(orderDetailsList);
-
+        Order order = paymentService.payCallBack(request, response);
+        if (Objects.nonNull(order)) {
+            System.out.println(order.getId());
+            byte[] byteArrayResource = this.orderService.getMailVerify(order.getId());
+            //            System.out.println(byteArrayResource);
+            mailService.sendEmail1(order.getMailAddress(), "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
             response.sendRedirect("http://localhost:4200/client/pay-success");
         } else {
             response.sendRedirect("http://localhost:4200/client/pay-faile");

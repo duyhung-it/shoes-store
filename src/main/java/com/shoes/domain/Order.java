@@ -79,7 +79,7 @@ public class Order extends AbstractAuditingEntity<Long> implements Serializable 
     @Column(name = "address")
     private String address;
 
-    @Column(name = "emailAddress")
+    @Column(name = "email_address")
     private String mailAddress;
 
     @Column(name = "phone")

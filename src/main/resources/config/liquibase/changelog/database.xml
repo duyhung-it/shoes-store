@@ -1305,4 +1305,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="order_return_details"/>
     </changeSet>
+    <changeSet id="20231121090531-15" author="jhipster">
+        <addColumn tableName="jhi_user">
+            <column name="phone" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

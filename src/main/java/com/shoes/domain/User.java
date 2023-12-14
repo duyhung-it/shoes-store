@@ -59,6 +59,9 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     @Column(length = 254, unique = true)
     private String email;
 
+    @Column(name = "phone")
+    private String phone;
+
     @NotNull
     @Column(nullable = false)
     private boolean activated = false;
