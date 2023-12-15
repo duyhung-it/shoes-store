@@ -42,6 +42,8 @@ public class OrderDTO implements Serializable {
 
     private String createdBy;
 
+    private String mailAddress;
+
     private Instant createdDate;
 
     private String lastModifiedBy;

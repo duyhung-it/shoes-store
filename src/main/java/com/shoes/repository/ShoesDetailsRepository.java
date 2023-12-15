@@ -303,4 +303,16 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         nativeQuery = true
     )
     List<ShopShoesDTO> getShoesDiscount();
+
+    @Query(
+        value = "    SELECT\n" +
+        "   sd.*     " +
+        "    FROM\n" +
+        "        `shoes-store`.shoes_details sd \n" +
+        "WHERE status = 1 and shoes_id = :shoesId " +
+        "    GROUP BY\n" +
+        "        shoes_id, brand_id order by MIN(price) limit 1 \n",
+        nativeQuery = true
+    )
+    ShoesDetails getMinPrice(@Param("shoesId") Long shoesId);
 }

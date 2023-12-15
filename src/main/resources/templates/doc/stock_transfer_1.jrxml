@@ -380,51 +380,6 @@
                     <textFieldExpression><![CDATA[$P{address}]]></textFieldExpression>
                 </textField>
                 <staticText>
-                    <reportElement x="0" y="95" width="59" height="15" uuid="a5533d47-8614-4a75-a54d-e64be0d068af">
-                        <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                        <property name="com.jaspersoft.studio.unit.height" value="px"/>
-                    </reportElement>
-                    <textElement markup="none">
-                        <font fontName="Times New Roman" isBold="true"/>
-                    </textElement>
-                    <text><![CDATA[Phường/xã: ]]></text>
-                </staticText>
-                <textField>
-                    <reportElement x="80" y="95" width="130" height="15" uuid="3321933b-8c37-4490-a8f1-3cbbadb0eb89">
-                        <property name="com.jaspersoft.studio.unit.y" value="px"/>
-                    </reportElement>
-                    <textElement>
-                        <font fontName="Times New Roman"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$P{ward}]]></textFieldExpression>
-                </textField>
-                <staticText>
-                    <reportElement x="0" y="115" width="59" height="15" uuid="24455ed2-09aa-4a8d-8072-f7247ed5943d">
-                        <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                        <property name="com.jaspersoft.studio.unit.height" value="px"/>
-                    </reportElement>
-                    <textElement markup="none">
-                        <font fontName="Times New Roman" isBold="true"/>
-                    </textElement>
-                    <text><![CDATA[Quận/huyện: ]]></text>
-                </staticText>
-                <textField>
-                    <reportElement x="80" y="115" width="130" height="15" uuid="3cfb8630-bd20-4541-b34f-58b46d79aa94">
-                        <property name="com.jaspersoft.studio.unit.y" value="px"/>
-                    </reportElement>
-                    <textElement>
-                        <font fontName="Times New Roman"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$P{district}]]></textFieldExpression>
-                </textField>
-                <staticText>
-                    <reportElement x="0" y="5" width="210" height="30" uuid="5d64e1c4-f27c-4bed-8249-50c0dd9e3e2a"/>
-                    <textElement>
-                        <font fontName="Times New Roman" size="12" isBold="true"/>
-                    </textElement>
-                    <text><![CDATA[Thông tin giao nhận:]]></text>
-                </staticText>
-                <staticText>
                     <reportElement x="301" y="10" width="140" height="30" uuid="ec469804-a561-4967-a33e-512487facb94"/>
                     <textElement>
                         <font fontName="Times New Roman" size="12" isBold="true"/>
