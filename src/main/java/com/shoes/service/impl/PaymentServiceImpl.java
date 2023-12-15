@@ -119,10 +119,8 @@ public class PaymentServiceImpl implements PaymentService {
         String orderType = "other";
         BigDecimal amount = price.multiply(new BigDecimal("100")).setScale(0);
         String bankCode = "NCB";
-        System.out.println(price);
         String vnp_TxnRef = PaypalConfig.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
-
         String vnp_TmnCode = PaypalConfig.vnp_TmnCode;
 
         Map<String, String> vnp_Params = new HashMap<>();
@@ -196,7 +194,6 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_SecureHash = PaypalConfig.hmacSHA512(PaypalConfig.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = PaypalConfig.vnp_PayUrl + "?" + queryUrl;
-        System.out.println(queryUrl);
         return paymentUrl;
     }
 
@@ -212,7 +209,6 @@ public class PaymentServiceImpl implements PaymentService {
                 fields.put(fieldName, fieldValue);
             }
         }
-        System.out.println(fields);
         String vnp_SecureHash = request.getParameter("vnp_SecureHash");
         if (fields.containsKey("vnp_SecureHashType")) {
             fields.remove("vnp_SecureHashType");
@@ -220,10 +216,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (fields.containsKey("vnp_SecureHash")) {
             fields.remove("vnp_SecureHash");
         }
-        System.out.println(fields);
         String signValue = PaypalConfig.hashAllFields(fields);
-        System.out.println(signValue);
-        System.out.println(vnp_SecureHash);
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
                 return 1;
@@ -240,9 +233,8 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
         String orderCode = request.getParameter("vnp_TxnRef");
         String orderInfo = request.getParameter("order");
-        System.out.println(orderInfo);
         long vnpAmountLong = Long.parseLong(request.getParameter("vnp_Amount")) / 100;
-        BigDecimal price = BigDecimal.valueOf(vnpAmountLong).divide(new BigDecimal("100"));
+        BigDecimal price = BigDecimal.valueOf(vnpAmountLong);
         String[] orderInfoParts = orderInfo.split("_");
 
         if ("00".equals(vnp_ResponseCode)) {
@@ -257,7 +249,6 @@ public class PaymentServiceImpl implements PaymentService {
             String[] sanPhamParts = arrSanPham.split("a");
             String[] quantityParts = arrQuantity.split("b");
             User owner;
-            System.out.println(idOwnerStr);
             if (!idOwnerStr.equalsIgnoreCase("null")) {
                 long idOwner = Long.parseLong(idOwnerStr);
                 owner = userRepository.findOneById(idOwner);
@@ -290,7 +281,6 @@ public class PaymentServiceImpl implements PaymentService {
             for (int i = 0; i < sanPhamParts.length; i++) {
                 orderDetails = new OrderDetails();
                 long id = Long.parseLong(sanPhamParts[i]);
-                System.out.println(id);
                 Integer quantity = Integer.valueOf(quantityParts[i]);
                 shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
                 orderDetails.setQuantity(quantity);
