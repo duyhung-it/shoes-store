@@ -283,22 +283,7 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setCreatedDate(Instant.now());
             paymentRepository.save(payment);
 
-            Order order = new Order();
-            order.setCode(orderCode);
-            order.setAddress(address);
-            order.setPhone(phone);
-            order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
-            order.setShipPrice(shipPrice);
-            order.setTotalPrice(price);
-            order.setReceivedBy(receivedBy);
-            order.setStatus(Constants.ORDER_STATUS.PENDING);
-            order.setCreatedBy("system");
-            order.setCreatedDate(Instant.now());
-            order.setOwner(owner);
-            order.setMailAddress(email);
-            order.setPayment(payment);
-            orderRepository.save(order);
-
+            Order order = newOrder(orderCode, address, phone, shipPrice, price, receivedBy, owner, email, payment);
             List<OrderDetails> orderDetailsList = new ArrayList<>();
             ShoesDetails shoesDetails;
             OrderDetails orderDetails;
@@ -308,7 +293,6 @@ public class PaymentServiceImpl implements PaymentService {
                 System.out.println(id);
                 Integer quantity = Integer.valueOf(quantityParts[i]);
                 shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
-
                 orderDetails.setQuantity(quantity);
                 orderDetails.setPrice(shoesDetails.getPrice());
                 orderDetails.setStatus(1);
@@ -318,6 +302,7 @@ public class PaymentServiceImpl implements PaymentService {
                 orderDetails.setShoesDetails(shoesDetails);
                 orderDetailsList.add(orderDetails);
 
+                orderRepository.save(order);
                 shoesDetails.setQuantity(shoesDetails.getQuantity() - quantity);
                 shoesDetailsRepository.save(shoesDetails);
             }
@@ -325,5 +310,33 @@ public class PaymentServiceImpl implements PaymentService {
             return order;
         }
         return null;
+    }
+
+    private Order newOrder(
+        String orderCode,
+        String address,
+        String phone,
+        BigDecimal shipPrice,
+        BigDecimal price,
+        String receivedBy,
+        User owner,
+        String email,
+        Payment payment
+    ) {
+        Order order = new Order();
+        order.setCode(orderCode);
+        order.setAddress(address);
+        order.setPhone(phone);
+        order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
+        order.setShipPrice(shipPrice);
+        order.setTotalPrice(price);
+        order.setReceivedBy(receivedBy);
+        order.setStatus(Constants.ORDER_STATUS.PENDING);
+        order.setCreatedBy("system");
+        order.setCreatedDate(Instant.now());
+        order.setOwner(owner);
+        order.setMailAddress(email);
+        order.setPayment(payment);
+        return order;
     }
 }

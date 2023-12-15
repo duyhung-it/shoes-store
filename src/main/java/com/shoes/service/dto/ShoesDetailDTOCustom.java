@@ -1,5 +1,7 @@
 package com.shoes.service.dto;
 
+import java.math.BigDecimal;
+
 public interface ShoesDetailDTOCustom {
 
     String getName();
@@ -9,4 +11,7 @@ public interface ShoesDetailDTOCustom {
     Integer getIdc();
     Integer getIdb();
     String getPath();
+    Integer getDiscountmethod();
+    BigDecimal getDiscountamount_1_2();
+    BigDecimal getDiscountamount_3_4();
 }
