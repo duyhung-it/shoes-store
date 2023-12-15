@@ -119,7 +119,7 @@ public class ShoesDetailsResource {
     @PutMapping("/shoes-details-image")
     public ResponseEntity<ShoesDetailsDTO> updateShoesDetailsImages(
         @RequestPart ShoesDetailsDTO shoesDetailsDTO,
-        @RequestPart MultipartFile[] images
+        @RequestPart(required = false) MultipartFile[] images
     ) throws URISyntaxException {
         // Kiểm tra nếu shoesDetailsDTO đã có ID
         if (shoesDetailsDTO.getId() == null) {
