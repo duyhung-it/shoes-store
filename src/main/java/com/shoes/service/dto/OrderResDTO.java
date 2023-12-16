@@ -26,6 +26,7 @@ public class OrderResDTO {
     private Integer paymentStatus;
 
     private BigDecimal shipPrice;
+    private String mailAddress;
 
     private BigDecimal totalPrice;
 
