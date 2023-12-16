@@ -283,10 +283,7 @@ public class OrderServiceImpl implements OrderService {
                 )
             );
             parameters.put("phone", DataUtils.safeToString(orderResDTO.getPhone()));
-            parameters.put("address", DataUtils.safeToString(orderResDTO.getUserAddress().getAddressDetails()));
-            parameters.put("ward", DataUtils.safeToString(orderResDTO.getUserAddress().getWardName()));
-            parameters.put("district", DataUtils.safeToString(orderResDTO.getUserAddress().getDistrictName()));
-            parameters.put("province", DataUtils.safeToString(orderResDTO.getUserAddress().getProvinceName()));
+            parameters.put("address", DataUtils.safeToString(orderResDTO.getAddress()));
             parameters.put(
                 "paymentMethod",
                 DataUtils.safeToString(
