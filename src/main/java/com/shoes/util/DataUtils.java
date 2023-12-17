@@ -145,4 +145,8 @@ public class DataUtils {
         str = str.replace("/", "");
         return str;
     }
+
+    public static Instant toInstant(String instant) {
+        return LocalDateTime.parse(instant).toInstant(ZoneOffset.UTC);
+    }
 }

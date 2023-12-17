@@ -68,7 +68,7 @@ public class DiscountServiceImpl implements DiscountService {
                     throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
                 }
             }
-        } else if (Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discountDTO.getDiscountMethod())) {
+        } else if (Constants.DISCOUNT_METHOD.TOTAL_MONEY.equals(discountDTO.getDiscountMethod())) {
             for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
                 ShoesDetails shoesDetail = shoesDetailsRepository.getMinPrice(discountShoesDetails.getShoesDetails().getId());
 
@@ -119,6 +119,12 @@ public class DiscountServiceImpl implements DiscountService {
             if (Objects.isNull(discountShoesDetails.getId())) {
                 discountShoesDetails.setCreatedBy(loggedUser);
                 discountShoesDetails.setStatus(Constants.STATUS.ACTIVE);
+            }
+            if (
+                Constants.DISCOUNT_METHOD.TOTAL_MONEY.equals(discount.getDiscountMethod()) ||
+                Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discount.getDiscountMethod())
+            ) {
+                discountShoesDetails.setDiscountAmount(discount.getDiscountAmount());
             }
         }
         for (DiscountShoesDetails discountShoesDetails : discountShoesDetailsList) {
