@@ -236,8 +236,7 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = this.orderRepository.findAllByIdIn(orderId);
         for (Order order : orders) {
             if (
-                Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) ||
-                Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())
+                Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) || Constants.ORDER_STATUS.WAIT_DELIVERY.equals(order.getStatus())
             ) {
                 order.setStatus(Constants.ORDER_STATUS.CANCELED);
                 order.setLastModifiedDate(DataUtils.getCurrentDateTime());
