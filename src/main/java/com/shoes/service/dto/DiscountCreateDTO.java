@@ -41,10 +41,10 @@ public class DiscountCreateDTO {
     private List<DiscountShoesDetailsDTO> discountShoesDetailsDTOS;
 
     public Instant getStartDate() {
-        return DataUtils.getStartOfDay_yyyy_MM_dd_HH_mm_ss(startDate);
+        return DataUtils.toInstant(startDate);
     }
 
     public Instant getEndDate() {
-        return DataUtils.getEndOfDay_yyyy_MM_dd_HH_mm_ss(endDate);
+        return DataUtils.toInstant(endDate);
     }
 }
