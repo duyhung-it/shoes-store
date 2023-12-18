@@ -45,8 +45,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct iu.path) as paths ," +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
-        "GROUP_CONCAT(distinct d.discount_amount) as discount_amount ," +
-        "CAST(COALESCE(avg(fb.rate), 5) AS SIGNED ) as rating  " +
+        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount , " +
+        "CAST(COALESCE(avg(fb.rate), 0) AS SIGNED ) as rating  " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
         "JOIN (\n" +
@@ -80,7 +80,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
         "`shoes-store`.color cl ON sd.color_id = cl.id\n " +
-        "LEFT JOIN `shoes-store`.feed_back fb ON sd.id = fb.shoes_id and fb.status = 1 " +
+        "LEFT JOIN `shoes-store`.feed_back fb ON fb.shoes_id in (select id from shoes_details where brand_id = sd.brand_id and shoes_id = sd.shoes_id)  and fb.status = 1 " +
         "WHERE sd.status = 1 AND (sd.brand_id = :idBrands OR :idBrands IS NULL) and sd.price between :startPrice and :endPrice " +
         "GROUP BY shoes_id, brand_id\n"
     )
@@ -107,13 +107,11 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "  GROUP_CONCAT(iu.path) as paths ,\n " +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
-        "GROUP_CONCAT(distinct d.discount_amount) as discount_amount ,  " +
+        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount ,  " +
         "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount_3_4 ,  " +
-        " (SELECT CAST(COALESCE(avg(fb.rate), 5) AS SIGNED)\n" +
+        " (SELECT CAST(COALESCE(avg(fb.rate), 0) AS SIGNED)\n" +
         "FROM feed_back fb\n" +
-        "JOIN shoes_details ad ON fb.shoes_id = ad.id\n" +
-        "JOIN jhi_user u ON fb.user_id = u.id\n" +
-        "WHERE ad.shoes_id = :shid AND sd.brand_id = :brid AND fb.status = 1 ) as rating\n" +
+        "JOIN shoes_details ad ON fb.shoes_id in (select id from shoes_details where brand_id = sd.brand_id and shoes_id = sd.shoes_id)  AND fb.status = 1 ) as rating\n" +
         "FROM\n" +
         "    (\n" +
         "        SELECT\n" +
