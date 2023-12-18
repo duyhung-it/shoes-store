@@ -26,4 +26,6 @@ public interface OrderDetailDTOInterface {
     String getNameSize();
     String getNameColor();
     String getNameBrand();
+
+    BigDecimal getDiscount();
 }

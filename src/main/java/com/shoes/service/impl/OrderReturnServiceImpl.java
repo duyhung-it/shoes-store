@@ -2,11 +2,9 @@ package com.shoes.service.impl;
 
 import com.shoes.config.Constants;
 import com.shoes.domain.*;
-import com.shoes.repository.OrderReturnDetailsRepository;
-import com.shoes.repository.OrderReturnRepository;
-import com.shoes.repository.ReturnShoesDetailsRepository;
-import com.shoes.repository.ShoesDetailsRepository;
+import com.shoes.repository.*;
 import com.shoes.service.OrderReturnService;
+import com.shoes.service.OrderService;
 import com.shoes.service.dto.*;
 import com.shoes.service.mapper.OrderReturnDetailsMapper;
 import com.shoes.service.mapper.OrderReturnMapper;
@@ -47,6 +45,7 @@ public class OrderReturnServiceImpl implements OrderReturnService {
     private final ReturnShoesDetailsMapper returnShoesDetailsMapper;
     private final ReturnShoesDetailsRepository returnShoesDetailsRepository;
     private final ShoesDetailsRepository shoesDetailsRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public OrderReturnDTO save(OrderReturnReqDTO orderReturnDTO) {
@@ -60,7 +59,14 @@ public class OrderReturnServiceImpl implements OrderReturnService {
         orderReturn.setCreatedDate(DataUtils.getCurrentDateTime());
         orderReturn = orderReturnRepository.save(orderReturn);
         List<OrderReturnDetailsDTO> orderReturnDTOList = orderReturnDTO.getReturnOrderDetails();
+        Optional<Order> order = orderRepository.findById(orderReturn.getOrder().getId());
+        if (order.isPresent()) {
+            Order order1 = order.get();
+            order1.setStatus(Constants.ORDER_STATUS.PENDING_CHECKOUT);
+            orderRepository.save(order1);
+        }
         OrderReturn finalOrderReturn = orderReturn;
+
         orderReturnDTOList.forEach(orderReturnDetailsDTO -> {
             orderReturnDetailsDTO.setOrderDetails(new OrderDetailsDTO(orderReturnDetailsDTO.getOrderDetailsId()));
             orderReturnDetailsDTO.setOrderReturn(orderReturnMapper.toDto(finalOrderReturn));
