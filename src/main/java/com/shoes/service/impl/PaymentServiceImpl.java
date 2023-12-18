@@ -12,6 +12,7 @@ import com.shoes.service.mapper.OrderMapper;
 import com.shoes.service.mapper.PaymentMapper;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
@@ -117,7 +118,7 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        BigDecimal amount = price.multiply(new BigDecimal("100")).setScale(0);
+        BigDecimal amount = price.multiply(new BigDecimal("100")).setScale(0, RoundingMode.HALF_UP);
         String bankCode = "NCB";
         String vnp_TxnRef = PaypalConfig.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
