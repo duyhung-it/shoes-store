@@ -190,7 +190,6 @@ public class OrderDetailsResource {
         }
 
         List<OrderDetailDTOInterface> list = orderDetailsService.findAllByOrder_Id(order.getId());
-        list.forEach(System.out::println);
         return ResponseEntity.ok(list);
     }
 }
