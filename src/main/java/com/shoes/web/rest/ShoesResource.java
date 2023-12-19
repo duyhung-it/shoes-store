@@ -159,6 +159,7 @@ public class ShoesResource {
         Optional<ShoesDTO> shoesDTO = shoesService.findOne(id);
         return ResponseUtil.wrapOrNotFound(shoesDTO);
     }
+
     @GetMapping("/shoes/removed")
     public ResponseEntity<List<ShoesDTO>> getAllColorsDelete(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Colors");
@@ -166,6 +167,7 @@ public class ShoesResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+
     @DeleteMapping("/shoes/{id}")
     public ResponseEntity<Void> deleteColor(@PathVariable Long id) {
         log.debug("REST request to delete Shoes : {}", id);
