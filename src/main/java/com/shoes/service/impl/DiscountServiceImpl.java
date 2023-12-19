@@ -133,16 +133,18 @@ public class DiscountServiceImpl implements DiscountService {
                 discountShoesDetails.getBrandId()
             );
             if (Objects.nonNull(discountShoesDetails1) && !Objects.equals(discountShoesDetails.getId(), discountShoesDetails1.getId())) {
-                Brand brand = brandRepository.findByIdAndStatus(discountShoesDetails.getBrandId(), Constants.STATUS.ACTIVE);
-                Shoes shoes = shoesRepository.findByIdAndStatus(discountShoesDetails.getShoesDetails().getId(), Constants.STATUS.ACTIVE);
-                throw new BadRequestAlertException(
-                    "Giày đã được sử dụng trong chương trình giảm giá khác! Mã: " +
-                    (shoes == null ? "" : shoes.getCode()) +
-                    " - " +
-                    (brand == null ? "" : brand.getName()),
-                    ENTITY_NAME,
-                    "used"
-                );
+                //                Brand brand = brandRepository.findByIdAndStatus(discountShoesDetails.getBrandId(), Constants.STATUS.ACTIVE);
+                //                Shoes shoes = shoesRepository.findByIdAndStatus(discountShoesDetails.getShoesDetails().getId(), Constants.STATUS.ACTIVE);
+                //                throw new BadRequestAlertException(
+                //                    "Giày đã được sử dụng trong chương trình giảm giá khác! Mã: " +
+                //                    (shoes == null ? "" : shoes.getCode()) +
+                //                    " - " +
+                //                    (brand == null ? "" : brand.getName()),
+                //                    ENTITY_NAME,
+                //                    "used"
+                //                );
+                discountShoesDetails1.setStatus(Constants.STATUS.DELETE);
+                discountShoesDetailsRepository.save(discountShoesDetails);
             }
         }
         discountShoesDetailsRepository.saveAll(discountShoesDetailsList);

@@ -1319,5 +1319,11 @@
             </column>
         </addColumn>
     </changeSet>
-
+    <changeSet id="20231121090531-17" author="jhipster">
+        <addColumn tableName="jhi_user">
+            <column name="address" type="nvarchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
