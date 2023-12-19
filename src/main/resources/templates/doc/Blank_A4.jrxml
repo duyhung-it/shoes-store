@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="619" pageHeight="875" columnWidth="478" leftMargin="99" rightMargin="42" topMargin="70" bottomMargin="56" uuid="ff1c4373-5e4e-41df-8ddf-4fec318b66cb">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    <property name="com.jaspersoft.studio.unit.topMargin" value="mm"/>
+    <property name="com.jaspersoft.studio.unit.bottomMargin" value="mm"/>
+    <property name="com.jaspersoft.studio.unit.leftMargin" value="mm"/>
+    <property name="com.jaspersoft.studio.unit.rightMargin" value="mm"/>
+    <property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
+    <property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
+    <subDataset name="Dataset1" uuid="293dd12d-1c7b-41f3-b212-3b6cbe8fdf60">
+        <queryString>
+            <![CDATA[]]>
+        </queryString>
+        <field name="code" class="java.lang.String"/>
+        <field name="name" class="java.lang.String"/>
+        <field name="storageUnit" class="java.lang.String"/>
+        <field name="quantity" class="java.lang.Integer"/>
+        <variable name="rowNumber" class="java.lang.Integer" resetType="None" incrementType="Column" calculation="Sum">
+            <initialValueExpression><![CDATA[1]]></initialValueExpression>
+        </variable>
+        <variable name="quantity2" class="java.lang.Integer" calculation="Sum">
+            <variableExpression><![CDATA[$F{quantity}]]></variableExpression>
+        </variable>
+    </subDataset>
+    <parameter name="customer" class="java.lang.String"/>
+    <parameter name="logoPath" class="java.io.InputStream"/>
+    <parameter name="requestedBy" class="java.lang.String"/>
+    <parameter name="code" class="java.lang.String"/>
+    <parameter name="unit" class="java.lang.String"/>
+    <parameter name="importBranch" class="java.lang.String"/>
+    <parameter name="exportBranch" class="java.lang.String"/>
+    <parameter name="exchangeReason" class="java.lang.String"/>
+    <parameter name="note" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="-90" y="-50" width="100" height="30" uuid="e321a6a7-763d-4160-b2e6-d2d2b8b9b21b"/>
+                <textFieldExpression><![CDATA["Chào "+$P{customer}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+    <detail>
+        <band height="372" splitType="Stretch">
+            <textField>
+                <reportElement x="-90" y="30" width="600" height="262" uuid="ce3c64d4-6579-4b08-b766-88e59f0de288"/>
+                <textFieldExpression><![CDATA["Lý do hủy đơn có thể do một số nguyên nhân, bao gồm:\n" +
+
+"1. Không Thể Xác Nhận Thanh Toán: Thanh toán cho đơn hàng của bạn không thể được xác nhận hoặc đã xảy ra sự cố với giao dịch thanh toán.\n" +
+
+"2. Hết Hàng Hoặc Sẽ Không Có Hàng Giao: Sản phẩm bạn đặt có thể đã hết hàng hoặc không khả dụng để giao hàng trong khoảng thời gian mong muốn.\n" +
+
+"3. Thông Tin Khách Hàng Không Chính Xác: Thông tin liên lạc hoặc địa chỉ giao hàng có thể không chính xác, làm cho quá trình giao hàng trở nên khó khăn.\n" +
+
+"Nếu bạn có bất kỳ câu hỏi hoặc cần giải đáp thêm thông tin về việc hủy đơn hàng, vui lòng liên hệ với chúng tôi qua địa chỉ email support@sportkick.com hoặc số điện thoại 038.423.3301.\n" +
+
+"Chúng tôi chân thành xin lỗi về sự phiền phức mà điều này có thể gây ra và hy vọng có cơ hội phục vụ bạn trong tương lai\n."+
+"Trân trọng,\n"+
+"SprotKick Shop"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="-90" y="-10" width="599" height="30" uuid="e187ad0d-c3ba-4a8a-9d62-6f7fbfcbf9d1"/>
+                <textFieldExpression><![CDATA["Chúng tôi xin thông báo rằng đơn hàng của bạn (Mã đơn hàng: "+ $P{code}  +" đã bị hủy. Chúng tôi rất tiếc về sự bất tiện này và mong bạn thông cảm."]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

@@ -65,6 +65,9 @@ public class OrderResource {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");
         }
         OrderDTO result = orderService.save(orderDTO);
+        byte[] byteArrayResource = this.orderService.getMailVerify(result.getId());
+        //            System.out.println(byteArrayResource);
+        mailService.sendEmail1(result.getMailAddress(), "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
         return ResponseEntity
             .created(new URI("/api/orders/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -216,6 +219,18 @@ public class OrderResource {
     @GetMapping("/orders/cancel/{id}")
     public ResponseEntity<Void> cancelOrder(@PathVariable("id") List<Long> id) {
         this.orderService.cancelOrder(id);
+        for (Long ids : id) {
+            Order order = orderRepository.findById(ids).orElse(new Order());
+            byte[] byteArrayResource = this.orderService.getCancelOrderMail(ids);
+            mailService.sendEmail1(
+                order.getMailAddress(),
+                "[SPORT-KICK] Thông báo đơn hàng của bạn đã bị hủy",
+                "",
+                byteArrayResource,
+                true,
+                true
+            );
+        }
         return ResponseEntity.ok().build();
     }
 
