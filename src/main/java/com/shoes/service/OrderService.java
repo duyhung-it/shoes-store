@@ -68,6 +68,7 @@ public interface OrderService {
     void verifyOrder(List<Long> orderId);
     void cancelOrder(List<Long> orderId);
     byte[] getMailVerify(Long orderId);
+    byte[] getCancelOrderMail(Long orderId);
     List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login);
     Order getOrderByCode(String code);
 }
