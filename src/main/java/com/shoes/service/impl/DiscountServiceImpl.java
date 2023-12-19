@@ -61,6 +61,9 @@ public class DiscountServiceImpl implements DiscountService {
             }
         } else if (Constants.DISCOUNT_METHOD.PER_PERCENT.equals(discountDTO.getDiscountMethod())) {
             for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
+                if (DataUtils.isNull(discountShoesDetails.getDiscountAmount())) {
+                    throw new BadRequestAlertException("Giảm giá không được để trống", ENTITY_NAME, "date");
+                }
                 if (
                     discountShoesDetails.getDiscountAmount().doubleValue() > 100 ||
                     discountShoesDetails.getDiscountAmount().doubleValue() <= 0
@@ -83,7 +86,9 @@ public class DiscountServiceImpl implements DiscountService {
         } else {
             for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
                 ShoesDetails shoesDetail = shoesDetailsRepository.getMinPrice(discountShoesDetails.getShoesDetails().getId());
-
+                if (DataUtils.isNull(discountShoesDetails.getDiscountAmount())) {
+                    throw new BadRequestAlertException("Giảm giá không được để trống", ENTITY_NAME, "date");
+                }
                 if (shoesDetail.getPrice().compareTo(discountShoesDetails.getDiscountAmount()) < 0) {
                     throw new BadRequestAlertException(
                         "Số tiền giảm không được nhỏ hơn số tiền của giày" + discountShoesDetails.getShoesDetails().getName(),
@@ -106,6 +111,7 @@ public class DiscountServiceImpl implements DiscountService {
         discount.setCode(generateCode());
         discount.setStatus(Constants.STATUS.ACTIVE);
         discount.setCreatedBy(loggedUser);
+        discount.setDiscountStatus(0);
         discount.setLastModifiedBy(loggedUser);
         discountRepository.save(discount);
         List<DiscountShoesDetails> discountShoesDetailsList = discountDTO
@@ -144,7 +150,7 @@ public class DiscountServiceImpl implements DiscountService {
                 //                    "used"
                 //                );
                 discountShoesDetails1.setStatus(Constants.STATUS.DELETE);
-                discountShoesDetailsRepository.save(discountShoesDetails);
+                discountShoesDetailsRepository.save(discountShoesDetails1);
             }
         }
         discountShoesDetailsRepository.saveAll(discountShoesDetailsList);
@@ -213,6 +219,24 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
+    public void scanDiscount() {
+        List<Discount> listDiscountA = discountRepository.findAllActive();
+        List<Discount> listDiscountB = discountRepository.findAllHetHan();
+        List<Discount> listSave = new ArrayList<>();
+        for (Discount discount : listDiscountA) {
+            discount.setDiscountStatus(1);
+            listSave.add(discount);
+        }
+        for (Discount discount : listDiscountB) {
+            discount.setDiscountStatus(2);
+            listSave.add(discount);
+        }
+        discountRepository.saveAll(listSave);
+        List<Long> discountId = listDiscountB.stream().map(Discount::getId).collect(Collectors.toList());
+        discountShoesDetailsRepository.updateStatus(discountId, 0);
+    }
+
+    @Override
     public Optional<DiscountDTO> partialUpdate(DiscountDTO discountDTO) {
         log.debug("Request to partially update Discount : {}", discountDTO);
 
@@ -274,8 +298,10 @@ public class DiscountServiceImpl implements DiscountService {
             .findById(id)
             .orElseThrow(() -> new BadRequestAlertException(Translator.toLocal(""), "abc", "abc"));
         discount.setStatus(Constants.STATUS.DELETE);
+        discount.setDiscountStatus(2);
         discount.setLastModifiedBy(loggedUser);
         discount.setLastModifiedDate(Instant.now().plus(7, ChronoUnit.HOURS));
+        this.discountShoesDetailsRepository.updateStatus(Collections.singletonList(id), -1);
         discountRepository.save(discount);
     }
 

@@ -27,6 +27,7 @@ public interface DiscountService {
      * @return the persisted entity.
      */
     DiscountDTO update(DiscountCreateDTO discountDTO, Long id);
+    void scanDiscount();
 
     /**
      * Partially updates a discount.

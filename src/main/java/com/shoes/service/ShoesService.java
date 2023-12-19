@@ -3,7 +3,6 @@ package com.shoes.service;
 import com.shoes.service.dto.ShoesDTO;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -50,6 +49,7 @@ public interface ShoesService {
      * @return the entity.
      */
     Optional<ShoesDTO> findOne(Long id);
+
     public void delete(Long id);
 
     public Page<ShoesDTO> findDelete(Pageable pageable);
