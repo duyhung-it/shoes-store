@@ -12,6 +12,7 @@ import com.shoes.service.mapper.OrderMapper;
 import com.shoes.service.mapper.PaymentMapper;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
@@ -50,6 +51,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CartDetailsRepository cartDetailsRepository;
     private final MailService mailService;
     private final CartRepository cartRepository;
+    private final AddressRepository addressRepository;
 
     @Override
     public PaymentDTO save(PaymentDTO paymentDTO) {
@@ -109,6 +111,9 @@ public class PaymentServiceImpl implements PaymentService {
         String phone,
         String email,
         String address,
+        Integer province,
+        Integer district,
+        Integer ward,
         BigDecimal shipPrice,
         String idOwner,
         String arrSanPham,
@@ -117,7 +122,7 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        BigDecimal amount = price.multiply(new BigDecimal("100")).setScale(0);
+        BigDecimal amount = price.multiply(new BigDecimal("100")).setScale(0, RoundingMode.HALF_UP);
         String bankCode = "NCB";
         String vnp_TxnRef = PaypalConfig.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
@@ -147,6 +152,12 @@ public class PaymentServiceImpl implements PaymentService {
             email +
             "_" +
             address +
+            "_" +
+            province +
+            "_" +
+            district +
+            "_" +
+            ward +
             "_" +
             shipPrice +
             "_" +
@@ -242,10 +253,13 @@ public class PaymentServiceImpl implements PaymentService {
             String phone = orderInfoParts[1];
             String email = orderInfoParts[2];
             String address = orderInfoParts[3];
-            BigDecimal shipPrice = new BigDecimal(orderInfoParts[4]);
-            String arrSanPham = orderInfoParts[6];
-            String arrQuantity = orderInfoParts[7];
-            String idOwnerStr = orderInfoParts[5];
+            Integer province = Integer.valueOf(orderInfoParts[4]);
+            Integer district = Integer.valueOf(orderInfoParts[5]);
+            Integer ward = Integer.valueOf(orderInfoParts[6]);
+            BigDecimal shipPrice = new BigDecimal(orderInfoParts[7]);
+            String idOwnerStr = orderInfoParts[8];
+            String arrSanPham = orderInfoParts[9];
+            String arrQuantity = orderInfoParts[10];
             String[] sanPhamParts = arrSanPham.split("a");
             String[] quantityParts = arrQuantity.split("b");
             User owner;
@@ -266,6 +280,8 @@ public class PaymentServiceImpl implements PaymentService {
                 owner = null;
             }
 
+            Address adr = saveAddress(province, district, ward, address);
+
             Payment payment = new Payment();
             payment.setCode(orderCode);
             payment.setPaymentMethod(Constants.PAYMENT_METHOD.CREDIT);
@@ -274,7 +290,7 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setCreatedDate(Instant.now());
             paymentRepository.save(payment);
 
-            Order order = newOrder(orderCode, address, phone, shipPrice, price, receivedBy, owner, email, payment);
+            Order order = newOrder(orderCode, phone, shipPrice, price, receivedBy, owner, email, payment, adr);
             List<OrderDetails> orderDetailsList = new ArrayList<>();
             ShoesDetails shoesDetails;
             OrderDetails orderDetails;
@@ -304,18 +320,18 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Order newOrder(
         String orderCode,
-        String address,
         String phone,
         BigDecimal shipPrice,
         BigDecimal price,
         String receivedBy,
         User owner,
         String email,
-        Payment payment
+        Payment payment,
+        Address address
     ) {
         Order order = new Order();
         order.setCode(orderCode);
-        order.setAddress(address);
+        order.setUserAddress(address);
         order.setPhone(phone);
         order.setPaidMethod(Constants.PAYMENT_METHOD.CREDIT);
         order.setShipPrice(shipPrice);
@@ -328,5 +344,15 @@ public class PaymentServiceImpl implements PaymentService {
         order.setMailAddress(email);
         order.setPayment(payment);
         return order;
+    }
+
+    private Address saveAddress(Integer province, Integer district, Integer ward, String addressDetail) {
+        Address address = new Address();
+        address.setAddressDetails(addressDetail);
+        address.setProvince(province);
+        address.setDistrict(district);
+        address.setWard(ward);
+        addressRepository.save(address);
+        return address;
     }
 }
