@@ -45,7 +45,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct iu.path) as paths ," +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
-        "dsd.discount_amount as discount_amount , " +
+        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount , " +
         "CAST(COALESCE(avg(fb.rate), 0) AS SIGNED ) as rating  " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
