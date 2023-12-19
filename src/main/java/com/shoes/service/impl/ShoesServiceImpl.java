@@ -4,6 +4,7 @@ import com.shoes.config.Constants;
 import com.shoes.domain.Color;
 import com.shoes.domain.Shoes;
 import com.shoes.domain.ShoesDetails;
+import com.shoes.domain.Size;
 import com.shoes.repository.ShoesDetailsRepository;
 import com.shoes.repository.ShoesRepository;
 import com.shoes.repository.SizeRepository;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
@@ -124,14 +126,16 @@ public class ShoesServiceImpl implements ShoesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ShoesDTO> findOne(Long id) {
-        log.debug("Request to get Shoes : {}", id);
-        return shoesRepository.findById(id).map(shoesMapper::toDto);
+    public Page<ShoesDTO> findDelete(Pageable pageable) {
+        log.debug("Request to get all Colors with status = 1");
+        // Retrieve all colors with status = 1 from the repository and map them to ColorDTO
+        Page<Shoes> colorsWithStatus1 = shoesRepository.findByStatus(0, pageable);
+        return colorsWithStatus1.map(shoesMapper::toDto);
     }
 
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Shoes : {}", id);
+        log.debug("Request to delete Color : {}", id);
 
         // Find the Color entity by ID
         Optional<Shoes> optionalColor = shoesRepository.findById(id);
@@ -139,9 +143,16 @@ public class ShoesServiceImpl implements ShoesService {
         // Check if the Color entity exists
         if (optionalColor.isPresent()) {
             // Update the status to 0 (inactive) instead of deleting
-            Shoes shoes = optionalColor.get();
-            shoes.setStatus(0);
-            shoesRepository.save(shoes);
+            Shoes color = optionalColor.get();
+            color.setStatus(0);
+            shoesRepository.save(color);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<ShoesDTO> findOne(Long id) {
+        log.debug("Request to get Shoes : {}", id);
+        return shoesRepository.findById(id).map(shoesMapper::toDto);
     }
 }

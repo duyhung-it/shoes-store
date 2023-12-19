@@ -157,8 +157,14 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
 
     @Query(
         value = "select fu.path,sd.price,s.name,s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb,\n" +
-        "\t\td.discount_method as discountmethod,dsd.discount_amount as discountamount_3_4,\n" +
-        "d.discount_amount as discountamount_1_2\n" +
+            "    coalesce(max(discount_method),min(discount_method)) AS discountmethod,\n" +
+            "    max(\n" +
+            "    case\n" +
+            "    when discount_method is not null && (discount_method = 3 || discount_method = 4)  then dsd.discount_amount\n" +
+            "    else null\n" +
+            "    end \n" +
+            "    ) as discountamount_3_4,\n" +
+            "    coalesce(max(d.discount_amount),min(d.discount_amount)) AS discountamount_1_2\n" +
         "from (\n" +
         "    WITH shoes_details AS (\n" +
         "        SELECT\n" +
@@ -231,6 +237,45 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         nativeQuery = true
     )
     List<ShoesDetailDTOCustom> getNewDiscountShoesDetail();
+
+    @Query(
+        value = "SELECT \n" +
+            "    fu.path,\n" +
+            "    sd.price,\n" +
+            "    s.name,\n" +
+            "    sd.id AS shoesdetailid,\n" +
+            "    s.id AS idsh,\n" +
+            "    sz.id AS idsz,\n" +
+            "    c.id AS idc,\n" +
+            "    b.id AS idb,\n" +
+            "    sum(od.quantity) as totalQuantity\n" +
+            "FROM \n" +
+            "    shoes_details sd\n" +
+            "JOIN \n" +
+            "    shoes s ON sd.shoes_id = s.id\n" +
+            "JOIN \n" +
+            "    size sz ON sd.size_id = sz.id\n" +
+            "JOIN \n" +
+            "    color c ON sd.color_id = c.id\n" +
+            "JOIN \n" +
+            "    brand b ON sd.brand_id = b.id\n" +
+            "JOIN order_details od on od.shoes_details_id = sd.id\n" +
+            "JOIN (\n" +
+            "    SELECT \n" +
+            "        sfum.*,\n" +
+            "        ROW_NUMBER() OVER (PARTITION BY shoes_details_id ORDER BY id) AS rn\n" +
+            "    FROM \n" +
+            "        shoes_file_upload_mapping sfum\n" +
+            ") sfum ON sd.id = sfum.shoes_details_id\n" +
+            "JOIN \n" +
+            "    file_upload fu ON sfum.file_upload_id = fu.id \n" +
+            "WHERE rn = 1 \n" +
+            "GROUP BY sd.id\n" +
+            "order by totalQuantity desc\n" +
+            "limit 10\n",
+        nativeQuery = true
+    )
+    List<ShoesDetailDTOCustom> getBestSeller();
 
     @Query(
         value = "SELECT  \n" +

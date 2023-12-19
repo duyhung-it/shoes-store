@@ -101,6 +101,11 @@ public class ShoesDetailsServiceImpl implements ShoesDetailsService {
     }
 
     @Override
+    public List<ShoesDetailDTOCustom> getBestSellerShoesDetail() {
+        return shoesDetailsRepository.getBestSeller();
+    }
+
+    @Override
     public List<ShopShoesDTO> getDiscountShoes() {
         return shoesDetailsRepository.getShoesDiscount();
     }

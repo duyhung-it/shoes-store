@@ -54,10 +54,11 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final OrderDetailsMapper orderDetailsMapper;
     private final OrderDetailsRepository orderDetailsRepository;
-    private final AddressRepository addressRepository;
-    private final AddressMapper addressMapper;
+    private final CartRepository cartRepository;
     private final String baseCode = "HD";
     private final ShoesDetailsRepository shoesDetailsRepository;
+    private final UserRepository userRepository;
+    private final CartDetailsRepository cartDetailsRepository;
 
     @Override
     public OrderDTO save(OrderCreateDTO orderDTO) {
@@ -65,11 +66,6 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Request to save Order : {}", orderDTO);
 
         Order order = orderMapper.toOrderEntity(orderDTO);
-        //        Address address = addressMapper.toEntity(orderDTO.getUserAddress());
-        //        address.setStatus(Constants.STATUS.ACTIVE);
-        //        address.setCreatedBy(loggedUser);
-        //        address.setLastModifiedBy(loggedUser);
-        //        order.setUserAddress(addressRepository.save(address));
         if (Objects.isNull(order.getId())) {
             order.setCreatedBy(loggedUser);
             order.setStatus(Constants.ORDER_STATUS.PENDING);
@@ -106,6 +102,21 @@ public class OrderServiceImpl implements OrderService {
             orderDetails.setStatus(Constants.STATUS.ACTIVE);
         }
         orderDetailsRepository.saveAll(orderDetailsList);
+        User user = userRepository.findOneByLogin(loggedUser).orElse(null);
+        if (user != null) {
+            Cart cart = cartRepository.findByOwnerId(user.getId());
+            List<CartDetails> cartDetailsList = cartDetailsRepository.findCartDetailsByCart(cart);
+            for (CartDetails c : cartDetailsList) {
+                for (Long idSP : orderDetailsList
+                    .stream()
+                    .map(orderDetails -> orderDetails.getShoesDetails().getId())
+                    .collect(Collectors.toList())) {
+                    if (Objects.equals(c.getShoesDetails().getId(), idSP)) {
+                        cartDetailsRepository.delete(c);
+                    }
+                }
+            }
+        }
         return orderMapper.toDto(order);
     }
 
@@ -236,8 +247,7 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = this.orderRepository.findAllByIdIn(orderId);
         for (Order order : orders) {
             if (
-                Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) ||
-                Constants.ORDER_STATUS.PENDING_CHECKOUT.equals(order.getStatus())
+                Constants.ORDER_STATUS.PENDING.equals(order.getStatus()) || Constants.ORDER_STATUS.WAIT_DELIVERY.equals(order.getStatus())
             ) {
                 order.setStatus(Constants.ORDER_STATUS.CANCELED);
                 order.setLastModifiedDate(DataUtils.getCurrentDateTime());
@@ -290,6 +300,28 @@ public class OrderServiceImpl implements OrderService {
                     Constants.PAYMENT_METHOD.CASH.equals(orderResDTO.getPayment().getPaymentMethod()) ? "Tiền mặt" : "Chuyển khoản"
                 )
             );
+            return this.exportJasperReport(jasperReport, parameters, bos);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public byte[] getCancelOrderMail(Long orderId) {
+        try {
+            Order orderResDTO = orderRepository.findById(orderId).orElse(new Order());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            InputStream inputStream = getClass().getResourceAsStream("/templates/doc/Blank_A4.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(
+                "customer",
+                DataUtils.safeToString(
+                    orderResDTO.getReceivedBy() == null ? (orderResDTO.getOwner().getFirstName()) : orderResDTO.getReceivedBy()
+                )
+            );
+            parameters.put("code", DataUtils.safeToString(orderResDTO.getCode()));
             return this.exportJasperReport(jasperReport, parameters, bos);
         } catch (Exception e) {
             log.error(e.getMessage());

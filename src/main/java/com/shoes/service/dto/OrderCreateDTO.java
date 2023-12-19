@@ -39,6 +39,7 @@ public class OrderCreateDTO {
     private BigDecimal totalPrice;
 
     private String receivedBy;
+    private String mailAddress;
 
     private String receivedDate;
     private String address;

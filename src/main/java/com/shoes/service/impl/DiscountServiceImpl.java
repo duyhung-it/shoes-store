@@ -68,7 +68,7 @@ public class DiscountServiceImpl implements DiscountService {
                     throw new BadRequestAlertException("Số % giảm phải lớn hơn 0 và nhỏ hơn 100", ENTITY_NAME, "date");
                 }
             }
-        } else if (Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discountDTO.getDiscountMethod())) {
+        } else if (Constants.DISCOUNT_METHOD.TOTAL_MONEY.equals(discountDTO.getDiscountMethod())) {
             for (DiscountShoesDetailsDTO discountShoesDetails : discountDTO.getDiscountShoesDetailsDTOS()) {
                 ShoesDetails shoesDetail = shoesDetailsRepository.getMinPrice(discountShoesDetails.getShoesDetails().getId());
 
@@ -120,6 +120,12 @@ public class DiscountServiceImpl implements DiscountService {
                 discountShoesDetails.setCreatedBy(loggedUser);
                 discountShoesDetails.setStatus(Constants.STATUS.ACTIVE);
             }
+            if (
+                Constants.DISCOUNT_METHOD.TOTAL_MONEY.equals(discount.getDiscountMethod()) ||
+                Constants.DISCOUNT_METHOD.TOTAL_PERCENT.equals(discount.getDiscountMethod())
+            ) {
+                discountShoesDetails.setDiscountAmount(discount.getDiscountAmount());
+            }
         }
         for (DiscountShoesDetails discountShoesDetails : discountShoesDetailsList) {
             DiscountShoesDetails discountShoesDetails1 = discountShoesDetailsRepository.findByShoesIdAndStatus(
@@ -127,16 +133,18 @@ public class DiscountServiceImpl implements DiscountService {
                 discountShoesDetails.getBrandId()
             );
             if (Objects.nonNull(discountShoesDetails1) && !Objects.equals(discountShoesDetails.getId(), discountShoesDetails1.getId())) {
-                Brand brand = brandRepository.findByIdAndStatus(discountShoesDetails.getBrandId(), Constants.STATUS.ACTIVE);
-                Shoes shoes = shoesRepository.findByIdAndStatus(discountShoesDetails.getShoesDetails().getId(), Constants.STATUS.ACTIVE);
-                throw new BadRequestAlertException(
-                    "Giày đã được sử dụng trong chương trình giảm giá khác! Mã: " +
-                    (shoes == null ? "" : shoes.getCode()) +
-                    " - " +
-                    (brand == null ? "" : brand.getName()),
-                    ENTITY_NAME,
-                    "used"
-                );
+                //                Brand brand = brandRepository.findByIdAndStatus(discountShoesDetails.getBrandId(), Constants.STATUS.ACTIVE);
+                //                Shoes shoes = shoesRepository.findByIdAndStatus(discountShoesDetails.getShoesDetails().getId(), Constants.STATUS.ACTIVE);
+                //                throw new BadRequestAlertException(
+                //                    "Giày đã được sử dụng trong chương trình giảm giá khác! Mã: " +
+                //                    (shoes == null ? "" : shoes.getCode()) +
+                //                    " - " +
+                //                    (brand == null ? "" : brand.getName()),
+                //                    ENTITY_NAME,
+                //                    "used"
+                //                );
+                discountShoesDetails1.setStatus(Constants.STATUS.DELETE);
+                discountShoesDetailsRepository.save(discountShoesDetails);
             }
         }
         discountShoesDetailsRepository.saveAll(discountShoesDetailsList);
