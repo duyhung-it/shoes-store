@@ -53,7 +53,7 @@ public class DashBoardServiceImpl implements DashboardService {
         }
         List<RevenueDTO> list = orderRepository.getRevenueInYear(on);
         for (RevenueDTO revenueDTO : list) {
-            listAr.set(revenueDTO.getMonth(), revenueDTO.getValue());
+            listAr.set(revenueDTO.getMonth() - 1, revenueDTO.getValue());
         }
         return listAr;
     }

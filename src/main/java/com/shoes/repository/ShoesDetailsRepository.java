@@ -102,7 +102,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "  sz.name as size_name,\n" +
         "  cl.name as color_name ," +
         "  sd.*,\n" +
-        "  CONCAT(sh.name, ' ', br.name) as name,\n" +
+        "  CONCAT(br.name, ' ', sh.name) as name,\n" +
         "  iu.path,\n" +
         "  GROUP_CONCAT(iu.path) as paths ,\n " +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
@@ -142,7 +142,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "JOIN `shoes-store`.size sz ON sd.size_id = sz.id and (:siid IS NULL OR sz.id = :siid) \n" +
         "JOIN `shoes-store`.color cl ON sd.color_id = cl.id and cl.id = :clid \n" +
         "LEFT JOIN `shoes-store`.discount_shoes_details dsd\n" +
-        "ON dsd.shoes_details_id = sd.shoes_id and dsd.status = 1 and dsd.brand_id = br.id\n" +
+        "ON dsd.shoes_details_id = sd.shoes_id and dsd.status = 1 and dsd.brand_id = sd.brand_id\n" +
         "LEFT JOIN `shoes-store`.discount d \n" +
         "ON dsd.discount_id = d.id and d.start_date <= now() and d.end_date >= now() and d.status = 1 " +
         "WHERE  " +
