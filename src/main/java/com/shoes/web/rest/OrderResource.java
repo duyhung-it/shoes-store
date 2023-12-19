@@ -219,6 +219,18 @@ public class OrderResource {
     @GetMapping("/orders/cancel/{id}")
     public ResponseEntity<Void> cancelOrder(@PathVariable("id") List<Long> id) {
         this.orderService.cancelOrder(id);
+        for (Long ids : id) {
+            Order order = orderRepository.findById(ids).orElse(new Order());
+            byte[] byteArrayResource = this.orderService.getCancelOrderMail(ids);
+            mailService.sendEmail1(
+                order.getMailAddress(),
+                "[SPORT-KICK] Thông báo đơn hàng của bạn đã bị hủy",
+                "",
+                byteArrayResource,
+                true,
+                true
+            );
+        }
         return ResponseEntity.ok().build();
     }
 

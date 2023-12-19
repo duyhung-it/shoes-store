@@ -307,6 +307,28 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public byte[] getCancelOrderMail(Long orderId) {
+        try {
+            Order orderResDTO = orderRepository.findById(orderId).orElse(new Order());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            InputStream inputStream = getClass().getResourceAsStream("/templates/doc/Blank_A4.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(
+                "customer",
+                DataUtils.safeToString(
+                    orderResDTO.getReceivedBy() == null ? (orderResDTO.getOwner().getFirstName()) : orderResDTO.getReceivedBy()
+                )
+            );
+            parameters.put("code", DataUtils.safeToString(orderResDTO.getCode()));
+            return this.exportJasperReport(jasperReport, parameters, bos);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
     public byte[] exportJasperReport(JasperReport jasperReport, Map<String, Object> parameters, ByteArrayOutputStream bos) {
         try {
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
