@@ -63,7 +63,7 @@ public interface CartDetailsRepository extends JpaRepository<CartDetails, Long> 
         "JOIN \n" +
         "    file_upload fu ON sfum.file_upload_id = fu.id \n" +
         "WHERE \n" +
-        "    cd.cart_id = 1\n" +
+        "    cd.cart_id = :idCart\n" +
         "    AND rn = 1\n" +
         "GROUP BY sd.id\n",
         nativeQuery = true
