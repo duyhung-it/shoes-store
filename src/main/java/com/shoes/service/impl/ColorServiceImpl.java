@@ -93,7 +93,7 @@ public class ColorServiceImpl implements ColorService {
     @Transactional(readOnly = true)
     public Page<ColorDTO> findDelete(Pageable pageable) {
         log.debug("Request to get all Colors with status = 1");
-        // Retrieve all colors with status = 1 from the repository and map them to ColorDTO
+        // Retrieve all colors with status = 0 from the repository and map them to ColorDTO
         Page<Color> colorsWithStatus1 = colorRepository.findByStatus(0, pageable);
         return colorsWithStatus1.map(colorMapper::toDto);
     }

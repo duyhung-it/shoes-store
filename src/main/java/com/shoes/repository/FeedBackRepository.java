@@ -35,21 +35,21 @@ public interface FeedBackRepository extends JpaRepository<FeedBack, Long> {
     @Query(
         value = "SELECT EXISTS (\n" +
         "    SELECT 1 \n" +
-        "    FROM feed_back\n" +
-        "    WHERE user_id = :uid AND shoes_id = :shid\n" +
-        ");\n",
+        "    FROM feed_back" +
+        "    WHERE user_id = :uid AND shoes_id  in ( select id from shoes_details where brand_id = :brid and shoes_id = :shid  ) " +
+        ");",
         nativeQuery = true
     )
-    Integer checkComment(@Param("uid") Long id, @Param("shid") Long shid);
+    Integer checkComment(@Param("uid") Long id, @Param("brid") Long brid, @Param("shid") Long shid);
 
     @Query(
         value = "SELECT EXISTS (\n" +
         "    SELECT 1 \n" +
         "    FROM jhi_order\n" +
         "    JOIN order_details od ON jhi_order.id = od.order_id \n" +
-        "    WHERE jhi_order.owner_id = :uid AND od.shoes_details_id = :shid \n" +
+        "    WHERE jhi_order.owner_id = :uid AND od.shoes_details_id  in ( select id from shoes_details where brand_id = :brid and shoes_id = :shid ) and jhi_order.status = 3 " +
         ");",
         nativeQuery = true
     )
-    Integer checkBuy(@Param("uid") Long id, @Param("shid") Long shid);
+    Integer checkBuy(@Param("uid") Long id, @Param("brid") Long brid, @Param("shid") Long shid);
 }

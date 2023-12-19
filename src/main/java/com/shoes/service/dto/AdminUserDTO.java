@@ -3,6 +3,7 @@ package com.shoes.service.dto;
 import com.shoes.config.Constants;
 import com.shoes.domain.Authority;
 import com.shoes.domain.User;
+import com.shoes.util.DataUtils;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
@@ -54,6 +55,8 @@ public class AdminUserDTO implements Serializable {
     private String phone;
 
     private Set<String> authorities;
+    private String dob;
+    private String address;
 
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.
@@ -75,6 +78,8 @@ public class AdminUserDTO implements Serializable {
         this.lastModifiedDate = user.getLastModifiedDate();
         this.phone = user.getPhone();
         this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+        this.address = user.getAddress();
+        this.dob = String.valueOf(user.getDOB());
     }
 
     public Long getId() {
@@ -195,6 +200,18 @@ public class AdminUserDTO implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     // prettier-ignore

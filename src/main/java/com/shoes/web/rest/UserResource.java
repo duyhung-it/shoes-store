@@ -110,18 +110,18 @@ public class UserResource {
      */
     @PostMapping("/users")
     //    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<User> createUser(@Valid @RequestBody AdminUserDTO adminUsserDTO) throws URISyntaxException {
-        log.debug("REST request to save User : {}", adminUsserDTO);
+    public ResponseEntity<User> createUser(@Valid @RequestBody AdminUserDTO adminUserDTO) throws URISyntaxException {
+        log.debug("REST request to save User : {}", adminUserDTO);
 
-        if (adminUsserDTO.getId() != null) {
+        if (adminUserDTO.getId() != null) {
             throw new BadRequestAlertException("A new user cannot already have an ID", "userManagement", "idexists");
             // Lowercase the user login before comparing with database
-        } else if (userRepository.findOneByLogin(adminUsserDTO.getLogin().toLowerCase()).isPresent()) {
+        } else if (userRepository.findOneByLogin(adminUserDTO.getLogin().toLowerCase()).isPresent()) {
             throw new LoginAlreadyUsedException();
-        } else if (userRepository.findOneByEmailIgnoreCase(adminUsserDTO.getEmail()).isPresent()) {
+        } else if (userRepository.findOneByEmailIgnoreCase(adminUserDTO.getEmail()).isPresent()) {
             throw new EmailAlreadyUsedException();
         } else {
-            User newUser = userService.createUser(adminUsserDTO);
+            User newUser = userService.createUser(adminUserDTO);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setId(newUser.getId());
