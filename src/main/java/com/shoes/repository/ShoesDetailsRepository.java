@@ -45,7 +45,7 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct iu.path) as paths ," +
         "GROUP_CONCAT(distinct d.name) as discount_name ," +
         "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
-        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount , " +
+        "dsd.discount_amount as discount_amount , " +
         "CAST(COALESCE(avg(fb.rate), 0) AS SIGNED ) as rating  " +
         "FROM\n" +
         "    `shoes-store`.shoes_details sd\n" +
@@ -72,10 +72,10 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "    `shoes-store`.brand br ON sd.brand_id = br.id\n " +
         "JOIN\n" +
         "    `shoes-store`.shoes sh ON sd.shoes_id = sh.id and sh.status = 1\n" +
-        "left join `shoes-store`.discount_shoes_details dsd\n" +
-        "on dsd.shoes_details_id = sd.shoes_id and dsd.status = 1 and dsd.brand_id = br.id\n" +
-        "left join `shoes-store`.discount d \n" +
-        "on dsd.discount_id = d.id and d.start_date <= now() and d.end_date >= now() and d.status = 1\n" +
+        "LEFT JOIN `shoes-store`.discount_shoes_details dsd ON dsd.shoes_details_id = sd.shoes_id\n" +
+        "    AND dsd.status = 1 AND dsd.brand_id = sd.brand_id\n" +
+        "LEFT JOIN `shoes-store`.discount d ON dsd.discount_id = d.id\n" +
+        "    AND d.start_date <= NOW() AND d.end_date >= NOW() AND d.status = 1 " +
         "JOIN\n" +
         " `shoes-store`.size sz ON sd.size_id = sz.id\n" +
         "JOIN\n" +
@@ -157,14 +157,14 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
 
     @Query(
         value = "select fu.path,sd.price,s.name,s.id as idsh,sz.id as idsz,c.id as idc,b.id as idb,\n" +
-            "    coalesce(max(discount_method),min(discount_method)) AS discountmethod,\n" +
-            "    max(\n" +
-            "    case\n" +
-            "    when discount_method is not null && (discount_method = 3 || discount_method = 4)  then dsd.discount_amount\n" +
-            "    else null\n" +
-            "    end \n" +
-            "    ) as discountamount_3_4,\n" +
-            "    coalesce(max(d.discount_amount),min(d.discount_amount)) AS discountamount_1_2\n" +
+        "    coalesce(max(discount_method),min(discount_method)) AS discountmethod,\n" +
+        "    max(\n" +
+        "    case\n" +
+        "    when discount_method is not null && (discount_method = 3 || discount_method = 4)  then dsd.discount_amount\n" +
+        "    else null\n" +
+        "    end \n" +
+        "    ) as discountamount_3_4,\n" +
+        "    coalesce(max(d.discount_amount),min(d.discount_amount)) AS discountamount_1_2\n" +
         "from (\n" +
         "    WITH shoes_details AS (\n" +
         "        SELECT\n" +
@@ -240,39 +240,39 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
 
     @Query(
         value = "SELECT \n" +
-            "    fu.path,\n" +
-            "    sd.price,\n" +
-            "    s.name,\n" +
-            "    sd.id AS shoesdetailid,\n" +
-            "    s.id AS idsh,\n" +
-            "    sz.id AS idsz,\n" +
-            "    c.id AS idc,\n" +
-            "    b.id AS idb,\n" +
-            "    sum(od.quantity) as totalQuantity\n" +
-            "FROM \n" +
-            "    shoes_details sd\n" +
-            "JOIN \n" +
-            "    shoes s ON sd.shoes_id = s.id\n" +
-            "JOIN \n" +
-            "    size sz ON sd.size_id = sz.id\n" +
-            "JOIN \n" +
-            "    color c ON sd.color_id = c.id\n" +
-            "JOIN \n" +
-            "    brand b ON sd.brand_id = b.id\n" +
-            "JOIN order_details od on od.shoes_details_id = sd.id\n" +
-            "JOIN (\n" +
-            "    SELECT \n" +
-            "        sfum.*,\n" +
-            "        ROW_NUMBER() OVER (PARTITION BY shoes_details_id ORDER BY id) AS rn\n" +
-            "    FROM \n" +
-            "        shoes_file_upload_mapping sfum\n" +
-            ") sfum ON sd.id = sfum.shoes_details_id\n" +
-            "JOIN \n" +
-            "    file_upload fu ON sfum.file_upload_id = fu.id \n" +
-            "WHERE rn = 1 \n" +
-            "GROUP BY sd.id\n" +
-            "order by totalQuantity desc\n" +
-            "limit 10\n",
+        "    fu.path,\n" +
+        "    sd.price,\n" +
+        "    s.name,\n" +
+        "    sd.id AS shoesdetailid,\n" +
+        "    s.id AS idsh,\n" +
+        "    sz.id AS idsz,\n" +
+        "    c.id AS idc,\n" +
+        "    b.id AS idb,\n" +
+        "    sum(od.quantity) as totalQuantity\n" +
+        "FROM \n" +
+        "    shoes_details sd\n" +
+        "JOIN \n" +
+        "    shoes s ON sd.shoes_id = s.id\n" +
+        "JOIN \n" +
+        "    size sz ON sd.size_id = sz.id\n" +
+        "JOIN \n" +
+        "    color c ON sd.color_id = c.id\n" +
+        "JOIN \n" +
+        "    brand b ON sd.brand_id = b.id\n" +
+        "JOIN order_details od on od.shoes_details_id = sd.id\n" +
+        "JOIN (\n" +
+        "    SELECT \n" +
+        "        sfum.*,\n" +
+        "        ROW_NUMBER() OVER (PARTITION BY shoes_details_id ORDER BY id) AS rn\n" +
+        "    FROM \n" +
+        "        shoes_file_upload_mapping sfum\n" +
+        ") sfum ON sd.id = sfum.shoes_details_id\n" +
+        "JOIN \n" +
+        "    file_upload fu ON sfum.file_upload_id = fu.id \n" +
+        "WHERE rn = 1 \n" +
+        "GROUP BY sd.id\n" +
+        "order by totalQuantity desc\n" +
+        "limit 10\n",
         nativeQuery = true
     )
     List<ShoesDetailDTOCustom> getBestSeller();
