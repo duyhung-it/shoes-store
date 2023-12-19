@@ -63,5 +63,6 @@ public interface ShoesDetailsService {
 
     List<ShoesDetailDTOCustom> getNewShoesDetail();
     List<ShoesDetailDTOCustom> getNewDiscountShoesDetail();
+    List<ShoesDetailDTOCustom> getBestSellerShoesDetail();
     List<ShopShoesDTO> getDiscountShoes();
 }
