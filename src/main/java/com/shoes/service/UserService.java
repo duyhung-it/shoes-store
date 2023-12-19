@@ -182,6 +182,11 @@ public class UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setPhone(userDTO.getPhone());
+        user.setAddress(userDTO.getAddress());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(userDTO.getDob(), formatter);
+        Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        user.setDOB(instant);
         if (userDTO.getEmail() != null) {
             user.setEmail(userDTO.getEmail().toLowerCase());
         }
@@ -240,6 +245,11 @@ public class UserService {
                 user.setActivated(true);
                 user.setLangKey("en");
                 Set<Authority> managedAuthorities = user.getAuthorities();
+                user.setAddress(userDTO.getAddress());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate localDate = LocalDate.parse(userDTO.getDob(), formatter);
+                Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+                user.setDOB(instant);
                 managedAuthorities.clear();
                 userDTO
                     .getAuthorities()
