@@ -43,8 +43,8 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "GROUP_CONCAT(distinct cl.id order by cl.id) as colors,\n " +
         "GROUP_CONCAT(distinct cl.name order by cl.id) as color_names ," +
         "GROUP_CONCAT(distinct iu.path) as paths ," +
-        "GROUP_CONCAT(distinct d.name) as discount_name ," +
-        "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
+        "d.name as discount_name ," +
+        "d.discount_method as discount_method ,  " +
         "dsd.discount_amount as discount_amount , " +
         "CAST(COALESCE(avg(fb.rate), 0) AS SIGNED ) as rating  " +
         "FROM\n" +
@@ -105,10 +105,10 @@ public interface ShoesDetailsRepository extends JpaRepository<ShoesDetails, Long
         "  CONCAT(br.name, ' ', sh.name) as name,\n" +
         "  iu.path,\n" +
         "  GROUP_CONCAT(iu.path) as paths ,\n " +
-        "GROUP_CONCAT(distinct d.name) as discount_name ," +
-        "GROUP_CONCAT(distinct d.discount_method) as discount_method ,  " +
-        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount ,  " +
-        "GROUP_CONCAT(distinct dsd.discount_amount) as discount_amount_3_4 ,  " +
+        "d.name as discount_name ," +
+        "d.discount_method as discount_method ,  " +
+        "dsd.discount_amount as discount_amount ,  " +
+        "dsd.discount_amount as discount_amount_3_4 ,  " +
         " (SELECT CAST(COALESCE(avg(fb.rate), 0) AS SIGNED)\n" +
         "FROM feed_back fb\n" +
         "JOIN shoes_details ad ON fb.shoes_id in (select id from shoes_details where brand_id = sd.brand_id and shoes_id = sd.shoes_id)  AND fb.status = 1 ) as rating\n" +
