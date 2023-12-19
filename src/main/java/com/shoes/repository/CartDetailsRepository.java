@@ -25,7 +25,7 @@ public interface CartDetailsRepository extends JpaRepository<CartDetails, Long> 
             "    coalesce(max(discount_method),min(discount_method)) AS discountmethod,\n" +
             "    max(\n" +
             "    case\n" +
-            "    when discount_method is not null && (discount_method = 3 || discount_method = 4)  then dsd.discount_amount\n" +
+            "    when discount_method is not null then dsd.discount_amount\n" +
             "    else null\n" +
             "    end \n" +
             "    ) as discountamount_3_4,\n" +
