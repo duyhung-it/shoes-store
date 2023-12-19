@@ -65,6 +65,9 @@ public class OrderResource {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");
         }
         OrderDTO result = orderService.save(orderDTO);
+        byte[] byteArrayResource = this.orderService.getMailVerify(result.getId());
+        //            System.out.println(byteArrayResource);
+        mailService.sendEmail1(result.getMailAddress(), "[SPORT-KICK] Thông báo đặt hàng thành công", "", byteArrayResource, true, true);
         return ResponseEntity
             .created(new URI("/api/orders/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
