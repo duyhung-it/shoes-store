@@ -1,10 +1,9 @@
 package com.shoes.repository;
 
 import com.shoes.domain.Shoes;
+import com.shoes.domain.Size;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
-
-import com.shoes.domain.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;

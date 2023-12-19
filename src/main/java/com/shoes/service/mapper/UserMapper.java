@@ -59,6 +59,30 @@ public class UserMapper {
         }
     }
 
+    //    public AdminUserDTO userToAdminUserDTO(User user) {
+    //        if (user == null) {
+    //            return null;
+    //        } else {
+    //            AdminUserDTO userDTO = new AdminUserDTO();
+    //            userDTO.setId(user.getId());
+    //            userDTO.setLogin(user.getLogin());
+    //            userDTO.setFirstName(user.getFirstName());
+    //            userDTO.setLastName(user.getLastName());
+    //            userDTO.setEmail(user.getEmail());
+    //            userDTO.setImageUrl(user.getImageUrl());
+    //            userDTO.setActivated(user.isActivated());
+    //            userDTO.setLangKey(user.getLangKey());
+    //            Set<String> authorityNames = new HashSet<>();
+    //            // Ánh xạ từ Authority sang tên của Authority
+    //            for (Authority authority : user.getAuthorities()) {
+    //                authorityNames.add(authority.getName());
+    //            }
+    //            userDTO.setAuthorities(authorityNames);
+    //            userDTO.setAddress(userDTO.getAddress());
+    //            return userDTO;
+    //        }
+    //    }
+
     private Set<Authority> authoritiesFromStrings(Set<String> authoritiesAsString) {
         Set<Authority> authorities = new HashSet<>();
 
