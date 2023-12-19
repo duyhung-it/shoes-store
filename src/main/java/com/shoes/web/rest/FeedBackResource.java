@@ -55,19 +55,25 @@ public class FeedBackResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/feed-backs")
-    public ResponseEntity<FeedBackDTO> createFeedBack(@RequestBody FeedBackDTO feedBackDTO) throws URISyntaxException {
+    public ResponseEntity<FeedBackDTO> createFeedBack(
+        @RequestBody FeedBackDTO feedBackDTO,
+        @RequestParam("brandId") Integer brandId,
+        @RequestParam("shoesId") Integer shoesId
+    ) throws URISyntaxException {
         log.debug("REST request to save FeedBack : {}", feedBackDTO);
         if (feedBackDTO.getId() != null) {
             throw new BadRequestAlertException("A new feedBack cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        // Kiểm tra xem người dùng đã mua giày chưa
-        Integer hasFeedBack = feedBackRepository.checkComment(feedBackDTO.getUser().getId(), feedBackDTO.getShoes().getId());
+
+        // Sử dụng brandId và shoesId nhận được từ request
+        Integer hasFeedBack = feedBackRepository.checkComment(feedBackDTO.getUser().getId(), brandId.longValue(), shoesId.longValue());
         if (hasFeedBack == 1) {
-            throw new BadRequestAlertException("Bạn đã feedback đôi giày", ENTITY_NAME, "hascomment");
+            throw new BadRequestAlertException("Bạn đã feedback đôi giày này", ENTITY_NAME, "hascomment");
         }
-        Integer hasBuy = feedBackRepository.checkBuy(feedBackDTO.getUser().getId(), feedBackDTO.getShoes().getId());
+
+        Integer hasBuy = feedBackRepository.checkBuy(feedBackDTO.getUser().getId(), brandId.longValue(), shoesId.longValue());
         if (hasBuy != 1) {
-            throw new BadRequestAlertException("Bạn phải mua đôi giày để bình luận", ENTITY_NAME, "shoenotpurchased");
+            throw new BadRequestAlertException("Bạn phải mua đôi giày này để bình luận", ENTITY_NAME, "shoenotpurchased");
         }
         FeedBackDTO result = feedBackService.save(feedBackDTO);
         return ResponseEntity
