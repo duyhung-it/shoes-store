@@ -11,6 +11,9 @@ import com.shoes.service.dto.AdminUserDTO;
 import com.shoes.service.dto.UserDTO;
 import com.shoes.util.SecurityUtils;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,14 +115,20 @@ public class UserService {
                     throw new EmailAlreadyUsedException();
                 }
             });
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(userDTO.getDob(), formatter);
+        Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
         User newUser = new User();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
+        System.out.println(userDTO.getDob());
         // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
         newUser.setFirstName(userDTO.getFirstName());
         newUser.setLastName(userDTO.getLastName());
         newUser.setPhone(userDTO.getPhone());
+        newUser.setDOB(instant);
+        newUser.setAddress(userDTO.getAddress());
         if (userDTO.getEmail() != null) {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
@@ -317,6 +326,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthoritiesByLogin(String login) {
+        System.out.println("111");
         return userRepository.findOneWithAuthoritiesByLogin(login);
     }
 
