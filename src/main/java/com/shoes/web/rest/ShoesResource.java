@@ -2,6 +2,7 @@ package com.shoes.web.rest;
 
 import com.shoes.repository.ShoesRepository;
 import com.shoes.service.ShoesService;
+import com.shoes.service.dto.ColorDTO;
 import com.shoes.service.dto.ShoesDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -158,15 +159,15 @@ public class ShoesResource {
         Optional<ShoesDTO> shoesDTO = shoesService.findOne(id);
         return ResponseUtil.wrapOrNotFound(shoesDTO);
     }
-
-    /**
-     * {@code DELETE  /shoes/:id} : delete the "id" shoes.
-     *
-     * @param id the id of the shoesDTO to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
+    @GetMapping("/shoes/removed")
+    public ResponseEntity<List<ShoesDTO>> getAllColorsDelete(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of Colors");
+        Page<ShoesDTO> page = shoesService.findDelete(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
     @DeleteMapping("/shoes/{id}")
-    public ResponseEntity<Void> deleteShoes(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteColor(@PathVariable Long id) {
         log.debug("REST request to delete Shoes : {}", id);
         shoesService.delete(id);
         return ResponseEntity
