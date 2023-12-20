@@ -10,10 +10,10 @@ import com.shoes.web.rest.errors.BadRequestAlertException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -144,6 +144,35 @@ public class OrderResource {
         );
     }
 
+    @GetMapping("orders/revenue/monthly")
+    public ResponseEntity<BigDecimal[]> getMonthlyRevenue() {
+        List<Object[]> monthlyRevenues = orderRepository.getMonthlyRevenue();
+        BigDecimal[] revenues = new BigDecimal[12];
+        Arrays.fill(revenues, BigDecimal.ZERO);
+        for (Object[] monthRevenue : monthlyRevenues) {
+            int month = (Integer) monthRevenue[0] - 1; // Chuyển đổi sang chỉ số mảng (0 đến 11)
+            BigDecimal revenue = (BigDecimal) monthRevenue[1];
+            revenues[month] = revenue;
+        }
+        return ResponseEntity.ok().body(revenues);
+    }
+
+    @GetMapping("revenue/growth-percentage")
+    public BigDecimal getRevenueGrowthPercentage() {
+        Map<String, BigDecimal> revenues = orderRepository.getRevenueComparison();
+        BigDecimal thisWeekRevenue = revenues.get("this_week_revenue");
+        BigDecimal lastWeekRevenue = revenues.get("last_week_revenue");
+
+        if (lastWeekRevenue == null || lastWeekRevenue.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO; // Tránh chia cho zero
+        }
+
+        return thisWeekRevenue
+            .subtract(lastWeekRevenue)
+            .divide(lastWeekRevenue, 2, BigDecimal.ROUND_HALF_UP)
+            .multiply(new BigDecimal("100"));
+    }
+
     /**
      * {@code GET  /orders} : get all the orders.
      *
@@ -156,6 +185,26 @@ public class OrderResource {
         Page<OrderDTO> page = orderService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/orders/count")
+    public ResponseEntity<Long> getAllOrders() {
+        log.debug("REST request to get a page of Orders");
+        return ResponseEntity.ok().body(orderRepository.count());
+    }
+
+    @GetMapping("/orders/price")
+    public ResponseEntity<BigDecimal> getAllOrderss() {
+        log.debug("REST request to get a page of Orders");
+        return ResponseEntity.ok().body(orderRepository.sumTotalPriceForStatusThree());
+    }
+
+    @GetMapping("/orders/seven-day")
+    public ResponseEntity<BigDecimal> getAllOrdersss() {
+        log.debug("REST request to get a page of Orders");
+        Instant endDate = ZonedDateTime.now().toInstant();
+        Instant startDate = endDate.minusSeconds(60 * 60 * 24 * 7);
+        return ResponseEntity.ok().body(orderRepository.calculateRevenueForLastSevenDays(startDate, endDate));
     }
 
     @GetMapping("/order-owner/{id}")

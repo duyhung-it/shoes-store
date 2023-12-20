@@ -5,8 +5,10 @@ import com.shoes.service.FeedBackService;
 import com.shoes.service.dto.FeedBackDTO;
 import com.shoes.service.dto.ShoesFeedBackDTO;
 import com.shoes.web.rest.errors.BadRequestAlertException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -176,6 +178,18 @@ public class FeedBackResource {
         log.debug("REST request to get FeedBack : {}", id);
         Optional<FeedBackDTO> feedBackDTO = feedBackService.findOne(id);
         return ResponseUtil.wrapOrNotFound(feedBackDTO);
+    }
+
+    @GetMapping("/feed-backs/count-unread")
+    public ResponseEntity<Integer> getFeedBackComment() {
+        log.debug("REST request to get count FeedBack : {}", 0);
+        return ResponseEntity.ok().body(feedBackRepository.countAllByStatus(0));
+    }
+
+    @GetMapping("/feed-backs/count")
+    public ResponseEntity<Long> getFeedBackCommentAll() {
+        log.debug("REST request to get count FeedBack : {}", 0);
+        return ResponseEntity.ok().body(feedBackRepository.count());
     }
 
     /**
