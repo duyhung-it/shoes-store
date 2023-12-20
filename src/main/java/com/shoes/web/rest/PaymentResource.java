@@ -97,7 +97,8 @@ public class PaymentResource {
         @RequestParam("shipPrice") BigDecimal shipPrice,
         @RequestParam("idOwner") String idOwner,
         @RequestParam("arrSanPham") String arrSanPham,
-        @RequestParam("arrQuantity") String arrQuantity
+        @RequestParam("arrQuantity") String arrQuantity,
+        @RequestParam("arrPriceDiscount") String arrPriceDiscount
     ) throws UnsupportedEncodingException {
         String paymentUrl = paymentService.createPayment(
             price,
@@ -111,7 +112,8 @@ public class PaymentResource {
             shipPrice,
             idOwner,
             arrSanPham,
-            arrQuantity
+            arrQuantity,
+            arrPriceDiscount
         );
         return paymentUrl;
     }

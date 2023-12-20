@@ -117,7 +117,8 @@ public class PaymentServiceImpl implements PaymentService {
         BigDecimal shipPrice,
         String idOwner,
         String arrSanPham,
-        String arrQuantity
+        String arrQuantity,
+        String arrPriceDiscount
     ) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -165,7 +166,9 @@ public class PaymentServiceImpl implements PaymentService {
             "_" +
             arrSanPham +
             "_" +
-            arrQuantity
+            arrQuantity +
+            "_" +
+            arrPriceDiscount
         );
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
@@ -260,8 +263,10 @@ public class PaymentServiceImpl implements PaymentService {
             String idOwnerStr = orderInfoParts[8];
             String arrSanPham = orderInfoParts[9];
             String arrQuantity = orderInfoParts[10];
+            String arrPriceDiscount = orderInfoParts[11];
             String[] sanPhamParts = arrSanPham.split("a");
             String[] quantityParts = arrQuantity.split("b");
+            String[] priceDiscountParts = arrPriceDiscount.split("d");
             User owner;
             if (!idOwnerStr.equalsIgnoreCase("null")) {
                 long idOwner = Long.parseLong(idOwnerStr);
@@ -298,6 +303,7 @@ public class PaymentServiceImpl implements PaymentService {
                 orderDetails = new OrderDetails();
                 long id = Long.parseLong(sanPhamParts[i]);
                 Integer quantity = Integer.valueOf(quantityParts[i]);
+                BigDecimal discount = BigDecimal.valueOf(Long.parseLong(priceDiscountParts[i]));
                 shoesDetails = shoesDetailsRepository.findByIdAndStatus(id, 1);
                 orderDetails.setQuantity(quantity);
                 orderDetails.setPrice(shoesDetails.getPrice());
@@ -306,6 +312,7 @@ public class PaymentServiceImpl implements PaymentService {
                 orderDetails.setCreatedDate(Instant.now());
                 orderDetails.setOrder(order);
                 orderDetails.setShoesDetails(shoesDetails);
+                orderDetails.setDiscount(discount);
                 orderDetailsList.add(orderDetails);
 
                 orderRepository.save(order);
