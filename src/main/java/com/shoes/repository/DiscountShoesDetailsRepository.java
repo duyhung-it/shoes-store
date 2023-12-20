@@ -24,4 +24,8 @@ public interface DiscountShoesDetailsRepository extends JpaRepository<DiscountSh
         nativeQuery = true
     )
     DiscountShoesDetails findByShoesIdAndStatus(@Param("shoesId") Long idShoes, @Param("brandId") Long idBrand);
+
+    @Modifying
+    @Query(value = "update discount_shoes_details set status = :status where discount_id in :ids and status = 1", nativeQuery = true)
+    void updateStatus(@Param("ids") List<Long> ids, @Param("status") Integer status);
 }
