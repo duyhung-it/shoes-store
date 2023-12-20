@@ -52,4 +52,6 @@ public interface FeedBackRepository extends JpaRepository<FeedBack, Long> {
         nativeQuery = true
     )
     Integer checkBuy(@Param("uid") Long id, @Param("brid") Long brid, @Param("shid") Long shid);
+
+    Integer countAllByStatus(Integer status);
 }

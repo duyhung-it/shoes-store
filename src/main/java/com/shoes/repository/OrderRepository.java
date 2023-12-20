@@ -5,7 +5,10 @@ import com.shoes.repository.custom.OrderRepositoryCustom;
 import com.shoes.service.dto.OrderDTO;
 import com.shoes.service.dto.RevenueDTO;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +28,9 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     Page<Order> getOrderByOwnerId(Long id, Pageable pageable);
 
     Optional<Order> findByIdAndStatus(Long id, Integer status);
+
     List<Order> findAllByIdInAndStatus(List<Long> orderIds, Integer status);
+
     List<Order> findAllByIdIn(List<Long> orderIds);
 
     @Query(value = "SELECT * FROM jhi_order jo WHERE jo.created_date LIKE :date", nativeQuery = true)
@@ -64,5 +69,26 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     BigDecimal getRevenueOnline();
 
     List<Order> getOrderByStatusAndOwnerLogin(Integer status, String login);
+
     Order getOrderByCode(String code);
+
+    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.status = 3")
+    BigDecimal sumTotalPriceForStatusThree();
+
+    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.createdDate >= :startDate AND o.createdDate <= :endDate AND o.status = 3")
+    BigDecimal calculateRevenueForLastSevenDays(@Param("startDate") Instant startDate, @Param("endDate") Instant endDate);
+
+    @Query(
+        value = "SELECT MONTH(o.created_date) AS month, SUM(o.total_price) AS revenue FROM jhi_order o where status = 3 GROUP BY MONTH(o.created_date)",
+        nativeQuery = true
+    )
+    List<Object[]> getMonthlyRevenue();
+
+    @Query(
+        value = "SELECT " +
+        "(SELECT SUM(o.total_price) FROM jhi_order o WHERE o.created_date >= CURRENT_DATE - INTERVAL 1 WEEK AND o.created_date < CURRENT_DATE) AS this_week_revenue, " +
+        "(SELECT SUM(o.total_price) FROM jhi_order o WHERE o.created_date >= CURRENT_DATE - INTERVAL 2 WEEK AND o.created_date < CURRENT_DATE - INTERVAL 1 WEEK) AS last_week_revenue",
+        nativeQuery = true
+    )
+    Map<String, BigDecimal> getRevenueComparison();
 }
