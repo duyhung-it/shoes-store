@@ -73,7 +73,8 @@ public interface PaymentService {
         BigDecimal shipPrice,
         String idOwner,
         String arrSanPham,
-        String arrQuantity
+        String arrQuantity,
+        String arrPriceDiscount
     ) throws UnsupportedEncodingException;
 
     int orderReturn(HttpServletRequest request);
